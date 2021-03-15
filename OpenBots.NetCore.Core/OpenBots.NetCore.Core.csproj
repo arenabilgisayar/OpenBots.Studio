@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -93,5 +93,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="nuget pack &quot;$(ProjectPath)&quot; -Properties Configuration=$(ConfigurationName) -IncludeReferencedProjects -OutputDirectory &quot;$(ProjectDir)..\OpenBots.Packages&quot;" />
+  </Target>
 
 </Project>
