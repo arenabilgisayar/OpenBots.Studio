@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -37,23 +38,12 @@ namespace OpenBots.Commands.If
 		[SampleUsage("")]
 		[Remarks("")]
 		[Editor("ShowIfBuilder", typeof(UIAdditionalHelperType))]
+		[CompatibleTypes(new Type[] { typeof(object), typeof(Bitmap), typeof(DateTime), typeof(string) }, true)]
 		public DataTable v_IfConditionsTable { get; set; }
 
 		[JsonIgnore]
 		[Browsable(false)]
 		private DataGridView _ifConditionHelper;
-
-		[JsonIgnore]
-		[Browsable(false)]
-		private List<ScriptVariable> _scriptVariables;
-
-		[JsonIgnore]
-		[Browsable(false)]
-		private List<ScriptArgument> _scriptArguments;
-
-		[JsonIgnore]
-		[Browsable(false)]
-		private List<ScriptElement> _scriptElements;
 
 		public BeginMultiIfCommand()
 		{
@@ -90,6 +80,10 @@ namespace OpenBots.Commands.If
                 {
 					isTrueStatement = true;
 					break;
+                }
+				else if (v_LogicType == "Or")
+                {
+					isTrueStatement = false;
                 }
 			}
 
@@ -142,11 +136,6 @@ namespace OpenBots.Commands.If
 		{
 			base.Render(editor, commandControls);
 
-			//get script variables for feeding into if builder form
-			_scriptVariables = editor.ScriptEngineContext.Variables;
-			_scriptArguments = editor.ScriptEngineContext.Arguments;
-			_scriptElements = editor.ScriptEngineContext.Elements;
-
 			RenderedControls.AddRange(commandControls.CreateDefaultDropdownGroupFor("v_LogicType", this, editor));
 
 			//create controls
@@ -171,7 +160,7 @@ namespace OpenBots.Commands.If
 			_ifConditionHelper.Columns.Add(new DataGridViewButtonColumn() { HeaderText = "Delete", UseColumnTextForButtonValue = true, Text = "Delete", Width = 60 });
 			_ifConditionHelper.AllowUserToAddRows = false;
 			_ifConditionHelper.AllowUserToDeleteRows = true;
-			_ifConditionHelper.CellContentClick += (sender, e) => IfConditionHelper_CellContentClick(sender, e, commandControls);
+			_ifConditionHelper.CellContentClick += (sender, e) => IfConditionHelper_CellContentClick(sender, e, editor, commandControls);
 
 			return RenderedControls;
 		}
@@ -182,14 +171,19 @@ namespace OpenBots.Commands.If
 			{
 				return "If <Not Configured>";
 			}
-			else
+			else if (v_LogicType == "And")
 			{
 				var statements = v_IfConditionsTable.AsEnumerable().Select(f => f.Field<string>("Statement")).ToList();
 				return string.Join(" && ", statements);
 			}
+			else
+            {
+				var statements = v_IfConditionsTable.AsEnumerable().Select(f => f.Field<string>("Statement")).ToList();
+				return string.Join(" || ", statements);
+			}
 		}
 
-		private void IfConditionHelper_CellContentClick(object sender, DataGridViewCellEventArgs e, ICommandControls commandControls)
+		private void IfConditionHelper_CellContentClick(object sender, DataGridViewCellEventArgs e, IfrmCommandEditor parentEditor, ICommandControls commandControls)
 		{
 			var senderGrid = (DataGridView)sender;
 
@@ -212,13 +206,15 @@ namespace OpenBots.Commands.If
 					editor.EditingCommand = ifCommand;
 					editor.OriginalCommand = ifCommand;
 					editor.CreationModeInstance = CreationMode.Edit;
-					editor.ScriptEngineContext.Variables = _scriptVariables;
-					editor.ScriptEngineContext.Arguments = _scriptArguments;
-					editor.ScriptEngineContext.Elements = _scriptElements;
+					editor.ScriptEngineContext = parentEditor.ScriptEngineContext;
+					editor.TypeContext = parentEditor.TypeContext;
 
 					if (((Form)editor).ShowDialog() == DialogResult.OK)
 					{
-						var editedCommand = editor.EditingCommand as BeginIfCommand;
+						parentEditor.ScriptEngineContext = editor.ScriptEngineContext;
+						parentEditor.TypeContext = editor.TypeContext;
+
+						var editedCommand = editor.SelectedCommand as BeginIfCommand;
 						var displayText = editedCommand.GetDisplayValue();
 						var serializedData = JsonConvert.SerializeObject(editedCommand);
 
@@ -243,7 +239,8 @@ namespace OpenBots.Commands.If
 			var automationCommands = new List<AutomationCommand>() { CommandsHelper.ConvertToAutomationCommand(typeof(BeginIfCommand)) };
 			IfrmCommandEditor editor = commandControls.CreateCommandEditorForm(automationCommands, null);
             editor.SelectedCommand = new BeginIfCommand();
-            editor.ScriptEngineContext.Variables = parentEditor.ScriptEngineContext.Variables;
+			editor.ScriptEngineContext = parentEditor.ScriptEngineContext;
+			editor.TypeContext = parentEditor.TypeContext;
 
 			if (((Form)editor).ShowDialog() == DialogResult.OK)
 			{
@@ -251,7 +248,8 @@ namespace OpenBots.Commands.If
 				var configuredCommand = editor.SelectedCommand as BeginIfCommand;
 				var displayText = configuredCommand.GetDisplayValue();
 				var serializedData = JsonConvert.SerializeObject(configuredCommand);
-				parentEditor.ScriptEngineContext.Variables = editor.ScriptEngineContext.Variables;
+				parentEditor.ScriptEngineContext = editor.ScriptEngineContext;
+				parentEditor.TypeContext = editor.TypeContext;
 
 				//add to list
 				v_IfConditionsTable.Rows.Add(displayText, serializedData);

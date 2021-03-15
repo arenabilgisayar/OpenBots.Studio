@@ -18,8 +18,7 @@ namespace OpenBots.Studio.Utilities
         {          
             var commandList = new List<AutomationCommand>();
             var commandClasses = new List<Type>();
-                      
-
+                               
             using (var scope = container.BeginLifetimeScope())
             {
                     var types = scope.ComponentRegistry.Registrations
@@ -70,7 +69,7 @@ namespace OpenBots.Studio.Utilities
                 try
                 {
                     var newTypes = assem.GetTypes()?
-                                        .Where(x => x.IsClass && x.IsVisible && x.IsPublic && !x.IsInterface && !x.IsAbstract 
+                                        .Where(x => x.IsVisible && x.IsPublic && !x.IsInterface && !x.IsAbstract 
                                                               && x.Namespace != null && !x.Namespace.StartsWith("OpenBots"))
                                         .ToList();
 

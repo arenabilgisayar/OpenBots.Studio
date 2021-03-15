@@ -56,7 +56,7 @@ namespace OpenBots.Commands.File
 		[DisplayName("Output Extracted File Path(s) List Variable")]
 		[Description("Create a new variable or select a variable from the list.")]
 		[SampleUsage("{vUserVariable}")]
-		[Remarks("Variables not pre-defined in the Variable Manager will be automatically generated at runtime.")]
+		[Remarks("New variables/arguments may be instantiated by utilizing the Ctrl+K/Ctrl+J shortcuts.")]
 		[CompatibleTypes(new Type[] { typeof(List<>) })]
 		public string v_OutputUserVariableName { get; set; }
 
@@ -96,7 +96,9 @@ namespace OpenBots.Commands.File
 			Directory.CreateDirectory(vFilePathDestination);
 
 			// get password to extract files
-			var vPassword = ((SecureString)v_Password.ConvertUserVariableToObject(engine, nameof(v_Password), this)).ConvertSecureStringToString();
+			var vPassword = "";
+			if (v_Password != null)
+				vPassword = ((SecureString)v_Password.ConvertUserVariableToObject(engine, nameof(v_Password), this)).ConvertSecureStringToString();
 			FileStream fs = IO.File.OpenRead(vSourceFilePathOrigin);
 			ZipFile file = new ZipFile(fs);
 

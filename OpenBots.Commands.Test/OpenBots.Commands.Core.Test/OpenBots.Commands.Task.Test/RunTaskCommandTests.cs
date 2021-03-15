@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using OpenBots.Core.Script;
+using OpenBots.Core.Enums;
 using OpenBots.Core.Utilities.CommonUtilities;
 using OpenBots.Engine;
 using System;
@@ -71,7 +72,7 @@ namespace OpenBots.Commands.Task.Test
             _textFile.v_FilePath = Path.Combine(filePath, @"test.txt");
             _textFile.v_TextToWrite = "{inputArg}";
             _textFile.v_Overwrite = "Overwrite";
-            _engine.AutomationEngineContext.FilePath = Path.Combine(filePath, "task.json");
+            _engine.AutomationEngineContext.FilePath = Path.Combine(filePath, "task.obscript");
             _engine.AutomationEngineContext.IsTest = true;
             List<ScriptAction> commands = new List<ScriptAction>();
             ScriptAction com1 = new ScriptAction();
@@ -125,9 +126,9 @@ namespace OpenBots.Commands.Task.Test
             ScriptAction runTaskAction = new ScriptAction();
             runTaskAction.ScriptCommand = _runTask;
 
-            "inputValue".CreateTestVariable(_engine, "taskInput", typeof(string));
-            "default".CreateTestVariable(_engine, "taskOutput", typeof(string));
-            "unassigned".CreateTestVariable(_engine, "outputVar", typeof(string));
+            VariableMethods.CreateTestVariable("inputValue", _engine, "taskInput", typeof(string));
+            VariableMethods.CreateTestVariable("default", _engine, "taskOutput", typeof(string));
+            VariableMethods.CreateTestVariable(null, _engine, "outputVar", typeof(string));
 
             _engine.ExecuteCommand(runTaskAction);
 
@@ -136,7 +137,7 @@ namespace OpenBots.Commands.Task.Test
             Assert.Equal("inputValue", OBIO.File.ReadAllText(Path.Combine(filePath, @"test.txt")));
 
             OBIO.File.Delete(Path.Combine(filePath, @"test.txt"));
-            OBIO.File.Delete(Path.Combine(filePath, @"task.json"));
+            OBIO.File.Delete(Path.Combine(filePath, @"task.obscript"));
         }
     }
 }

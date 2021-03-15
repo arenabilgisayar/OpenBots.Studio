@@ -55,7 +55,7 @@ namespace OpenBots.Commands.File
 		[DisplayName("Output Compressed File Path Variable")]
 		[Description("Create a new variable or select a variable from the list.")]
 		[SampleUsage("{vUserVariable}")]
-		[Remarks("Variables not pre-defined in the Variable Manager will be automatically generated at runtime.")]
+		[Remarks("New variables/arguments may be instantiated by utilizing the Ctrl+K/Ctrl+J shortcuts.")]
 		[CompatibleTypes(new Type[] { typeof(string) })]
 		public string v_OutputUserVariableName { get; set; }
 
@@ -77,8 +77,10 @@ namespace OpenBots.Commands.File
 			// get file path to destination files
 			var vFilePathDestination = v_PathDestination.ConvertUserVariableToString(engine);
 
+			var vPassword = "";
 			// get password to extract files
-			var vPassword = ((SecureString)v_Password.ConvertUserVariableToObject(engine, nameof(v_Password), this)).ConvertSecureStringToString();
+			if (v_Password != null)
+				vPassword = ((SecureString)v_Password.ConvertUserVariableToObject(engine, nameof(v_Password), this)).ConvertSecureStringToString();
 
             if (IO.File.Exists(vSourceDirectoryPathOrigin))
             {
