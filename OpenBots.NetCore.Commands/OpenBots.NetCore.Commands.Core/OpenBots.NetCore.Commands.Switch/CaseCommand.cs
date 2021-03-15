@@ -12,7 +12,7 @@ namespace OpenBots.NetCore.Commands.Switch
 {
 	[Serializable]
 	[Category("Switch Commands")]
-	[Description("This command defines a case block whose commands will execute if the value specified in the "+
+	[Description("This command defines a case block whose commands will execute if the value specified in the " +
 				 "case is equal to that of the preceding Switch Command.")]
 	public class CaseCommand : ScriptCommand
 	{

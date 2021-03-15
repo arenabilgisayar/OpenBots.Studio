@@ -41,8 +41,8 @@ namespace OpenBots.NetCore.Commands.Loop
 		[DisplayName("Output Collection Item Variable")]
 		[Description("Create a new variable or select a variable from the list.")]
 		[SampleUsage("{vUserVariable}")]
-		[Remarks("Variables not pre-defined in the Variable Manager will be automatically generated at runtime.")]
-		[CompatibleTypes(new Type[] { typeof(DataRow), typeof(IWebElement), typeof(MailItem), typeof(MimeMessage), typeof(KeyValuePair<,>), typeof(string)})]
+		[Remarks("New variables/arguments may be instantiated by utilizing the Ctrl+K/Ctrl+J shortcuts.")]
+		[CompatibleTypes(new Type[] { typeof(DataRow), typeof(IWebElement), typeof(MailItem), typeof(MimeMessage), typeof(KeyValuePair<,>), typeof(string) })]
 		public string v_OutputUserVariableName { get; set; }
 
 		public LoopCollectionCommand()
@@ -59,12 +59,12 @@ namespace OpenBots.NetCore.Commands.Loop
 			var engine = (IAutomationEngineInstance)sender;
 
 			int loopTimes;
-			var complexVariable = v_LoopParameter.ConvertUserVariableToObject(engine, nameof(v_LoopParameter), this);           
+			var complexVariable = v_LoopParameter.ConvertUserVariableToObject(engine, nameof(v_LoopParameter), this);
 
 			//if still null then throw exception
 			if (complexVariable == null)
 			{
-				throw new System.Exception("Complex Variable '" + v_LoopParameter + 
+				throw new System.Exception("Complex Variable '" + v_LoopParameter +
 					"' not found. Ensure the variable exists before attempting to modify it.");
 			}
 
@@ -91,8 +91,8 @@ namespace OpenBots.NetCore.Commands.Loop
 			}
 			else if (complexVariable is Dictionary<string, string>)
 			{
-                listToLoop = ((Dictionary<string, string>)complexVariable).ToList();
-            }
+				listToLoop = ((Dictionary<string, string>)complexVariable).ToList();
+			}
 			else if (complexVariable is Dictionary<string, DataTable>)
 			{
 				listToLoop = ((Dictionary<string, DataTable>)complexVariable).ToList();
@@ -113,14 +113,14 @@ namespace OpenBots.NetCore.Commands.Loop
 			{
 				listToLoop = ((Dictionary<string, object>)complexVariable).ToList();
 			}
-			else if ((complexVariable.ToString().StartsWith("[")) && 
-				(complexVariable.ToString().EndsWith("]")) && 
+			else if ((complexVariable.ToString().StartsWith("[")) &&
+				(complexVariable.ToString().EndsWith("]")) &&
 				(complexVariable.ToString().Contains(",")))
 			{
 				//automatically handle if user has given a json array
 				JArray jsonArray = JsonConvert.DeserializeObject(complexVariable.ToString()) as JArray;
 
-			   var itemList = new List<string>();
+				var itemList = new List<string>();
 				foreach (var item in jsonArray)
 				{
 					var value = (JValue)item;
@@ -138,7 +138,7 @@ namespace OpenBots.NetCore.Commands.Loop
 			for (int i = 0; i < loopTimes; i++)
 			{
 				engine.ReportProgress("Starting Loop Number " + (i + 1) + "/" + loopTimes + " From Line " + loopCommand.LineNumber);
-				
+
 				((object)listToLoop[i]).StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);
 
 				foreach (var cmd in parentCommand.AdditionalScriptCommands)

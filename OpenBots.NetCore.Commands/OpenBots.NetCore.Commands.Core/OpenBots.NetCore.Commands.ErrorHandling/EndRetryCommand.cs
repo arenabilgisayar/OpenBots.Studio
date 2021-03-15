@@ -19,7 +19,7 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
             SelectionName = "End Retry";
             CommandIcon = Resources.command_end_try;
 
-            CommandEnabled = true;           
+            CommandEnabled = true;
         }
 
         public override void RunCommand(object sender)

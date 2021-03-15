@@ -19,7 +19,7 @@ using System.Windows.Forms;
 
 namespace OpenBots.NetCore.Commands.ErrorHandling
 {
-    [Serializable]
+	[Serializable]
 	[Category("Error Handling Commands")]
 	[Description("This command defines a retry block which will retry the contained commands as long as the condition is not met or " +
 		"an error is thrown.")]
@@ -58,23 +58,12 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
 		[SampleUsage("")]
 		[Remarks("Items in the retry scope will be executed if the condition doesn't satisfy.")]
 		[Editor("ShowIfBuilder", typeof(UIAdditionalHelperType))]
+		[CompatibleTypes(new Type[] { typeof(object), typeof(Bitmap), typeof(DateTime), typeof(string) }, true)]
 		public DataTable v_IfConditionsTable { get; set; }
 
 		[JsonIgnore]
 		[Browsable(false)]
 		private DataGridView _ifConditionHelper;
-
-		[JsonIgnore]
-		[Browsable(false)]
-		private List<ScriptVariable> _scriptVariables;
-
-		[JsonIgnore]
-		[Browsable(false)]
-		private List<ScriptArgument> _scriptArguments;
-
-		[JsonIgnore]
-		[Browsable(false)]
-		private List<ScriptElement> _scriptElements;
 
 		[JsonIgnore]
 		[Browsable(false)]
@@ -101,10 +90,10 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
 			var retryCommand = (BeginRetryCommand)parentCommand.ScriptCommand;
 
 			int retryCount = int.Parse(retryCommand.v_RetryCount.ConvertUserVariableToString(engine));
-			int retryInterval = int.Parse(retryCommand.v_RetryInterval.ConvertUserVariableToString(engine))*1000;
+			int retryInterval = int.Parse(retryCommand.v_RetryInterval.ConvertUserVariableToString(engine)) * 1000;
 			bool exceptionOccurred;
 
-			for(int startIndex = 0; startIndex < retryCount; startIndex++)
+			for (int startIndex = 0; startIndex < retryCount; startIndex++)
 			{
 				//reset error flags
 				engine.ChildScriptFailed = false;
@@ -117,7 +106,7 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
 				{
 					try
 					{
-						cmd.IsExceptionIgnored = true;						
+						cmd.IsExceptionIgnored = true;
 						engine.ExecuteCommand(cmd);
 						if (cmd.ScriptCommand.CommandName == "RunTaskCommand" && engine.ChildScriptFailed && !engine.ChildScriptErrorCaught)
 							throw new Exception("Child Script Failed");
@@ -133,18 +122,18 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
 				if (!exceptionOccurred && GetConditionResult(engine))
 				{
 					engine.ErrorsOccured.Clear();
-					retryCount = 0;					
+					retryCount = 0;
 				}
-				else if((startIndex + 1) < retryCount)
+				else if ((startIndex + 1) < retryCount)
 				{
 					engine.ErrorsOccured.Clear();
 					Thread.Sleep(retryInterval);
 				}
-                else
-                {
-					if(!(engine.LastExecutedCommand.CommandName == "RethrowCommand"))
-						engine.ErrorsOccured.Clear();	
-					
+				else
+				{
+					if (!(engine.LastExecutedCommand.CommandName == "RethrowCommand"))
+						engine.ErrorsOccured.Clear();
+
 					if (_exception != null)
 						throw new Exception("Number of retries has expired! - " + _exception.Message);
 					else
@@ -159,12 +148,6 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
 
 			RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_RetryCount", this, editor));
 			RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_RetryInterval", this, editor));
-
-			//get script variables for feeding into if builder form
-			_scriptVariables = editor.ScriptEngineContext.Variables;
-			_scriptArguments = editor.ScriptEngineContext.Arguments;
-			_scriptElements = editor.ScriptEngineContext.Elements;
-
 			RenderedControls.AddRange(commandControls.CreateDefaultDropdownGroupFor("v_LogicType", this, editor));
 
 			//create controls
@@ -189,7 +172,7 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
 			_ifConditionHelper.Columns.Add(new DataGridViewButtonColumn() { HeaderText = "Delete", UseColumnTextForButtonValue = true, Text = "Delete", Width = 60 });
 			_ifConditionHelper.AllowUserToAddRows = false;
 			_ifConditionHelper.AllowUserToDeleteRows = true;
-			_ifConditionHelper.CellContentClick += (sender, e) => IfConditionHelper_CellContentClick(sender, e, commandControls);
+			_ifConditionHelper.CellContentClick += (sender, e) => IfConditionHelper_CellContentClick(sender, e, editor, commandControls);
 
 			return RenderedControls;
 		}
@@ -199,7 +182,7 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
 			return base.GetDisplayValue() + $" [Number of Retries '{v_RetryCount}' - Retry Interval '{v_RetryInterval}']";
 		}
 
-		private void IfConditionHelper_CellContentClick(object sender, DataGridViewCellEventArgs e, ICommandControls commandControls)
+		private void IfConditionHelper_CellContentClick(object sender, DataGridViewCellEventArgs e, IfrmCommandEditor parentEditor, ICommandControls commandControls)
 		{
 			var senderGrid = (DataGridView)sender;
 
@@ -222,13 +205,15 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
 					editor.EditingCommand = ifCommand;
 					editor.OriginalCommand = ifCommand;
 					editor.CreationModeInstance = CreationMode.Edit;
-					editor.ScriptEngineContext.Variables = _scriptVariables;
-					editor.ScriptEngineContext.Arguments = _scriptArguments;
-					editor.ScriptEngineContext.Elements = _scriptElements;
+					editor.ScriptEngineContext = parentEditor.ScriptEngineContext;
+					editor.TypeContext = parentEditor.TypeContext;
 
 					if (((Form)editor).ShowDialog() == DialogResult.OK)
 					{
-						var editedCommand = editor.EditingCommand;
+						parentEditor.ScriptEngineContext = editor.ScriptEngineContext;
+						parentEditor.TypeContext = editor.TypeContext;
+
+						var editedCommand = editor.SelectedCommand as BeginIfCommand;
 						var displayText = editedCommand.GetDisplayValue();
 						var serializedData = JsonConvert.SerializeObject(editedCommand);
 
@@ -251,9 +236,10 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
 		private void CreateIfCondition(object sender, EventArgs e, IfrmCommandEditor parentEditor, ICommandControls commandControls)
 		{
 			var automationCommands = new List<AutomationCommand>() { CommandsHelper.ConvertToAutomationCommand(commandControls.GetCommandType("BeginIfCommand")) };
-            IfrmCommandEditor editor = commandControls.CreateCommandEditorForm(automationCommands, null);
+			IfrmCommandEditor editor = commandControls.CreateCommandEditorForm(automationCommands, null);
 			editor.SelectedCommand = commandControls.CreateBeginIfCommand();
-            editor.ScriptEngineContext.Variables = parentEditor.ScriptEngineContext.Variables;
+			editor.ScriptEngineContext = parentEditor.ScriptEngineContext;
+			editor.TypeContext = parentEditor.TypeContext;
 
 			if (((Form)editor).ShowDialog() == DialogResult.OK)
 			{
@@ -261,7 +247,8 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
 				var configuredCommand = editor.SelectedCommand;
 				var displayText = configuredCommand.GetDisplayValue();
 				var serializedData = JsonConvert.SerializeObject(configuredCommand);
-				parentEditor.ScriptEngineContext.Variables = editor.ScriptEngineContext.Variables;
+				parentEditor.ScriptEngineContext = editor.ScriptEngineContext;
+				parentEditor.TypeContext = editor.TypeContext;
 
 				//add to list
 				v_IfConditionsTable.Rows.Add(displayText, serializedData);
@@ -283,11 +270,15 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
 					break;
 				}
 
-				if(statementResult && v_LogicType == "Or")
-                {
+				if (statementResult && v_LogicType == "Or")
+				{
 					isTrueStatement = true;
 					break;
-                }
+				}
+				else if (v_LogicType == "Or")
+				{
+					isTrueStatement = false;
+				}
 			}
 			return isTrueStatement;
 		}

@@ -29,7 +29,7 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
         public override void RunCommand(object sender, ScriptAction parentCommand)
         {
             //get engine
-            var engine = (IAutomationEngineInstance) sender;
+            var engine = (IAutomationEngineInstance)sender;
 
             //get indexes of commands
             var startIndex = 0;
@@ -48,7 +48,7 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
                     var cmd = parentCommand.AdditionalScriptCommands[tryIndex];
                     cmd.IsExceptionIgnored = true;
                     engine.ExecuteCommand(cmd);
-                    if(cmd.ScriptCommand.CommandName == "RunTaskCommand" && engine.ChildScriptFailed && !engine.ChildScriptErrorCaught)
+                    if (cmd.ScriptCommand.CommandName == "RunTaskCommand" && engine.ChildScriptFailed && !engine.ChildScriptErrorCaught)
                         throw new Exception("Child Script Failed");
                 }
                 catch (Exception ex)
@@ -59,7 +59,7 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
                     ScriptAction catchCommandItem;
                     CatchCommand targetCatchCommand;
 
-                    if(engine.ChildScriptFailed)
+                    if (engine.ChildScriptFailed)
                     {
                         engine.ChildScriptErrorCaught = true;
                         exceptionType = engine.ErrorsOccured.OrderByDescending(x => x.LineNumber).FirstOrDefault().ErrorType;
@@ -93,7 +93,7 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
                         ExecuteTargetCatchBlock(sender, parentCommand, targetCatchIndex, endCatch);
                     }
                     // Else If Generic Exception Catch Found
-                    else if(generalCatchIndex != -1)
+                    else if (generalCatchIndex != -1)
                     {
                         ExecuteTargetCatchBlock(sender, parentCommand, generalCatchIndex, endCatch);
                     }
@@ -134,7 +134,7 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
         {
             // get the count of all (Enabled) Catch Commands
             int totalCatchCommands = additionalCommands.FindAll(
-                action => action.ScriptCommand is CatchCommand && 
+                action => action.ScriptCommand is CatchCommand &&
                 action.ScriptCommand.IsCommented == false
                 ).Count;
 
@@ -167,7 +167,7 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
             {
                 nextCatch = catches[currentCatchIndex + 1];
             }
-            catch(Exception)
+            catch (Exception)
             {
                 nextCatch = currCatch;
             }

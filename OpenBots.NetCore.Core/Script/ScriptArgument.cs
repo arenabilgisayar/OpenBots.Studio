@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenBots.NetCore.Core.Enums;
+using System;
 
 namespace OpenBots.NetCore.Core.Script
 {

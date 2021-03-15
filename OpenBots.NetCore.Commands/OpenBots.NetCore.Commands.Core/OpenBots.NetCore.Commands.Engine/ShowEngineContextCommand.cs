@@ -54,9 +54,9 @@ namespace OpenBots.NetCore.Commands.Engine
 				v_AutoCloseAfter = "10";
 
 			var result = ((Form)engine.AutomationEngineContext.ScriptEngine).Invoke(new Action(() =>
-				{
-					engine.AutomationEngineContext.ScriptEngine.ShowEngineContext(engine.GetEngineContext(), closeAfter);
-				}
+			{
+				engine.AutomationEngineContext.ScriptEngine.ShowEngineContext(engine.GetEngineContext(), closeAfter);
+			}
 			));
 		}
 

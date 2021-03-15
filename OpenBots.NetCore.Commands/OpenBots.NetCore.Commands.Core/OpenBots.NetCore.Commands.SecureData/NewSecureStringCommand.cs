@@ -33,7 +33,7 @@ namespace OpenBots.NetCore.Commands.SecureData
 		[DisplayName("Output SecureString Variable")]
 		[Description("Create a new variable or select a variable from the list.")]
 		[SampleUsage("{vUserVariable}")]
-		[Remarks("Variables not pre-defined in the Variable Manager will be automatically generated at runtime.")]
+		[Remarks("New variables/arguments may be instantiated by utilizing the Ctrl+K/Ctrl+J shortcuts.")]
 		[CompatibleTypes(new Type[] { typeof(SecureString) })]
 		public string v_OutputUserVariableName { get; set; }
 
@@ -51,7 +51,7 @@ namespace OpenBots.NetCore.Commands.SecureData
 			var engine = (IAutomationEngineInstance)sender;
 			SecureString secureStringValue = v_Input.ConvertUserVariableToString(engine).ConvertStringToSecureString();
 
-			secureStringValue.StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);           
+			secureStringValue.StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);
 		}
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)

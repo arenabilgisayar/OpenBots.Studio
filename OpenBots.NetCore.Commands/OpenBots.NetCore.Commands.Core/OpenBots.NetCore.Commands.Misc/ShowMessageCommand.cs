@@ -20,7 +20,7 @@ namespace OpenBots.NetCore.Commands.Misc
 	{
 
 		[Required]
-		[DisplayName("Message")]      
+		[DisplayName("Message")]
 		[Description("Specify any text or variable value that should be displayed on screen.")]
 		[SampleUsage("Hello World || {vMyText} || Hello {vName}")]
 		[Remarks("")]
@@ -30,7 +30,7 @@ namespace OpenBots.NetCore.Commands.Misc
 
 		[Required]
 		[DisplayName("Close After X (Seconds)")]
-		[Description("Specify how many seconds to display the message on screen. After the specified time," + 
+		[Description("Specify how many seconds to display the message on screen. After the specified time," +
 							"\nthe message box will be automatically closed and script will resume execution.")]
 		[SampleUsage("0 || 5 || {vSeconds})")]
 		[Remarks("Set value to 0 to remain open indefinitely.")]
@@ -60,8 +60,8 @@ namespace OpenBots.NetCore.Commands.Misc
 				variableMessage = v_Message.ConvertUserVariableToObject(engine, nameof(v_Message), this);
 
 			string type = "";
-			if(variableMessage?.GetType().Name == typeof(KeyValuePair<,>).Name)
-            {
+			if (variableMessage?.GetType().Name == typeof(KeyValuePair<,>).Name)
+			{
 				type = variableMessage.GetType().FullName;
 			}
 			else if (variableMessage != null)
@@ -84,9 +84,9 @@ namespace OpenBots.NetCore.Commands.Misc
 				closeAfter = 10;
 
 			var result = ((Form)engine.AutomationEngineContext.ScriptEngine).Invoke(new Action(() =>
-				{
-					engine.AutomationEngineContext.ScriptEngine.ShowMessage(variableMessage, "MessageBox", DialogType.OkOnly, closeAfter);
-				}
+			{
+				engine.AutomationEngineContext.ScriptEngine.ShowMessage(variableMessage, "MessageBox", DialogType.OkOnly, closeAfter);
+			}
 			));
 
 		}

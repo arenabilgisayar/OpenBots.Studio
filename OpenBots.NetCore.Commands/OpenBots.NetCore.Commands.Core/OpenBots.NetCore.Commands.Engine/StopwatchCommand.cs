@@ -54,7 +54,7 @@ namespace OpenBots.NetCore.Commands.Engine
 		[DisplayName("Output Elapsed Time Variable")]
 		[Description("Create a new variable or select a variable from the list.")]
 		[SampleUsage("{vUserVariable}")]
-		[Remarks("Variables not pre-defined in the Variable Manager will be automatically generated at runtime.")]
+		[Remarks("New variables/arguments may be instantiated by utilizing the Ctrl+K/Ctrl+J shortcuts.")]
 		[CompatibleTypes(new Type[] { typeof(string) })]
 		public string v_OutputUserVariableName { get; set; }
 
@@ -77,7 +77,7 @@ namespace OpenBots.NetCore.Commands.Engine
 		{
 			var engine = (IAutomationEngineInstance)sender;
 			var format = v_ToStringFormat.ConvertUserVariableToString(engine);
-			
+
 			Stopwatch stopwatch;
 			switch (v_StopwatchAction)
 			{
@@ -134,9 +134,9 @@ namespace OpenBots.NetCore.Commands.Engine
 				ctrl.Visible = false;
 
 			RenderedControls.AddRange(_measureControls);
-		  
+
 			return RenderedControls;
-		}     
+		}
 
 		public override string GetDisplayValue()
 		{

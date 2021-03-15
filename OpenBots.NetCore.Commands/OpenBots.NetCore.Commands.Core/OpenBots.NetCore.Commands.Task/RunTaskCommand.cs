@@ -30,7 +30,7 @@ namespace OpenBots.NetCore.Commands.Task
 		[Required]
 		[DisplayName("Task File Path")]
 		[Description("Enter or select a valid path to the Task file.")]
-		[SampleUsage(@"C:\temp\mytask.json || {vScriptPath} || {ProjectPath}\mytask.json")]
+		[SampleUsage(@"C:\temp\mytask.obscript || {vScriptPath} || {ProjectPath}\mytask.obscript")]
 		[Remarks("")]
 		[Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
 		[Editor("ShowFileSelectionHelper", typeof(UIAdditionalHelperType))]
@@ -84,13 +84,13 @@ namespace OpenBots.NetCore.Commands.Task
 			v_ArgumentAssignments.Columns.Add("ArgumentValue");
 			v_ArgumentAssignments.Columns.Add("ArgumentDirection");
 			v_ArgumentAssignments.TableName = "RunTaskCommandInputParameters" + DateTime.Now.ToString("MMddyyhhmmss");
-			v_ArgumentAssignments.Columns[1].DataType = typeof(Type);			
+			v_ArgumentAssignments.Columns[1].DataType = typeof(Type);
 		}
 
 		public override void RunCommand(object sender)
 		{
 			var parentAutomationEngineInstance = (IAutomationEngineInstance)sender;
-			if(parentAutomationEngineInstance.AutomationEngineContext.ScriptEngine == null)
+			if (parentAutomationEngineInstance.AutomationEngineContext.ScriptEngine == null)
 			{
 				RunServerTask(sender);
 				return;
@@ -121,7 +121,7 @@ namespace OpenBots.NetCore.Commands.Task
 			_childfrmScriptEngine.IsHiddenTaskEngine = true;
 
 			if (IsSteppedInto)
-			{                
+			{
 				_childfrmScriptEngine.IsNewTaskSteppedInto = true;
 				_childfrmScriptEngine.IsHiddenTaskEngine = false;
 			}
@@ -131,12 +131,12 @@ namespace OpenBots.NetCore.Commands.Task
 			else
 				Log.Information("Executing Child Task: " + Path.GetFileName(childTaskPath));
 
-			((Form)parentAutomationEngineInstance.AutomationEngineContext.ScriptEngine).Invoke((Action)delegate()
+			((Form)parentAutomationEngineInstance.AutomationEngineContext.ScriptEngine).Invoke((Action)delegate ()
 			{
 				((Form)parentAutomationEngineInstance.AutomationEngineContext.ScriptEngine).TopMost = false;
 			});
 			Application.Run((Form)_childfrmScriptEngine);
-			
+
 			if (_childfrmScriptEngine.ClosingAllEngines)
 			{
 				parentAutomationEngineInstance.AutomationEngineContext.ScriptEngine.ClosingAllEngines = true;
@@ -153,7 +153,7 @@ namespace OpenBots.NetCore.Commands.Task
 
 			if (parentfrmScriptEngine.IsDebugMode)
 			{
-				((Form)parentAutomationEngineInstance.AutomationEngineContext.ScriptEngine).Invoke((Action)delegate()
+				((Form)parentAutomationEngineInstance.AutomationEngineContext.ScriptEngine).Invoke((Action)delegate ()
 				{
 					((Form)parentfrmScriptEngine).TopMost = true;
 					parentfrmScriptEngine.IsHiddenTaskEngine = true;
@@ -189,11 +189,11 @@ namespace OpenBots.NetCore.Commands.Task
 			}
 			else
 			{
-				((Form)parentAutomationEngineInstance.AutomationEngineContext.ScriptEngine).Invoke((Action)delegate()
+				((Form)parentAutomationEngineInstance.AutomationEngineContext.ScriptEngine).Invoke((Action)delegate ()
 				{
 					((Form)parentfrmScriptEngine).TopMost = true;
 				});
-			}          
+			}
 		}
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
@@ -221,6 +221,8 @@ namespace OpenBots.NetCore.Commands.Task
 			_assignmentsGridViewHelper = commandControls.CreateDefaultDataGridViewFor("v_ArgumentAssignments", this);
 			_assignmentsGridViewHelper.AllowUserToAddRows = false;
 			_assignmentsGridViewHelper.AllowUserToDeleteRows = false;
+			//refresh gridview
+			_assignmentsGridViewHelper.MouseEnter += (sender, e) => PassParametersCheckbox_CheckedChanged(_passParameters, null, editor, commandControls);
 
 			if (!_passParameters.Checked)
 				_assignmentsGridViewHelper.Hide();
@@ -251,7 +253,7 @@ namespace OpenBots.NetCore.Commands.Task
 				startFile = startFile.Replace("{ProjectPath}", editor.ScriptEngineContext.ProjectPath);
 
 			startFile = startFile.ConvertUserVariableToString(currentScriptEngine);
-			
+
 			var Sender = (CheckBox)sender;
 
 			_assignmentsGridViewHelper.Visible = Sender.Checked;
@@ -269,10 +271,10 @@ namespace OpenBots.NetCore.Commands.Task
 					if (argument.ArgumentName == "ProjectPath")
 						continue;
 
-					DataRow[] foundArguments  = v_ArgumentAssignments.Select("ArgumentName = '" + "{" + argument.ArgumentName + "}" + "'");
+					DataRow[] foundArguments = v_ArgumentAssignments.Select("ArgumentName = '" + "{" + argument.ArgumentName + "}" + "'");
 					if (foundArguments.Length == 0)
-					    v_ArgumentAssignments.Rows.Add("{" + argument.ArgumentName + "}", argument.ArgumentType, argument.ArgumentValue, argument.Direction.ToString());
-				}               
+						v_ArgumentAssignments.Rows.Add("{" + argument.ArgumentName + "}", argument.ArgumentType, argument.ArgumentValue, argument.Direction.ToString());
+				}
 
 				for (int i = 0; i < _assignmentsGridViewHelper.Rows.Count; i++)
 				{
@@ -287,14 +289,14 @@ namespace OpenBots.NetCore.Commands.Task
 					returnComboBox.Items.Add("Out");
 					_assignmentsGridViewHelper.Rows[i].Cells[3] = returnComboBox;
 					//make read only until theres a way to cleanly synchronize changes made 
-					_assignmentsGridViewHelper.Rows[i].Cells[3].ReadOnly = true;					
+					_assignmentsGridViewHelper.Rows[i].Cells[3].ReadOnly = true;
 				}
 			}
 			else if (!Sender.Checked)
 			{
 				v_ArgumentAssignments.Clear();
 			}
-		}       
+		}
 
 		private void RunServerTask(object sender)
 		{
@@ -307,7 +309,7 @@ namespace OpenBots.NetCore.Commands.Task
 
 			object engineLogger = Log.Logger;
 
-			if(parentAutomationEngineInstance.AutomationEngineContext.IsTest == true)
+			if (parentAutomationEngineInstance.AutomationEngineContext.IsTest == true)
 				engineLogger = null;
 
 			EngineContext childEngineContext = new EngineContext
@@ -347,7 +349,7 @@ namespace OpenBots.NetCore.Commands.Task
 				var argumentDirection = (string)rw.ItemArray[3];
 
 				if (argumentDirection == "In")
-                {
+				{
 					if (((string)rw.ItemArray[2]).StartsWith("{") && ((string)rw.ItemArray[2]).EndsWith("}"))
 						argumentValue = ((string)rw.ItemArray[2]).ConvertUserVariableToObject(parentAutomationEngineInstance, typeof(object));
 
@@ -363,9 +365,9 @@ namespace OpenBots.NetCore.Commands.Task
 					});
 				}
 
-					
-                else if (argumentDirection == "Out")
-                {
+
+				else if (argumentDirection == "Out")
+				{
 					_argumentList.Add(new ScriptArgument
 					{
 						ArgumentName = argumentName.Replace("{", "").Replace("}", ""),
@@ -373,8 +375,8 @@ namespace OpenBots.NetCore.Commands.Task
 						AssignedVariable = ((string)rw.ItemArray[2]).Replace("{", "").Replace("}", ""),
 						ArgumentType = argumentType
 					});
-                }
-            }
+				}
+			}
 		}
 
 		private void UpdateCurrentEngineContext(IAutomationEngineInstance parentAutomationEngineIntance, IAutomationEngineInstance childAutomationEngineInstance)
@@ -384,27 +386,27 @@ namespace OpenBots.NetCore.Commands.Task
 
 			//get new argument list from the new task engine after it finishes running
 			var childArgumentList = childAutomationEngineInstance.AutomationEngineContext.Arguments;
-			foreach(var argument in _argumentList)
-            {
+			foreach (var argument in _argumentList)
+			{
 				if (argument.Direction == ScriptArgumentDirection.Out && !string.IsNullOrEmpty(argument.AssignedVariable))
-                {
+				{
 					var assignedParentVariable = parentVariableList.Where(v => v.VariableName == argument.AssignedVariable).FirstOrDefault();
 					var assignedParentArgument = parentArgumentList.Where(a => a.ArgumentName == argument.AssignedVariable).FirstOrDefault();
 					if (assignedParentVariable != null)
-                    {
+					{
 						assignedParentVariable.VariableValue = childArgumentList.Where(a => a.ArgumentName == argument.ArgumentName).First().ArgumentValue;
-					}	
+					}
 					else if (assignedParentArgument != null)
-                    {
+					{
 						assignedParentArgument.ArgumentValue = childArgumentList.Where(a => a.ArgumentName == argument.ArgumentName).First().ArgumentValue;
 					}
-                    else
-                    {
+					else
+					{
 						throw new ArgumentException($"Unable to assign the value of '{argument.ArgumentName}' to '{argument.AssignedVariable}' " +
 													 "because no variable/argument with this name exists.");
-                    }
-                }
-            }
+					}
+				}
+			}
 
 			//get updated app instance dictionary after the new engine finishes running
 			parentAutomationEngineIntance.AutomationEngineContext.AppInstances = childAutomationEngineInstance.AutomationEngineContext.AppInstances;

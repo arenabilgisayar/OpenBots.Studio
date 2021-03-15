@@ -53,7 +53,7 @@ namespace OpenBots.NetCore.Commands.Switch
 
 			var targetCaseIndex = -1;
 			var defaultCaseIndex = -1;
-  
+
 			ScriptAction caseCommandItem;
 			CaseCommand targetCaseCommand;
 

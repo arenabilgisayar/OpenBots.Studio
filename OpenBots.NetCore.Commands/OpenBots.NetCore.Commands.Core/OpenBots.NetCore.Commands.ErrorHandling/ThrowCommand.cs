@@ -66,7 +66,7 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
 			var exceptionMessage = v_ExceptionMessage.ConvertUserVariableToString(engine);
 
 			Exception ex;
-			switch(v_ExceptionType)
+			switch (v_ExceptionType)
 			{
 				case "AccessViolationException":
 					ex = new AccessViolationException(exceptionMessage);

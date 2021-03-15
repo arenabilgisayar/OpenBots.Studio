@@ -106,7 +106,7 @@ namespace OpenBots.NetCore.Commands.Loop
 			}
 			else
 			{
-				return "Loop " +  v_LoopParameter + " Times";
+				return "Loop " + v_LoopParameter + " Times";
 			}
 		}
 	}

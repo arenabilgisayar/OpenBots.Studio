@@ -50,7 +50,7 @@ namespace OpenBots.NetCore.Commands.If
 		[SampleUsage("Param Value || {vParamValue}")]
 		[Remarks("")]
 		[Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
-		[CompatibleTypes(new Type[] { typeof(object), typeof(Bitmap), typeof(DateTime), typeof(string)}, true)]
+		[CompatibleTypes(new Type[] { typeof(object), typeof(Bitmap), typeof(DateTime), typeof(string) }, true)]
 		public DataTable v_ActionParameterTable { get; set; }
 
 		[JsonIgnore]
@@ -139,7 +139,7 @@ namespace OpenBots.NetCore.Commands.If
 		{
 			base.Render(editor, commandControls);
 
-			_actionDropdown = (ComboBox)commandControls.CreateDropdownFor("v_IfActionType", this);
+			_actionDropdown = commandControls.CreateDropdownFor("v_IfActionType", this);
 			RenderedControls.Add(commandControls.CreateDefaultLabelFor("v_IfActionType", this));
 			RenderedControls.AddRange(commandControls.CreateUIHelpersFor("v_IfActionType", this, new Control[] { _actionDropdown }, editor));
 			_actionDropdown.SelectionChangeCommitted += ifAction_SelectionChangeCommitted;
@@ -185,14 +185,14 @@ namespace OpenBots.NetCore.Commands.If
 
 				case "Variable Has Value":
 					string variableName = ((from rw in v_ActionParameterTable.AsEnumerable()
-									  where rw.Field<string>("Parameter Name") == "Variable Name"
-									  select rw.Field<string>("Parameter Value")).FirstOrDefault());
+											where rw.Field<string>("Parameter Name") == "Variable Name"
+											select rw.Field<string>("Parameter Value")).FirstOrDefault());
 
 					return $"If (Variable '{variableName}' Has Value)";
 				case "Variable Is Numeric":
 					string varName = ((from rw in v_ActionParameterTable.AsEnumerable()
-											where rw.Field<string>("Parameter Name") == "Variable Name"
-											select rw.Field<string>("Parameter Value")).FirstOrDefault());
+									   where rw.Field<string>("Parameter Name") == "Variable Name"
+									   select rw.Field<string>("Parameter Value")).FirstOrDefault());
 
 					return $"If (Variable '{varName}' Is Numeric)";
 
@@ -206,8 +206,8 @@ namespace OpenBots.NetCore.Commands.If
 				case "Error Did Not Occur":
 
 					string lineNum = ((from rw in v_ActionParameterTable.AsEnumerable()
-										  where rw.Field<string>("Parameter Name") == "Line Number"
-										  select rw.Field<string>("Parameter Value")).FirstOrDefault());
+									   where rw.Field<string>("Parameter Name") == "Line Number"
+									   select rw.Field<string>("Parameter Value")).FirstOrDefault());
 
 					return $"If (Error Did Not Occur on Line Number '{lineNum}')";
 				case "Window Name Exists":
@@ -240,8 +240,8 @@ namespace OpenBots.NetCore.Commands.If
 										  select rw.Field<string>("Parameter Value")).FirstOrDefault());
 
 					string folderCompareType = ((from rw in v_ActionParameterTable.AsEnumerable()
-											   where rw.Field<string>("Parameter Name") == "True When"
-											   select rw.Field<string>("Parameter Value")).FirstOrDefault());
+												 where rw.Field<string>("Parameter Name") == "True When"
+												 select rw.Field<string>("Parameter Value")).FirstOrDefault());
 
 					if (folderCompareType == "It Does Not Exist")
 						return $"If Folder Does Not [Folder '{folderPath}']";
@@ -260,8 +260,8 @@ namespace OpenBots.NetCore.Commands.If
 											select rw.Field<string>("Parameter Value")).FirstOrDefault());
 
 					string webElementCompareType = ((from rw in v_ActionParameterTable.AsEnumerable()
-												 where rw.Field<string>("Parameter Name") == "True When"
-												 select rw.Field<string>("Parameter Value")).FirstOrDefault());
+													 where rw.Field<string>("Parameter Name") == "True When"
+													 select rw.Field<string>("Parameter Value")).FirstOrDefault());
 
 					if (webElementCompareType == "It Does Not Exist")
 						return $"If Web Element Does Not Exist [{searchMethod} '{parameterName}']";
@@ -272,12 +272,12 @@ namespace OpenBots.NetCore.Commands.If
 
 
 					string guiWindowName = ((from rw in v_ActionParameterTable.AsEnumerable()
-										 where rw.Field<string>("Parameter Name") == "Window Name"
-										 select rw.Field<string>("Parameter Value")).FirstOrDefault());
+											 where rw.Field<string>("Parameter Name") == "Window Name"
+											 select rw.Field<string>("Parameter Value")).FirstOrDefault());
 
 					string guiSearch = ((from rw in v_ActionParameterTable.AsEnumerable()
-											 where rw.Field<string>("Parameter Name") == "Element Search Parameter"
-											 select rw.Field<string>("Parameter Value")).FirstOrDefault());
+										 where rw.Field<string>("Parameter Name") == "Element Search Parameter"
+										 select rw.Field<string>("Parameter Value")).FirstOrDefault());
 
 					string guiElementCompareType = ((from rw in v_ActionParameterTable.AsEnumerable()
 													 where rw.Field<string>("Parameter Name") == "True When"
@@ -299,12 +299,12 @@ namespace OpenBots.NetCore.Commands.If
 						return $"If Image Exists on Screen";
 				case "App Instance Exists":
 					string instanceName = ((from rw in v_ActionParameterTable.AsEnumerable()
-											 where rw.Field<string>("Parameter Name") == "Instance Name"
-											 select rw.Field<string>("Parameter Value")).FirstOrDefault());
+											where rw.Field<string>("Parameter Name") == "Instance Name"
+											select rw.Field<string>("Parameter Value")).FirstOrDefault());
 
 					string instanceCompareType = (from rw in v_ActionParameterTable.AsEnumerable()
-											   where rw.Field<string>("Parameter Name") == "True When"
-											   select rw.Field<string>("Parameter Value")).FirstOrDefault();
+												  where rw.Field<string>("Parameter Name") == "True When"
+												  select rw.Field<string>("Parameter Value")).FirstOrDefault();
 
 					if (instanceCompareType == "It Does Not Exist")
 						return $"If App Instance Does Not Exist [Instance Name '{instanceName}']";
@@ -601,6 +601,8 @@ namespace OpenBots.NetCore.Commands.If
 				default:
 					break;
 			}
+
+			ifActionParameterBox.Columns[0].ReadOnly = true;
 		}
 
 		private void IfGridViewHelper_MouseEnter(object sender, EventArgs e)
@@ -612,7 +614,7 @@ namespace OpenBots.NetCore.Commands.If
 			catch (Exception)
 			{
 				ifAction_SelectionChangeCommitted(sender, e);
-			}           
+			}
 		}
 
 		private void ShowIfElementRecorder(object sender, EventArgs e, IfrmCommandEditor editor, ICommandControls commandControls)

@@ -122,7 +122,7 @@ namespace OpenBots.NetCore.Commands.Engine
 						case "Fatal":
 							logger.Fatal(textToLog);
 							break;
-					}                  
+					}
 				}
 			}
 		}

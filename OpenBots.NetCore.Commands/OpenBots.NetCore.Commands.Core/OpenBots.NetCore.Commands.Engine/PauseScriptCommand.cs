@@ -20,7 +20,7 @@ namespace OpenBots.NetCore.Commands.Engine
 	public class PauseScriptCommand : ScriptCommand
 	{
 		[Required]
-		[DisplayName("Pause Time (Milliseconds)")]      
+		[DisplayName("Pause Time (Milliseconds)")]
 		[Description("Select or provide a specific amount of time in milliseconds.")]
 		[SampleUsage("1000 || {vTime}")]
 		[Remarks("")]
@@ -34,7 +34,7 @@ namespace OpenBots.NetCore.Commands.Engine
 			SelectionName = "Pause Script";
 			CommandEnabled = true;
 			CommandIcon = Resources.command_pause;
-			
+
 			v_PauseLength = "1000";
 		}
 
