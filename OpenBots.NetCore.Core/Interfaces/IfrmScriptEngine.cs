@@ -14,7 +14,7 @@ namespace OpenBots.NetCore.Core.Infrastructure
         EngineContext ScriptEngineContext { get; set; }
         string JsonData { get; set; }
         bool ServerExecution { get; set; }
-        string Result { get; set; }        
+        string Result { get; set; }
         bool IsNewTaskSteppedInto { get; set; }
         bool IsNewTaskResumed { get; set; }
         bool IsNewTaskCancelled { get; set; }

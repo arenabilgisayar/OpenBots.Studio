@@ -68,8 +68,8 @@ namespace OpenBots.NetCore.Core.Enums
 
     public enum ScriptFinishedResult
     {
-        Successful, 
-        Error, 
+        Successful,
+        Error,
         Cancelled
     }
 
@@ -98,10 +98,24 @@ namespace OpenBots.NetCore.Core.Enums
         WmLButtonDown = 0x0201,
         WmLButtonUp = 0x0202,
         WmMouseMove = 0x0200,
-        WmMouseWheel = 0x020A,       
+        WmMouseWheel = 0x020A,
         WmRButtonDown = 0x0204,
         WmRButtonUp = 0x0205,
         WmMButtonDown = 0x0207,
         WmMButtonUp = 0x0208,
+    }
+
+    public enum ProjectType
+    {
+        OpenBots,
+        Python,
+        TagUI,
+        CSScript
+    }
+
+    public enum ScriptArgumentDirection
+    {
+        In,
+        Out
     }
 }

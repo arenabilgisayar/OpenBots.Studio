@@ -122,7 +122,7 @@ namespace OpenBots.NetCore.Core.Server.API_Methods
         }
 
         public static void ExtendQueueItem(RestClient client, Guid transactionKey)
-        {           
+        {
             var request = new RestRequest($"api/v1/QueueItems/Extend", Method.PUT);
             request.RequestFormat = DataFormat.Json;
             request.AddParameter("transactionKey", transactionKey.ToString(), ParameterType.QueryString);

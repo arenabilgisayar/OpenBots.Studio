@@ -31,10 +31,12 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
 
             var variableList = engine.AutomationEngineContext.Variables;
             var systemVariables = CommonMethods.GenerateSystemVariables();
-            var argumentsAsVariablesList = engine.AutomationEngineContext.Arguments.Select(arg => new ScriptVariable { 
-                                                                                        VariableName = arg.ArgumentName, 
-                                                                                        VariableType = arg.ArgumentType,
-                                                                                        VariableValue = arg.ArgumentValue })
+            var argumentsAsVariablesList = engine.AutomationEngineContext.Arguments.Select(arg => new ScriptVariable
+            {
+                VariableName = arg.ArgumentName,
+                VariableType = arg.ArgumentType,
+                VariableValue = arg.ArgumentValue
+            })
                                                                                     .ToList();
 
             var variableSearchList = new List<ScriptVariable>();
@@ -50,13 +52,13 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
             {
                 return userInputString.CalculateVariables(engine);
             }
-                
+
             //split by custom markers
             string[] potentialVariables = userInputString.Split(new string[] { startVariableMarker, endVariableMarker }, StringSplitOptions.None);
 
             foreach (var potentialVariable in potentialVariables)
             {
-                if (potentialVariable.Length == 0) 
+                if (potentialVariable.Length == 0)
                     continue;
 
                 string varcheckname = potentialVariable;
@@ -70,7 +72,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
                 var varCheck = variableSearchList.Where(v => v.VariableName == varcheckname)
                                                  .FirstOrDefault();
 
-                if (potentialVariable == "OpenBots.EngineContext") 
+                if (potentialVariable == "OpenBots.EngineContext")
                     varCheck.VariableValue = engine.GetEngineContext();
 
                 if (varCheck != null)
@@ -120,7 +122,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
                             string cellItem;
 
                             if (int.TryParse(rowIndexString, out int rowIndex))
-                            {                               
+                            {
                                 if (int.TryParse(columnName, out int columnIndex))
                                     cellItem = dt.Rows[rowIndex][columnIndex].ToString();
                                 else
@@ -141,7 +143,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
                             pair = varCheck.VariableValue;
                             if (resultType.ToLower() == "key")
                                 resultItem = pair.Key;
-                            else if(resultType.ToLower() == "value")
+                            else if (resultType.ToLower() == "value")
                                 resultItem = StringMethods.ConvertObjectToString(pair.Value, pair.Value.GetType());
                             else
                                 throw new DataException("Only use of Key and Value is allowed using dot operater with KeyValuePair");
@@ -153,7 +155,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
                         if (varCheck.VariableValue is string)
                             userInputString = userInputString.Replace(potentialVariable, (string)varCheck.VariableValue);
                     }
-                } 
+                }
                 else if (varCheck == null && userInputString.Contains(startVariableMarker + varcheckname + endVariableMarker))
                     throw new ArgumentNullException($"No variable/argument with the name '{varcheckname}' was found.");
             }
@@ -165,7 +167,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
         {
             var variableProperties = parent.GetType().GetProperties().Where(f => f.Name == parameterName).FirstOrDefault();
             var compatibleTypesAttribute = variableProperties.GetCustomAttributes(typeof(CompatibleTypes), true);
-           
+
             Type[] compatibleTypes = null;
 
             if (compatibleTypesAttribute.Length > 0)
@@ -183,7 +185,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
                                                 .Where(var => var.VariableName == reformattedVarArg)
                                                 .FirstOrDefault();
 
-                if (requiredVariable != null && compatibleTypes!= null && !compatibleTypes.Any(x => x.IsAssignableFrom(requiredVariable.VariableType)))
+                if (requiredVariable != null && compatibleTypes != null && !compatibleTypes.Any(x => x.IsAssignableFrom(requiredVariable.VariableType)))
                     throw new ArgumentException($"The type of variable '{requiredVariable.VariableName}' is not compatible.");
 
                 requiredArgument = engine.AutomationEngineContext.Arguments
@@ -251,7 +253,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
 
                 requiredVariable = engine.AutomationEngineContext.Variables
                                                 .Where(var => var.VariableName == reformattedVarArg)
-                                                .FirstOrDefault();              
+                                                .FirstOrDefault();
 
                 requiredArgument = engine.AutomationEngineContext.Arguments
                                                 .Where(arg => arg.ArgumentName == reformattedVarArg)
@@ -328,7 +330,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
                 compatibleTypes = ((CompatibleTypes[])compatibleTypesAttribute)[0].CompTypes;
 
             if (varArgName.StartsWith("{") && varArgName.EndsWith("}"))
-                varArgName = varArgName.Replace("{", "").Replace("}", "");           
+                varArgName = varArgName.Replace("{", "").Replace("}", "");
             else
                 throw new Exception("Variable markers '{}' missing. '" + varArgName + "' is an invalid output variable name.");
 
@@ -409,8 +411,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
             return strValue;
         }
 
-        //TODO: add type. Set to null as default for now
-        public static void CreateTestVariable(this object variableValue, IAutomationEngineInstance engine, string variableName, Type variableType = null)
+        public static void CreateTestVariable(object variableValue, IAutomationEngineInstance engine, string variableName, Type variableType)
         {
             ScriptVariable newVar = new ScriptVariable();
             newVar.VariableName = variableName;

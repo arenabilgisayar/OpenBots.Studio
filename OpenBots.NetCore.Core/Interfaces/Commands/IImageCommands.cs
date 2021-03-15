@@ -2,6 +2,6 @@
 {
     public interface IImageCommands
     {
-		string v_ImageCapture { get; set; }
+        string v_ImageCapture { get; set; }
     }
 }

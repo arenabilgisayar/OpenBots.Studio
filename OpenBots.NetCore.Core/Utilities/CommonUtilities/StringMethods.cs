@@ -38,7 +38,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
         /// <returns></returns>
         public static string DecryptText(string encryptedText, string additionalEntropy)
         {
-            
+
             try
             {
                 var encryptedBytes = Convert.FromBase64String(encryptedText);
@@ -126,12 +126,12 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
                     default:
                         return obj.ToString();
                 }
-                
+
             }
             catch (System.Exception ex)
             {
                 return $"Error converting {type} to string - {ex.Message}";
-            }           
+            }
         }
 
         public static string ConvertDataTableToString(DataTable dt)
@@ -158,7 +158,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
 
                 for (int i = 0; i < dt.Columns.Count - 1; i++)
                     stringBuilder.AppendFormat("{0}, ", rows[i]);
-          
+
                 stringBuilder.AppendFormat("{0}]", rows[dt.Columns.Count - 1]);
                 stringBuilder.AppendLine();
             }
@@ -444,7 +444,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
 
             if (type == typeof(string))
             {
-                KeyValuePair<string, string> stringPair = (KeyValuePair<string,string>)pair;
+                KeyValuePair<string, string> stringPair = (KeyValuePair<string, string>)pair;
                 stringBuilder.AppendFormat("[{0}, {1}]", stringPair.Key, stringPair.Value);
             }
             else if (type == typeof(DataTable))

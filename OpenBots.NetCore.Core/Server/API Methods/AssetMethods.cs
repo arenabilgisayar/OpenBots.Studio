@@ -14,7 +14,7 @@ namespace OpenBots.NetCore.Core.Server.API_Methods
     public class AssetMethods
     {
         public static Asset GetAsset(RestClient client, string filter)
-        {           
+        {
             var request = new RestRequest("api/v1/Assets", Method.GET);
             request.AddParameter("$filter", filter);
             request.RequestFormat = DataFormat.Json;
@@ -28,12 +28,12 @@ namespace OpenBots.NetCore.Core.Server.API_Methods
             var output = deserializer.Deserialize<Dictionary<string, string>>(response);
             var items = output["items"];
             return JsonConvert.DeserializeObject<List<Asset>>(items).FirstOrDefault();
-        }       
+        }
 
         public static void PutAsset(RestClient client, Asset asset)
         {
             var request = new RestRequest("api/v1/Assets/{id}", Method.PUT);
-            request.AddUrlSegment("id", asset.Id.ToString());           
+            request.AddUrlSegment("id", asset.Id.ToString());
             request.RequestFormat = DataFormat.Json;
             request.AddJsonBody(asset);
 
@@ -87,7 +87,7 @@ namespace OpenBots.NetCore.Core.Server.API_Methods
             if (!response.IsSuccessful)
                 throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
         }
-      
+
         public static void IncrementAsset(RestClient client, Guid? assetId)
         {
             var request = new RestRequest("api/v1/Assets/{id}/Increment", Method.PUT);

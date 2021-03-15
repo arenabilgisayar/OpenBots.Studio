@@ -24,7 +24,7 @@ namespace OpenBots.NetCore.Core.Script
 		public bool IsExceptionIgnored { get; set; }
 
 		[JsonIgnore]
-		[Browsable(false)]		
+		[Browsable(false)]
 		public string SerializationError { get; set; }
 
 		/// <summary>

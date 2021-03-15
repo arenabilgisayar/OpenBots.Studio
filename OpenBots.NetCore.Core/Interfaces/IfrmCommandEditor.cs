@@ -9,7 +9,7 @@ namespace OpenBots.NetCore.Core.Infrastructure
     public interface IfrmCommandEditor
     {
         List<AutomationCommand> CommandList { get; set; }
-        EngineContext ScriptEngineContext { get; set; }       
+        EngineContext ScriptEngineContext { get; set; }
         ScriptCommand SelectedCommand { get; set; }
         ScriptCommand OriginalCommand { get; set; }
         CreationMode CreationModeInstance { get; set; }
@@ -17,5 +17,6 @@ namespace OpenBots.NetCore.Core.Infrastructure
         ScriptCommand EditingCommand { get; set; }
         List<ScriptCommand> ConfiguredCommands { get; set; }
         string HTMLElementRecorderURL { get; set; }
+        TypeContext TypeContext { get; set; }
     }
 }

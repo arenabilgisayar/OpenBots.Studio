@@ -21,7 +21,7 @@ namespace OpenBots.NetCore.Core.Script
             { typeof(List<>).ToString(), typeof(List<>) },
             { typeof(Dictionary<,>).ToString(), typeof(Dictionary<,>) },
             { typeof(DataTable).ToString(), typeof(DataTable) },
-            { typeof(DataRow).ToString(), typeof(DataRow) }         
+            { typeof(DataRow).ToString(), typeof(DataRow) }
         };
 
         public static Dictionary<string, Type> DefaultInstanceTypes = new Dictionary<string, Type>()

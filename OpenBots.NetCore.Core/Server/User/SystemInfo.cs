@@ -28,5 +28,5 @@ namespace OpenBots.NetCore.Core.Server.User
             }
             return string.Join("-", Enumerable.Range(0, 6).Select(i => macAddress.Substring(i * 2, 2)));
         }
-    }    
+    }
 }

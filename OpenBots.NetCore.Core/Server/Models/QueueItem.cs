@@ -13,7 +13,7 @@ namespace OpenBots.NetCore.Core.Server.Models
 		public string JsonType { get; set; }
 		public string DataJson { get; set; }
 		public string State { get; set; }
-		public  string StateMessage { get; set; }
+		public string StateMessage { get; set; }
 		public Guid? LockTransactionKey { get; set; }
 		public DateTime? LockedEndTimeUTC { get; set; }
 		public int RetryCount { get; set; }

@@ -10,7 +10,7 @@ namespace OpenBots.NetCore.Core.Server.API_Methods
         {
             var request = new RestRequest("api/v1/Jobs", Method.POST);
             request.RequestFormat = DataFormat.Json;
-            request.AddJsonBody(new { agentId, processId});
+            request.AddJsonBody(new { agentId, processId });
 
             var response = client.Execute(request);
 

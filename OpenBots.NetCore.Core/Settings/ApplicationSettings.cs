@@ -56,13 +56,13 @@ namespace OpenBots.NetCore.Core.Settings
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-            }           
+            }
         }
 
         public ApplicationSettings GetOrCreateApplicationSettings(string settingsDir = "")
         {
             //create settings directory if not provided
-            if(string.IsNullOrEmpty(settingsDir))
+            if (string.IsNullOrEmpty(settingsDir))
                 settingsDir = Folders.GetFolder(FolderType.SettingsFolder);
 
             //create file path
@@ -78,7 +78,7 @@ namespace OpenBots.NetCore.Core.Settings
                     {
                         var serializerSettings = new JsonSerializerSettings()
                         {
-                            TypeNameHandling = TypeNameHandling.Objects                            
+                            TypeNameHandling = TypeNameHandling.Objects
                         };
 
                         JsonSerializer serializer = JsonSerializer.Create(serializerSettings);

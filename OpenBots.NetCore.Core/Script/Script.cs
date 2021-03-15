@@ -161,7 +161,7 @@ namespace OpenBots.NetCore.Core.Script
             {
                 //write to file
                 using (StreamWriter sw = new StreamWriter(engineContext.FilePath))
-                using (JsonWriter writer = new JsonTextWriter(sw){ Formatting = Formatting.Indented })
+                using (JsonWriter writer = new JsonTextWriter(sw) { Formatting = Formatting.Indented })
                 {
                     serializer.Serialize(writer, script, typeof(Script));
                 }
@@ -174,7 +174,7 @@ namespace OpenBots.NetCore.Core.Script
         /// </summary>
         public static Script DeserializeFile(EngineContext engineContext, bool isDialogResultYes = false)
         {
-            
+
             var serializerSettings = new JsonSerializerSettings();
             if (engineContext.IsTest)
             {
@@ -212,8 +212,8 @@ namespace OpenBots.NetCore.Core.Script
             if (!engineContext.IsTest && deserializedScriptVersion.CompareTo(new Version(Application.ProductVersion)) < 0)
             {
                 var dialogResult = MessageBox.Show($"Attempting to open a Script file from OpenBots Studio {deserializedScriptVersion}. " +
-                                                   $"Would you like to attempt to convert this Script to {Application.ProductVersion}? " + 
-                                                   "\n\nWarning: Once a Script has been converted, it cannot be undone.", 
+                                                   $"Would you like to attempt to convert this Script to {Application.ProductVersion}? " +
+                                                   "\n\nWarning: Once a Script has been converted, it cannot be undone.",
                                                    "Convert Script", MessageBoxButtons.YesNo);
 
                 if (dialogResult == DialogResult.Yes || isDialogResultYes)
@@ -242,7 +242,7 @@ namespace OpenBots.NetCore.Core.Script
         {
             var deserializationError = e.ErrorContext.Error.Message;
             var commandNameMatch = Regex.Match(deserializationError, @"OpenBots\.Commands\.\w+\.\w+Command");
-            
+
             Dictionary<string, string> newCommandGroupMapping = new Dictionary<string, string>()
             {
                 { "Data", "DataManipulation" },
@@ -290,7 +290,7 @@ namespace OpenBots.NetCore.Core.Script
                 deserializationError = $"Unable to load '{commandNameMatch.Value}'. Please install '{commandGroupFullName}'" +
                                         " from the Package Manager.";
             }
-                
+
             if (e.CurrentObject is ScriptAction)
                 ((ScriptAction)e.CurrentObject).SerializationError = deserializationError;
             e.ErrorContext.Handled = true;
@@ -311,8 +311,8 @@ namespace OpenBots.NetCore.Core.Script
             if (version == "0.0.0.0")
                 scriptText = scriptText.Insert(scriptText.LastIndexOf('\r'), ",\r\n  \"Version\": \"1.1.0.0\"");
 
-            var conversionFilePath = Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, 
-                                                  "Supplementary Files", "Script Conversion Files", version + ".json");
+            var conversionFilePath = Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName,
+                                                  "Supplementary Files", "Script Conversion Files", version + ".obscript");
 
             string conversionFileText = File.ReadAllText(conversionFilePath);
             JObject conversionObject = JObject.Parse(conversionFileText);
@@ -323,7 +323,7 @@ namespace OpenBots.NetCore.Core.Script
                     continue;
                 scriptText = Regex.Replace(scriptText, ((JProperty)(x)).Name, ((JProperty)(x)).Value.ToString());
             }
-                               
+
             File.WriteAllText(filePath, scriptText);
 
             EngineContext engineContext = new EngineContext()
@@ -332,6 +332,6 @@ namespace OpenBots.NetCore.Core.Script
                 Container = container
             };
             return DeserializeFile(engineContext, true);
-        }       
+        }
     }
 }

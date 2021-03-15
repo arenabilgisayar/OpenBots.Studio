@@ -32,7 +32,7 @@ namespace OpenBots.NetCore.Core.Server.API_Methods
             client.UserAgent = "";
 
             var request = new RestRequest("api/v1/auth/token", Method.POST);
-            request.RequestFormat = DataFormat.Json;              
+            request.RequestFormat = DataFormat.Json;
             request.AddJsonBody(new { username, password });
 
             var response = client.Execute(request);
@@ -45,7 +45,7 @@ namespace OpenBots.NetCore.Core.Server.API_Methods
 
             string token = output["token"];
             client.AddDefaultHeader("Authorization", string.Format("Bearer {0}", token));
-            
+
             return client;
         }
     }

@@ -43,7 +43,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
 
             var serializerSettings = new JsonSerializerSettings()
             {
-                TypeNameHandling =  TypeNameHandling.Objects
+                TypeNameHandling = TypeNameHandling.Objects
             };
 
             var serializedObject = JsonConvert.SerializeObject(source, serializerSettings);

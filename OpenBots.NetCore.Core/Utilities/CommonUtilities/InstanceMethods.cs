@@ -64,11 +64,11 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
         }
 
         public static bool InstanceExists(this string instanceName, IAutomationEngineInstance engine)
-        {          
+        {
             try
             {
                 if (engine.AutomationEngineContext.AppInstances.TryGetValue(instanceName, out object appObject))
-                {                   
+                {
                     string appType = appObject.GetType().ToString();
 
                     switch (appType.ToString())
@@ -100,9 +100,9 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
                             break;
                         default:
                             throw new InvalidComObjectException($"App instance '{appType}' not supported.");
-                    }                                                             
+                    }
                 }
-                return false;                    
+                return false;
             }
             catch (Exception ex)
             {
