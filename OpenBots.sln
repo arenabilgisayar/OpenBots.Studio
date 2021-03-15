@@ -48,6 +48,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenBots.NetCore.Core", "Op
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenBots.NetCore.Engine", "OpenBots.NetCore.Engine\OpenBots.NetCore.Engine.csproj", "{C009697E-F412-4432-B39A-E98D381BACAC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenBots.NetCore.Commands", "OpenBots.NetCore.Commands", "{651E27A2-624C-44D8-A3A0-4E1FAAC97F2D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenBots.NetCore.Commands.Core", "OpenBots.NetCore.Commands\OpenBots.NetCore.Commands.Core\OpenBots.NetCore.Commands.Core.csproj", "{E998DF0B-9734-4130-8608-1241DAFC7643}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -305,6 +309,18 @@ Global
 		{C009697E-F412-4432-B39A-E98D381BACAC}.Release|x64.Build.0 = Release|Any CPU
 		{C009697E-F412-4432-B39A-E98D381BACAC}.Release|x86.ActiveCfg = Release|Any CPU
 		{C009697E-F412-4432-B39A-E98D381BACAC}.Release|x86.Build.0 = Release|Any CPU
+		{E998DF0B-9734-4130-8608-1241DAFC7643}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E998DF0B-9734-4130-8608-1241DAFC7643}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E998DF0B-9734-4130-8608-1241DAFC7643}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E998DF0B-9734-4130-8608-1241DAFC7643}.Debug|x64.Build.0 = Debug|Any CPU
+		{E998DF0B-9734-4130-8608-1241DAFC7643}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E998DF0B-9734-4130-8608-1241DAFC7643}.Debug|x86.Build.0 = Debug|Any CPU
+		{E998DF0B-9734-4130-8608-1241DAFC7643}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E998DF0B-9734-4130-8608-1241DAFC7643}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E998DF0B-9734-4130-8608-1241DAFC7643}.Release|x64.ActiveCfg = Release|Any CPU
+		{E998DF0B-9734-4130-8608-1241DAFC7643}.Release|x64.Build.0 = Release|Any CPU
+		{E998DF0B-9734-4130-8608-1241DAFC7643}.Release|x86.ActiveCfg = Release|Any CPU
+		{E998DF0B-9734-4130-8608-1241DAFC7643}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -326,6 +342,7 @@ Global
 		{60435B7B-9702-4E9D-BBE8-78C46F39570B} = {308117E2-99C7-4C85-9DC0-4005865D5FF0}
 		{3B77EF50-BDEF-464B-BC30-0ACA47BF530B} = {308117E2-99C7-4C85-9DC0-4005865D5FF0}
 		{B6CC9937-A42E-43CE-9E6F-9A6E0D907C33} = {A799B480-CE25-47D7-AD13-3847ACAAA650}
+		{E998DF0B-9734-4130-8608-1241DAFC7643} = {651E27A2-624C-44D8-A3A0-4E1FAAC97F2D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CF7B0F64-1C1B-4350-867B-E06CEB778E6F}

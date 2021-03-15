@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <COMReference Include="Microsoft.Office.Outlook.dll">
+	    <WrapperTool>tlbimp</WrapperTool>
+	    <VersionMinor>6</VersionMinor>
+	    <VersionMajor>9</VersionMajor>
+	    <Guid>00062fff-0000-0000-c000-000000000046</Guid>
+	    <Lcid>0</Lcid>
+	    <Isolated>false</Isolated>
+	  </COMReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Forms\" />
+	  <Folder Include="Library\" />
+	  <Folder Include="Resources\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="MimeKit" Version="2.10.1" />
+	  <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+	  <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
+	  <PackageReference Include="Serilog" Version="2.10.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\OpenBots.NetCore.Core\OpenBots.NetCore.Core.csproj" />
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="nuget pack &quot;$(ProjectPath)&quot; -Properties Configuration=$(ConfigurationName) -IncludeReferencedProjects -OutputDirectory &quot;$(ProjectDir)..\..\OpenBots.Packages&quot;" />
+	</Target>
+
+</Project>
