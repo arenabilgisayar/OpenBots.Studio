@@ -50,15 +50,32 @@ namespace OpenBots.NetCore.Commands.Variable
 
 			dynamic input = v_Input.ConvertUserVariableToString(engine);
 
+			if (string.IsNullOrEmpty(input))
+				input = null;
+
 			if (input == v_Input && input.StartsWith("{") && input.EndsWith("}"))
+			{
 				if (v_Input.ConvertUserVariableToObject(engine, typeof(object)) != null)
 					input = v_Input.ConvertUserVariableToObject(engine, typeof(object));
+				else
+					input = null;
+			}
 
-			Type inputType = input.GetType();
-			Type outputType = v_OutputUserVariableName.GetVarArgType(engine);
+			if (input != null)
+			{
+				Type inputType = input.GetType();
+				Type outputType = v_OutputUserVariableName.GetVarArgType(engine);
 
-			if (inputType != outputType)
-				throw new InvalidCastException("Input and Output types do not match");
+				if ((inputType == typeof(string) || inputType.IsPrimitive) && (outputType == typeof(string) || outputType.IsPrimitive))
+				{
+					var converter = TypeDescriptor.GetConverter(outputType);
+					input = converter.ConvertFrom(input);
+					inputType = input.GetType();
+				}
+
+				if (inputType != outputType)
+					throw new InvalidCastException("Input and Output types do not match");
+			}
 
 			((object)input).StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);
 		}

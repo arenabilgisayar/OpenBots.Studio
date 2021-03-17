@@ -98,6 +98,12 @@ namespace OpenBots.NetCore.Core.Command
 		{
 		}
 
+		public virtual List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
+		{
+			RenderedControls = new List<Control>();
+			return RenderedControls;
+		}
+
 		public virtual string GetDisplayValue()
 		{
 			if (string.IsNullOrEmpty(v_Comment))
@@ -106,10 +112,8 @@ namespace OpenBots.NetCore.Core.Command
 				return $"{v_Comment} - " + SelectionName;
 		}
 
-		public virtual List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
+		public virtual void Shown()
 		{
-			RenderedControls = new List<Control>();
-			return RenderedControls;
 		}
 	}
 }

@@ -90,8 +90,7 @@ namespace OpenBots.NetCore.Core.Enums
     public enum SinkType
     {
         File,
-        HTTP,
-        SignalR
+        HTTP
     }
     public enum MouseMessages
     {

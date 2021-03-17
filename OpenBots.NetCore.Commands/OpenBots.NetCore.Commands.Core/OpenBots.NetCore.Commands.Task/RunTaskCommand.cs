@@ -364,8 +364,6 @@ namespace OpenBots.NetCore.Commands.Task
 						ArgumentType = argumentType
 					});
 				}
-
-
 				else if (argumentDirection == "Out")
 				{
 					_argumentList.Add(new ScriptArgument
