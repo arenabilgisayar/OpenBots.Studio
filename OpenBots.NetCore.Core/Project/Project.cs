@@ -2,6 +2,7 @@
 using ICSharpCode.SharpZipLib.Zip;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OpenBots.NetCore.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.IO;
