@@ -393,6 +393,12 @@
     <None Include="Resources\Icons\Logo\openbots-icon.png" />
     <Content Include="Resources\Samples\HTMLInputSample.html" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\OpenBots.Server.SDK\src\OpenBots.Server.SDK\OpenBots.Server.SDK.csproj">
+      <Project>{9f13c5ca-eee7-49d1-bea1-2a0bbf6df261}</Project>
+      <Name>OpenBots.Server.SDK</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>nuget pack "$(ProjectPath)" -Properties Configuration=$(ConfigurationName) -IncludeReferencedProjects -OutputDirectory "$(ProjectDir)..\OpenBots.Packages"</PostBuildEvent>

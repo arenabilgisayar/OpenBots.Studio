@@ -88,31 +88,31 @@ namespace OpenBots.Commands.Asset
 			var vAssetFilePath = v_AssetFilePath.ConvertUserVariableToString(engine);
 			var vAssetValue = v_AssetValue.ConvertUserVariableToString(engine);
 
-			var client = AuthMethods.GetAuthToken();
-			var asset = AssetMethods.GetAsset(client, $"name eq '{vAssetName}' and type eq '{v_AssetType}'");
+			var token = AuthMethods.GetAuthToken();
+			var asset = AssetMethods.GetAsset(token, vAssetName, v_AssetType);
 
 			if (asset == null)
 				throw new DataException($"No Asset was found for '{vAssetName}' with type '{v_AssetType}'");
 
-			switch (v_AssetType)
-			{
-				case "Text":
-					asset.TextValue = vAssetValue;
-					break;
-				case "Number":
-					asset.NumberValue = double.Parse(vAssetValue);
-					break;
-				case "JSON":
-					asset.JsonValue = vAssetValue;
-					break;
-				case "File":
-					AssetMethods.UpdateFileAsset(client, asset, vAssetFilePath);
-					break;
-			}
+            switch (v_AssetType)
+            {
+                case "Text":
+                    asset.TextValue = vAssetValue;
+                    break;
+                case "Number":
+                    asset.NumberValue = double.Parse(vAssetValue);
+                    break;
+                case "JSON":
+                    asset.JsonValue = vAssetValue;
+                    break;
+                case "File":
+                    //AssetMethods.UpdateFileAsset(client, asset, vAssetFilePath);
+                    break;
+            }
 
-			if (v_AssetType != "File")
-				AssetMethods.PutAsset(client, asset);
-		}
+            if (v_AssetType != "File")
+                AssetMethods.PutAsset(token, asset.Id.ToString());
+        }
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
 		{

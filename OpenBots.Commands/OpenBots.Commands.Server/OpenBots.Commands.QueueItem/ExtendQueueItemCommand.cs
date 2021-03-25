@@ -43,14 +43,14 @@ namespace OpenBots.Commands.QueueItem
 			var engine = (IAutomationEngineInstance)sender;
 			var vQueueItem = (Dictionary<string, object>)v_QueueItem.ConvertUserVariableToObject(engine, nameof(v_QueueItem), this);
 
-			var client = AuthMethods.GetAuthToken();
+			var token = AuthMethods.GetAuthToken();
 
 			Guid transactionKey = (Guid)vQueueItem["LockTransactionKey"];
 
 			if (transactionKey == null || transactionKey == Guid.Empty)
 				throw new NullReferenceException($"Transaction key {transactionKey} is invalid or not found");
 
-			QueueItemMethods.ExtendQueueItem(client, transactionKey);
+			//QueueItemMethods.ExtendQueueItem(client, transactionKey);
 		}
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)

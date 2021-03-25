@@ -133,34 +133,34 @@ namespace OpenBots.Commands.QueueItem
 			var vQueueItemTextValue = v_QueueItemTextValue.ConvertUserVariableToString(engine);
 			var vAttachments = v_Attachments.ConvertUserVariableToString(engine);
 
-			var client = AuthMethods.GetAuthToken();
-			Queue queue = QueueMethods.GetQueue(client, $"name eq '{vQueueName}'");
+			var token = AuthMethods.GetAuthToken();
+			//Queue queue = QueueMethods.GetQueue(client, $"name eq '{vQueueName}'");
 
-			if (queue == null)
-				throw new DataException($"Queue with name '{vQueueName}' not found");
+			//if (queue == null)
+			//	throw new DataException($"Queue with name '{vQueueName}' not found");
 
-			int priority = 0;
-			if (!string.IsNullOrEmpty(v_Priority))
-				priority = int.Parse(vPriority);
+			//int priority = 0;
+			//if (!string.IsNullOrEmpty(v_Priority))
+			//	priority = int.Parse(vPriority);
 
-            QueueItemModel queueItem = new QueueItemModel()
-			{
-				IsLocked = false,
-				QueueId = queue.Id,
-				Type = v_QueueItemType,
-				JsonType = vJsonType,
-				DataJson = vQueueItemTextValue,
-				Name = vQueueItemName,
-				IsDeleted = false,
-				Priority = priority,
-				Source = vSource,
-				Event = vEvent
-			};
+   //         QueueItemModel queueItem = new QueueItemModel()
+			//{
+			//	IsLocked = false,
+			//	QueueId = queue.Id,
+			//	Type = v_QueueItemType,
+			//	JsonType = vJsonType,
+			//	DataJson = vQueueItemTextValue,
+			//	Name = vQueueItemName,
+			//	IsDeleted = false,
+			//	Priority = priority,
+			//	Source = vSource,
+			//	Event = vEvent
+			//};
 
-			QueueItemMethods.EnqueueQueueItem(client, queueItem);
+			//QueueItemMethods.EnqueueQueueItem(client, queueItem);
 
-			if (!string.IsNullOrEmpty(vAttachments))
-				QueueItemMethods.AttachFiles(client, queueItem.Id, vAttachments);
+			//if (!string.IsNullOrEmpty(vAttachments))
+			//	QueueItemMethods.AttachFiles(client, queueItem.Id, vAttachments);
 		}
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)

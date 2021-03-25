@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
 using OpenBots.Core.Server.Models;
+using OpenBots.Core.Server.User;
+using OpenBots.Server.SDK.Api;
 using RestSharp;
-using RestSharp.Serialization.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using IOFile = System.IO.File;
 
@@ -13,34 +13,53 @@ namespace OpenBots.Core.Server.API_Methods
 {
     public class AssetMethods
     {
-        public static Asset GetAsset(RestClient client, string filter)
-        {           
-            var request = new RestRequest("api/v1/Assets", Method.GET);
-            request.AddParameter("$filter", filter);
-            request.RequestFormat = DataFormat.Json;
+        public static Dictionary<string, string> settings = EnvironmentSettings.GetAgentSettings();
+        public static string serverURL = settings["OpenBotsServerUrl"];
+        public static AssetsApi apiInstance = new AssetsApi(serverURL);
+        public static string apiVersion = "1";
 
-            var response = client.Execute(request);
+        public static Asset GetAsset(string token, string assetName, string assetType)
+        {
+            apiInstance.Configuration.AccessToken = token;
+            var asset = new Asset();
 
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
+            try
+            {
+                var result = apiInstance.ApiVapiVersionAssetsGetAssetByNameAssetNameGetAsyncWithHttpInfo(assetName, apiVersion, assetType).Result.Data;
+                string assetString = JsonConvert.SerializeObject(result);
+                asset = JsonConvert.DeserializeObject<Asset>(assetString);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling AssetsApi.ApiVapiVersionAssetsGetAssetByNameAssetNameGetAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
 
-            var deserializer = new JsonDeserializer();
-            var output = deserializer.Deserialize<Dictionary<string, string>>(response);
-            var items = output["items"];
-            return JsonConvert.DeserializeObject<List<Asset>>(items).FirstOrDefault();
+            return asset;
         }       
 
-        public static void PutAsset(RestClient client, Asset asset)
+        public static void PutAsset(string token, string assetId)
         {
-            var request = new RestRequest("api/v1/Assets/{id}", Method.PUT);
-            request.AddUrlSegment("id", asset.Id.ToString());           
-            request.RequestFormat = DataFormat.Json;
-            request.AddJsonBody(asset);
+            //var request = new RestRequest("api/v1/Assets/{id}", Method.PUT);
+            //request.AddUrlSegment("id", asset.Id.ToString());           
+            //request.RequestFormat = DataFormat.Json;
+            //request.AddJsonBody(asset);
 
-            var response = client.Execute(request);
+            //var response = client.Execute(request);
 
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
+            //if (!response.IsSuccessful)
+            //    throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
+            apiInstance.Configuration.AccessToken = token;
+
+            try
+            {
+                apiInstance.ApiVapiVersionAssetsIdUpdatePutAsyncWithHttpInfo(assetId, apiVersion).Wait();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling AssetsApi.ApiVapiVersionAssetsIdUpdatePutAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
         }
 
         public static void DownloadFileAsset(RestClient client, Guid? assetID, string directoryPath, string fileName)
@@ -75,17 +94,19 @@ namespace OpenBots.Core.Server.API_Methods
                 throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
         }
 
-        public static void AppendAsset(RestClient client, Guid? assetId, string appendText)
+        public static void AppendAsset(string token, Guid? assetId, string appendText)
         {
-            var request = new RestRequest("api/v1/Assets/{id}/Append", Method.PUT);
-            request.AddUrlSegment("id", assetId.ToString());
-            request.AddQueryParameter("value", appendText);
-            request.RequestFormat = DataFormat.Json;
+            apiInstance.Configuration.AccessToken = token;
 
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
+            try
+            {
+                apiInstance.ApiVapiVersionAssetsIdAppendPutAsyncWithHttpInfo(assetId.ToString(), apiVersion, appendText).Wait();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling AssetsApi.ApiVapiVersionAssetsGetAssetByNameAssetNameGetAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
         }
       
         public static void IncrementAsset(RestClient client, Guid? assetId)

@@ -55,13 +55,13 @@ namespace OpenBots.Commands.Asset
 			var vAssetName = v_AssetName.ConvertUserVariableToString(engine);
 			var vAppendText = v_AppendText.ConvertUserVariableToString(engine);
 
-			var client = AuthMethods.GetAuthToken();
-			var asset = AssetMethods.GetAsset(client, $"name eq '{vAssetName}' and type eq 'Text'");
+			string token = AuthMethods.GetAuthToken().ToString();
+			var asset = AssetMethods.GetAsset(token, vAssetName, "Text");
 
 			if (asset == null)
 				throw new DataException($"No Asset was found for '{vAssetName}' with type 'Text'");
 
-			AssetMethods.AppendAsset(client, asset.Id, vAppendText);
+			AssetMethods.AppendAsset(token, asset.Id, vAppendText);
 		}
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)

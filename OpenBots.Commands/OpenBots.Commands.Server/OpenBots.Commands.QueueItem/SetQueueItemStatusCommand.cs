@@ -77,25 +77,25 @@ namespace OpenBots.Commands.QueueItem
 			var vQueueItemErrorMessage = v_QueueItemErrorMessage.ConvertUserVariableToString(engine);
 			var vQueueItemErrorCode = v_QueueItemErrorCode.ConvertUserVariableToString(engine);
 
-			var client = AuthMethods.GetAuthToken();
+			var token = AuthMethods.GetAuthToken();
 
 			Guid transactionKey = (Guid)vQueueItem["LockTransactionKey"];
 
 			if (transactionKey == null || transactionKey == Guid.Empty)
 				throw new NullReferenceException($"Transaction key {transactionKey} is invalid or not found");
 
-			switch (v_QueueItemStatusType)
-			{
-				case "Successful":
-					QueueItemMethods.CommitQueueItem(client, transactionKey);
-					break;
-				case "Failed - Should Retry":
-					QueueItemMethods.RollbackQueueItem(client, transactionKey, vQueueItemErrorCode, vQueueItemErrorMessage, false);
-					break;
-				case "Failed - Fatal":
-					QueueItemMethods.RollbackQueueItem(client, transactionKey, vQueueItemErrorCode, vQueueItemErrorMessage, true);
-					break;
-			}
+			//switch (v_QueueItemStatusType)
+			//{
+			//	case "Successful":
+			//		QueueItemMethods.CommitQueueItem(client, transactionKey);
+			//		break;
+			//	case "Failed - Should Retry":
+			//		QueueItemMethods.RollbackQueueItem(client, transactionKey, vQueueItemErrorCode, vQueueItemErrorMessage, false);
+			//		break;
+			//	case "Failed - Fatal":
+			//		QueueItemMethods.RollbackQueueItem(client, transactionKey, vQueueItemErrorCode, vQueueItemErrorMessage, true);
+			//		break;
+			//}
 		}
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)

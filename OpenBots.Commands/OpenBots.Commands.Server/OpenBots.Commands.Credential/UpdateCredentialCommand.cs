@@ -63,16 +63,16 @@ namespace OpenBots.Commands.Credential
 			var vCredentialUsername = v_CredentialUsername.ConvertUserVariableToString(engine);
 			var vCredentialPassword = v_CredentialPassword.ConvertUserVariableToString(engine);
 
-			var client = AuthMethods.GetAuthToken();
-			var credential = CredentialMethods.GetCredential(client, $"name eq '{vCredentialName}'");
+			var token = AuthMethods.GetAuthToken();
+			//var credential = CredentialMethods.GetCredential(client, $"name eq '{vCredentialName}'");
 
-			if (credential == null)
-				throw new Exception($"No Credential was found for '{vCredentialName}'");
+			//if (credential == null)
+			//	throw new Exception($"No Credential was found for '{vCredentialName}'");
 
-			credential.UserName = vCredentialUsername;
-			credential.PasswordSecret = vCredentialPassword;
+			//credential.UserName = vCredentialUsername;
+			//credential.PasswordSecret = vCredentialPassword;
 			
-			CredentialMethods.PutCredential(client, credential);
+			//CredentialMethods.PutCredential(client, credential);
 		}
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)

@@ -1,15 +1,15 @@
-﻿using OpenBots.Core.Server.User;
-using RestSharp;
-using RestSharp.Serialization.Json;
+﻿using Newtonsoft.Json.Linq;
+using OpenBots.Core.Server.User;
+using OpenBots.Server.SDK.Api;
+using OpenBots.Server.SDK.Model;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 
 namespace OpenBots.Core.Server.API_Methods
 {
     public class AuthMethods
     {
-        public static RestClient GetAuthToken()
+        public static string GetAuthToken()
         {
             var settings = EnvironmentSettings.GetAgentSettings();
 
@@ -28,25 +28,24 @@ namespace OpenBots.Core.Server.API_Methods
             if (string.IsNullOrEmpty(serverURL))
                 throw new Exception("Server URL not found");
 
-            var client = new RestClient(serverURL);
-            client.UserAgent = "";
+            var apiInstance = new AuthApi(serverURL);
+            string apiVersion = "1";
+            var login = new Login(username, password);
+            string token;
 
-            var request = new RestRequest("api/v1/auth/token", Method.POST);
-            request.RequestFormat = DataFormat.Json;              
-            request.AddJsonBody(new { username, password });
+            try
+            {
+                var result = apiInstance.ApiVapiVersionAuthTokenPostAsyncWithHttpInfo(apiVersion, login).Result.Data.ToString();
+                JObject jsonObj = JObject.Parse(result.Replace("[]", "null"));
+                Dictionary<string, string> resultDict = jsonObj.ToObject<Dictionary<string, string>>();
+                token = resultDict["token"].ToString();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling AuthApi.ApiVapiVersionAuthTokenPostAsync: " + ex.Message);
+            }
 
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
-
-            var deserializer = new JsonDeserializer();
-            var output = deserializer.Deserialize<Dictionary<string, string>>(response);
-
-            string token = output["token"];
-            client.AddDefaultHeader("Authorization", string.Format("Bearer {0}", token));
-            
-            return client;
+            return token;
         }
     }
 }
