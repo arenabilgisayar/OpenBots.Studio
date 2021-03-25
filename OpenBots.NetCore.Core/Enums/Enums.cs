@@ -115,6 +115,7 @@ namespace OpenBots.NetCore.Core.Enums
     public enum ScriptArgumentDirection
     {
         In,
-        Out
+        Out,
+        InOut
     }
 }

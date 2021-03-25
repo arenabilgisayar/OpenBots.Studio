@@ -29,7 +29,7 @@ namespace OpenBots.Engine
     public class AutomationEngineInstance : IAutomationEngineInstance
     {
         //engine variables
-        public EngineContext AutomationEngineContext { get; set; } = new EngineContext();        
+        public EngineContext AutomationEngineContext { get; set; } = new EngineContext();
         public List<ScriptError> ErrorsOccured { get; set; }
         public string ErrorHandlingAction { get; set; }
         public bool ChildScriptFailed { get; set; }
@@ -71,7 +71,7 @@ namespace OpenBots.Engine
                 Log.Logger = AutomationEngineContext.EngineLogger;
                 Log.Information("Engine Class has been initialized");
             }
-            
+
             _privateCommandLog = "Can't log display value as the command contains sensitive data";
 
             //initialize error tracking list
@@ -96,8 +96,8 @@ namespace OpenBots.Engine
             if (AutomationEngineContext.AppInstances == null)
                 AutomationEngineContext.AppInstances = new Dictionary<string, object>();
 
-                ServiceResponses = new List<IRestResponse>();
-                DataTables = new List<DataTable>();
+            ServiceResponses = new List<IRestResponse>();
+            DataTables = new List<DataTable>();
 
             //this value can be later overriden by script
             AutoCalculateVariables = EngineSettings.AutoCalcVariables;
@@ -183,7 +183,7 @@ namespace OpenBots.Engine
                     ReportProgress("Deserializing JSON");
                     automationScript = Script.DeserializeJsonString(AutomationEngineContext.FilePath);
                 }
-                
+
                 ReportProgress("Creating Variable List");
 
                 //set variables if they were passed in
@@ -264,7 +264,12 @@ namespace OpenBots.Engine
                 }
 
                 //execute commands
-                foreach (var executionCommand in automationScript.Commands)
+                ScriptAction startCommand = automationScript.Commands.Where(x => x.ScriptCommand.LineNumber <= AutomationEngineContext.StartFromLineNumber)
+                                                                         .Last();
+
+                int startCommandIndex = automationScript.Commands.FindIndex(x => x.ScriptCommand.LineNumber == startCommand.ScriptCommand.LineNumber);
+
+                while (startCommandIndex < automationScript.Commands.Count)
                 {
                     if (IsCancellationPending)
                     {
@@ -273,7 +278,8 @@ namespace OpenBots.Engine
                         return;
                     }
 
-                    ExecuteCommand(executionCommand);
+                    ExecuteCommand(automationScript.Commands[startCommandIndex]);
+                    startCommandIndex++;
                 }
 
                 if (IsCancellationPending)
@@ -291,7 +297,7 @@ namespace OpenBots.Engine
             {
                 ScriptFinished(ScriptFinishedResult.Error, ex.ToString());
             }
-            if((AutomationEngineContext.ScriptEngine != null && !AutomationEngineContext.ScriptEngine.IsChildEngine) || (IsServerExecution && !IsServerChildExecution))
+            if ((AutomationEngineContext.ScriptEngine != null && !AutomationEngineContext.ScriptEngine.IsChildEngine) || (IsServerExecution && !IsServerChildExecution))
                 AutomationEngineContext.EngineLogger.Dispose();
         }
 
@@ -302,6 +308,13 @@ namespace OpenBots.Engine
 
             if (parentCommand == null)
                 return;
+
+            //in RunFromThisCommand exection, determine if/loop logic. If logic returns true, skip until reaching the selected command
+            if (!parentCommand.ScopeStartCommand && parentCommand.LineNumber < AutomationEngineContext.StartFromLineNumber)
+                return;
+            //if the selected command is within a loop/retry, reset starting line number so that previous commands within the scope run in the following iteration
+            else if (!parentCommand.ScopeStartCommand && parentCommand.LineNumber == AutomationEngineContext.StartFromLineNumber)
+                AutomationEngineContext.StartFromLineNumber = 1;
 
             if (AutomationEngineContext.ScriptEngine != null && (parentCommand.CommandName == "RunTaskCommand" || parentCommand.CommandName == "ShowMessageCommand"))
                 parentCommand.CurrentScriptBuilder = AutomationEngineContext.ScriptEngine.ScriptEngineContext.ScriptBuilder;
@@ -340,7 +353,7 @@ namespace OpenBots.Engine
                     parentCommand.CurrentScriptBuilder = AutomationEngineContext.ScriptEngine.ScriptEngineContext.ScriptBuilder;
                     _isScriptSteppedInto = false;
                     AutomationEngineContext.ScriptEngine.IsHiddenTaskEngine = true;
-                    
+
                     break;
                 }
                 else if (_isScriptSteppedOver || _isScriptSteppedInto)
@@ -355,7 +368,7 @@ namespace OpenBots.Engine
                     IsCancellationPending = true;
                     break;
                 }
-                                  
+
                 //wait
                 Thread.Sleep(1000);
             }
@@ -373,7 +386,7 @@ namespace OpenBots.Engine
                 throw new Exception("Child Script Failed");
 
             //bypass comments
-            if (parentCommand.CommandName == "AddCodeCommentCommand" || parentCommand.CommandName == "BrokenCodeCommentCommand" || parentCommand.IsCommented)             
+            if (parentCommand.CommandName == "AddCodeCommentCommand" || parentCommand.CommandName == "BrokenCodeCommentCommand" || parentCommand.IsCommented)
                 return;
 
             //report intended execution
@@ -496,7 +509,7 @@ namespace OpenBots.Engine
                     AutomationEngineContext.ScriptEngine.ScriptEngineContext.ScriptBuilder.IsUnhandledException = false;
 
                     if (result == DialogResult.OK)
-                    {                           
+                    {
                         ReportProgress("Ignoring Per User Choice");
                         ErrorsOccured.Clear();
 
@@ -517,16 +530,16 @@ namespace OpenBots.Engine
                     {
                         ReportProgress("Continuing Per User Choice");
                         AutomationEngineContext.ScriptEngine.ScriptEngineContext.ScriptBuilder.RemoveDebugTab();
-                        AutomationEngineContext.ScriptEngine.uiBtnPause_Click(null, null);                           
+                        AutomationEngineContext.ScriptEngine.uiBtnPause_Click(null, null);
                         throw ex;
                     }
                     //TODO: Add Break Option
                 }
                 else
                     throw ex;
-                
+
             }
-        }     
+        }
 
         public void CancelScript()
         {
@@ -589,7 +602,7 @@ namespace OpenBots.Engine
 
             if (progress.StartsWith("Skipping"))
                 args.LoggerColor = Color.Green;
-             
+
             args.ProgressUpdate = progress;
 
             //invoke event
@@ -691,12 +704,12 @@ namespace OpenBots.Engine
             {
                 Error = (serializer, err) =>
                 {
-                    err.ErrorContext.Handled = true;                    
+                    err.ErrorContext.Handled = true;
                 },
                 Formatting = Formatting.Indented
             };
 
-            return  JsonConvert.SerializeObject(this, settings);
+            return JsonConvert.SerializeObject(this, settings);
         }
 
         public string GetProjectPath()

@@ -75,6 +75,7 @@ namespace OpenBots.NetCore.Commands.If
 			SelectionName = "Begin If";
 			CommandEnabled = true;
 			CommandIcon = Resources.command_begin_if;
+			ScopeStartCommand = true;
 
 			//define parameter table
 			v_ActionParameterTable = new DataTable

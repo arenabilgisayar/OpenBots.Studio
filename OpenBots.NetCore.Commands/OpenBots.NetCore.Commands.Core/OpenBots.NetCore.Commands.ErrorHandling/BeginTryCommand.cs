@@ -23,7 +23,7 @@ namespace OpenBots.NetCore.Commands.ErrorHandling
             SelectionName = "Try";
             CommandEnabled = true;
             CommandIcon = Resources.command_try;
-
+            ScopeStartCommand = true;
         }
 
         public override void RunCommand(object sender, ScriptAction parentCommand)

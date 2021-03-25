@@ -1,26 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package>
-  <metadata>
-    <id>OpenBots.NetCore.Engine</id>
-    <version>1.4.0.0</version>
-    <title>OpenBots Engine</title>
-    <authors>OpenBots Inc</authors>
-    <owners>OpenBots Inc</owners>
-    <licenseUrl>https://github.com/OpenBotsAI/OpenBots.Studio/blob/develop/LICENSE</licenseUrl>
-    <projectUrl>https://openbots.ai</projectUrl>
-    <iconUrl>https://openbots.ai/wp-content/uploads/2020/11/Studio-Icon-256px.png</iconUrl>
-    <repository type="git" url="https://github.com/OpenBotsAI/OpenBots.Studio" branch="master" />
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>OpenBots Engine for executing scripts through the Studio and Agent.</description>
-    <releaseNotes>https://openbots.ai/category/release-notes/</releaseNotes>
-    <copyright>(C) OpenBots Inc 2020-2021</copyright>
-    <tags>OpenBots Engine Studio Agent</tags>
-    <dependencies>
-      <group targetFramework="netcoreapp3.1">
-      </group>
-    </dependencies>
-  </metadata>
-  <files>
+	<metadata>
+		<id>OpenBots.NetCore.Engine</id>
+		<version>1.4.0.0</version>
+		<title>OpenBots Engine</title>
+		<authors>OpenBots Inc</authors>
+		<owners>OpenBots Inc</owners>
+		<licenseUrl>https://github.com/OpenBotsAI/OpenBots.Studio/blob/develop/LICENSE</licenseUrl>
+		<projectUrl>https://openbots.ai</projectUrl>
+		<iconUrl>https://openbots.ai/wp-content/uploads/2020/11/Studio-Icon-256px.png</iconUrl>
+		<repository type="git" url="https://github.com/OpenBotsAI/OpenBots.Studio" branch="master" />
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>OpenBots Engine for executing scripts through the Studio and Agent.</description>
+		<releaseNotes>https://openbots.ai/category/release-notes/</releaseNotes>
+		<copyright>(C) OpenBots Inc 2020-2021</copyright>
+		<tags>OpenBots Engine Studio Agent</tags>
+		<dependencies>
+			<group targetFramework="netcoreapp3.1">
+				<dependency id="Autofac" version="6.1.0" />
+				<dependency id="Newtonsoft.Json" version="12.0.3" />
+				<dependency id="RestSharp" version="106.11.7" />
+				<dependency id="Serilog" version="2.10.0" />
+			</group>
+		</dependencies>
+	</metadata>
+	<files>
 		<file src="bin\$Configuration$\netcoreapp3.1\OpenBots.NetCore.Engine*.pdb" target="lib\netcoreapp3.1" />
-  </files>
+	</files>
 </package>
