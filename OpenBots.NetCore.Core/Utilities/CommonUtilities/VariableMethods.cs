@@ -185,14 +185,16 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
                                                 .Where(var => var.VariableName == reformattedVarArg)
                                                 .FirstOrDefault();
 
-                if (requiredVariable != null && compatibleTypes != null && !compatibleTypes.Any(x => x.IsAssignableFrom(requiredVariable.VariableType)))
+                if (requiredVariable != null && compatibleTypes != null && !compatibleTypes.Any(x => x.IsAssignableFrom(requiredVariable.VariableType)
+                                                                                                  || x == requiredVariable.VariableType))
                     throw new ArgumentException($"The type of variable '{requiredVariable.VariableName}' is not compatible.");
 
                 requiredArgument = engine.AutomationEngineContext.Arguments
                                                 .Where(arg => arg.ArgumentName == reformattedVarArg)
                                                 .FirstOrDefault();
 
-                if (requiredArgument != null && compatibleTypes != null && !compatibleTypes.Any(x => x.IsAssignableFrom(requiredArgument.ArgumentType)))
+                if (requiredArgument != null && compatibleTypes != null && !compatibleTypes.Any(x => x.IsAssignableFrom(requiredArgument.ArgumentType)
+                                                                                                  || x == requiredArgument.ArgumentType))
                     throw new ArgumentException($"The type of argument '{requiredArgument.ArgumentName}' is not compatible.");
             }
             else
@@ -220,14 +222,14 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
                                                 .Where(var => var.VariableName == reformattedVarArg)
                                                 .FirstOrDefault();
 
-                if (requiredVariable != null && !compatibleType.IsAssignableFrom(requiredVariable.VariableType))
+                if (requiredVariable != null && !compatibleType.IsAssignableFrom(requiredVariable.VariableType) && compatibleType != requiredVariable.VariableType)
                     throw new ArgumentException($"The type of variable '{requiredVariable.VariableName}' is not compatible.");
 
                 requiredArgument = engine.AutomationEngineContext.Arguments
                                                 .Where(arg => arg.ArgumentName == reformattedVarArg)
                                                 .FirstOrDefault();
 
-                if (requiredArgument != null && !compatibleType.IsAssignableFrom(requiredArgument.ArgumentType))
+                if (requiredArgument != null && !compatibleType.IsAssignableFrom(requiredArgument.ArgumentType) && compatibleType != requiredArgument.ArgumentType)
                     throw new ArgumentException($"The type of argument '{requiredArgument.ArgumentName}' is not compatible.");
             }
             else
@@ -244,28 +246,34 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
         public static Type GetVarArgType(this string varArgName, IAutomationEngineInstance engine)
         {
             ScriptVariable requiredVariable;
-            ScriptArgument requiredArgument;
 
             if (varArgName.StartsWith("{") && varArgName.EndsWith("}"))
             {
                 //reformat and attempt
                 var reformattedVarArg = varArgName.Replace("{", "").Replace("}", "");
 
-                requiredVariable = engine.AutomationEngineContext.Variables
-                                                .Where(var => var.VariableName == reformattedVarArg)
-                                                .FirstOrDefault();
+                var variableList = engine.AutomationEngineContext.Variables;
+                var systemVariables = CommonMethods.GenerateSystemVariables();
+                var argumentsAsVariablesList = engine.AutomationEngineContext.Arguments.Select(arg => new ScriptVariable
+                {
+                    VariableName = arg.ArgumentName,
+                    VariableType = arg.ArgumentType,
+                    VariableValue = arg.ArgumentValue
+                })
+                                                                                        .ToList();
 
-                requiredArgument = engine.AutomationEngineContext.Arguments
-                                                .Where(arg => arg.ArgumentName == reformattedVarArg)
-                                                .FirstOrDefault();
+                var variableSearchList = new List<ScriptVariable>();
+                variableSearchList.AddRange(variableList);
+                variableSearchList.AddRange(systemVariables);
+                variableSearchList.AddRange(argumentsAsVariablesList);
+
+                requiredVariable = variableSearchList.Where(var => var.VariableName == reformattedVarArg).FirstOrDefault();
             }
             else
                 throw new Exception("Variable/Argument markers '{}' missing. Variable/Argument '" + varArgName + "' could not be found.");
 
             if (requiredVariable != null)
                 return requiredVariable.VariableType;
-            else if (requiredArgument != null)
-                return requiredArgument.ArgumentType;
             else
                 return null;
         }
@@ -338,7 +346,8 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
                                                .Where(var => var.VariableName == varArgName)
                                                .FirstOrDefault();
 
-            if (existingVariable != null && compatibleTypes != null && !compatibleTypes.Any(x => x.IsAssignableFrom(existingVariable.VariableType)))
+            if (existingVariable != null && compatibleTypes != null && !compatibleTypes.Any(x => x.IsAssignableFrom(existingVariable.VariableType)
+                                                                                              || x == existingVariable.VariableType))
                 throw new ArgumentException($"The type of variable '{existingVariable.VariableName}' is not compatible.");
             else if (existingVariable != null)
             {
@@ -350,7 +359,8 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
                                             .Where(arg => arg.ArgumentName == varArgName)
                                             .FirstOrDefault();
 
-            if (existingArgument != null && compatibleTypes != null && !compatibleTypes.Any(x => x.IsAssignableFrom(existingArgument.ArgumentType)))
+            if (existingArgument != null && compatibleTypes != null && !compatibleTypes.Any(x => x.IsAssignableFrom(existingArgument.ArgumentType)
+                                                                                              || x == existingArgument.ArgumentType))
                 throw new ArgumentException($"The type of argument '{existingArgument.ArgumentName}' is not compatible.");
             else if (existingArgument != null)
             {
@@ -372,7 +382,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
                                                .Where(var => var.VariableName == varArgName)
                                                .FirstOrDefault();
 
-            if (existingVariable != null && !compatibleType.IsAssignableFrom(existingVariable.VariableType))
+            if (existingVariable != null && !compatibleType.IsAssignableFrom(existingVariable.VariableType) && compatibleType != existingVariable.VariableType)
                 throw new ArgumentException($"The type of variable '{existingVariable.VariableName}' is not compatible.");
             else if (existingVariable != null)
             {
@@ -384,7 +394,7 @@ namespace OpenBots.NetCore.Core.Utilities.CommonUtilities
                                             .Where(arg => arg.ArgumentName == varArgName)
                                             .FirstOrDefault();
 
-            if (existingArgument != null && !compatibleType.IsAssignableFrom(existingArgument.ArgumentType))
+            if (existingArgument != null && !compatibleType.IsAssignableFrom(existingArgument.ArgumentType) && compatibleType != existingArgument.ArgumentType)
                 throw new ArgumentException($"The type of argument '{existingArgument.ArgumentName}' is not compatible.");
             else if (existingArgument != null)
             {
