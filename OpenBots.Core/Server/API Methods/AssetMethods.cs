@@ -40,15 +40,6 @@ namespace OpenBots.Core.Server.API_Methods
 
         public static void PutAsset(string token, string assetId)
         {
-            //var request = new RestRequest("api/v1/Assets/{id}", Method.PUT);
-            //request.AddUrlSegment("id", asset.Id.ToString());           
-            //request.RequestFormat = DataFormat.Json;
-            //request.AddJsonBody(asset);
-
-            //var response = client.Execute(request);
-
-            //if (!response.IsSuccessful)
-            //    throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
             apiInstance.Configuration.AccessToken = token;
 
             try
