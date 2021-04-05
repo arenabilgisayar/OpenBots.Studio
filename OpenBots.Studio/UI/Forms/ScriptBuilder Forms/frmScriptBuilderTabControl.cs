@@ -34,6 +34,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                             _scriptVariables = scriptObject.ScriptVariables;
                             _scriptArguments = scriptObject.ScriptArguments;
                             _scriptElements = scriptObject.ScriptElements;
+                            _importedNamespaces = scriptObject.ImportedNamespaces;
 
                             if (!_isRunTaskCommand)
                             {
@@ -72,7 +73,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             }
             catch (Exception ex)
             {
-                Notify("An Error Occured: " + ex.Message, Color.Red);
+                Notify("An Error Occurred: " + ex.Message, Color.Red);
             }
         }
 

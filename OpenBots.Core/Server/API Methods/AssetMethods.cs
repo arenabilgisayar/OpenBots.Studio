@@ -4,7 +4,6 @@ using OpenBots.Core.Server.User;
 using OpenBots.Server.SDK.Api;
 using RestSharp;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using IOFile = System.IO.File;

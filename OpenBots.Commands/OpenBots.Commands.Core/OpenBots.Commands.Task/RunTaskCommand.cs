@@ -110,7 +110,7 @@ namespace OpenBots.Commands.Task
 			string projectPath = parentfrmScriptEngine.ScriptEngineContext.ProjectPath;
 
 			EngineContext childEngineContext = new EngineContext(childTaskPath, projectPath, parentAutomationEngineInstance.AutomationEngineContext.Container, CurrentScriptBuilder,
-				parentfrmScriptEngine.ScriptEngineContext.EngineLogger, null, _argumentList, null, parentAutomationEngineInstance.AutomationEngineContext.AppInstances, null, 1);
+				parentfrmScriptEngine.ScriptEngineContext.EngineLogger, null, _argumentList, null, parentAutomationEngineInstance.AutomationEngineContext.AppInstances, null, null, 1);
 
 			_childfrmScriptEngine = parentfrmScriptEngine.CommandControls.CreateScriptEngineForm(childEngineContext, false, parentfrmScriptEngine.IsDebugMode);
 
@@ -193,7 +193,14 @@ namespace OpenBots.Commands.Task
 				{
 					((Form)parentfrmScriptEngine).TopMost = true;
 				});
-			}          
+			}
+
+			if (_childfrmScriptEngine != null)
+            {
+				((Form)_childfrmScriptEngine).Dispose();
+				_childfrmScriptEngine = null;
+				GC.Collect();
+            }			
 		}
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
@@ -222,7 +229,7 @@ namespace OpenBots.Commands.Task
 			_assignmentsGridViewHelper.AllowUserToAddRows = false;
 			_assignmentsGridViewHelper.AllowUserToDeleteRows = false;
 			//refresh gridview
-            _assignmentsGridViewHelper.MouseEnter += (sender, e) => PassParametersCheckbox_CheckedChanged(_passParameters, null, editor, commandControls);
+            _assignmentsGridViewHelper.MouseEnter += (sender, e) => PassParametersCheckbox_CheckedChanged(_passParameters, null, editor, commandControls, true);
 
 			if (!_passParameters.Checked)
 				_assignmentsGridViewHelper.Hide();
@@ -240,49 +247,52 @@ namespace OpenBots.Commands.Task
 
 		private void TaskPathControl_TextChanged(object sender, EventArgs e)
 		{
+			v_TaskPath = ((TextBox)sender).Text;
 			_passParameters.Checked = false;
 		}
 
-		private void PassParametersCheckbox_CheckedChanged(object sender, EventArgs e, IfrmCommandEditor editor, ICommandControls commandControls)
-		{
-			var currentScriptEngine = commandControls.CreateAutomationEngineInstance(null);
-			currentScriptEngine.AutomationEngineContext.Arguments.AddRange(editor.ScriptEngineContext.Arguments);
-
-			var startFile = v_TaskPath;
-			if (startFile.Contains("{ProjectPath}"))
-				startFile = startFile.Replace("{ProjectPath}", editor.ScriptEngineContext.ProjectPath);
-
-			startFile = startFile.ConvertUserVariableToString(currentScriptEngine);
-			
+		private void PassParametersCheckbox_CheckedChanged(object sender, EventArgs e, IfrmCommandEditor editor, ICommandControls commandControls, bool isMouseEnter = false)
+		{			
 			var assignArgCheckBox = (CheckBox)sender;
-
 			_assignmentsGridViewHelper.Visible = assignArgCheckBox.Checked;
 
 			//load arguments if selected and file exists
-			if (assignArgCheckBox.Checked && File.Exists(startFile))
+			if (assignArgCheckBox.Checked)
 			{
-				_assignmentsGridViewHelper.DataSource = v_ArgumentAssignments;
-				DataTable vArgumentAssignmentsCopy = v_ArgumentAssignments.Copy();
-				v_ArgumentAssignments.Clear();
+				var currentScriptEngine = commandControls.CreateAutomationEngineInstance(null);
+				currentScriptEngine.AutomationEngineContext.Arguments.AddRange(editor.ScriptEngineContext.Arguments);
 
-				JObject scriptObject = JObject.Parse(File.ReadAllText(startFile));
-				var arguments = scriptObject["Arguments"].ToObject<List<ScriptArgument>>();
+				var startFile = v_TaskPath;
+				if (startFile.Contains("{ProjectPath}"))
+					startFile = startFile.Replace("{ProjectPath}", editor.ScriptEngineContext.ProjectPath);
 
-				foreach (var argument in arguments)
-				{
-					if (argument.ArgumentName == "ProjectPath")
-						continue;
+				startFile = startFile.ConvertUserVariableToString(currentScriptEngine);
 
-					DataRow foundArguments  = vArgumentAssignmentsCopy.Select("ArgumentName = '" + "{" + argument.ArgumentName + "}" + "'").FirstOrDefault();
-					if (foundArguments != null)
-                    {
-						var foundArgumentValue = foundArguments[2];
-						v_ArgumentAssignments.Rows.Add("{" + argument.ArgumentName + "}", argument.ArgumentType, foundArgumentValue, argument.Direction.ToString());
+				if (!isMouseEnter && File.Exists(startFile))
+                {
+					_assignmentsGridViewHelper.DataSource = v_ArgumentAssignments;
+					DataTable vArgumentAssignmentsCopy = v_ArgumentAssignments.Copy();
+					v_ArgumentAssignments.Clear();
+
+					JObject scriptObject = JObject.Parse(File.ReadAllText(startFile));
+					var arguments = scriptObject["Arguments"].ToObject<List<ScriptArgument>>();
+
+					foreach (var argument in arguments)
+					{
+						if (argument.ArgumentName == "ProjectPath")
+							continue;
+
+						DataRow foundArguments = vArgumentAssignmentsCopy.Select("ArgumentName = '" + "{" + argument.ArgumentName + "}" + "'").FirstOrDefault();
+						if (foundArguments != null)
+						{
+							var foundArgumentValue = foundArguments[2];
+							v_ArgumentAssignments.Rows.Add("{" + argument.ArgumentName + "}", argument.ArgumentType, foundArgumentValue, argument.Direction.ToString());
+						}
+						else
+							v_ArgumentAssignments.Rows.Add("{" + argument.ArgumentName + "}", argument.ArgumentType, argument.ArgumentValue, argument.Direction.ToString());
 					}
-                    else
-						v_ArgumentAssignments.Rows.Add("{" + argument.ArgumentName + "}", argument.ArgumentType, argument.ArgumentValue, argument.Direction.ToString());
 				}
-
+				
                 for (int i = 0; i < _assignmentsGridViewHelper.Rows.Count; i++)
 				{
 					DataGridViewComboBoxCell typeComboBox = new DataGridViewComboBoxCell();
@@ -323,9 +333,7 @@ namespace OpenBots.Commands.Task
 			{
 				FilePath = childTaskPath,
 				ProjectPath = parentAutomationEngineInstance.GetProjectPath(),
-
 				EngineLogger = (Logger)engineLogger,
-
 				Container = parentAutomationEngineInstance.AutomationEngineContext.Container,
 			};
 
