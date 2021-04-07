@@ -151,7 +151,7 @@ namespace OpenBots.Core.Server.API_Methods
 
         public static void DownloadFile(RestClient client, QueueItemAttachment attachment, string directoryPath)
         {
-            var file = FileMethods.GetFile(client, attachment.FileId);
+            //var file = FileMethods.GetFile(client, attachment.FileId);
             var request = new RestRequest($"api/v1/QueueItems/{attachment.QueueItemId}/QueueItemAttachments/{attachment.Id}/Export", Method.GET);
             request.RequestFormat = DataFormat.Json;
 
@@ -161,7 +161,7 @@ namespace OpenBots.Core.Server.API_Methods
                 throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
 
             byte[] fileBytes = response.RawBytes;
-            IOFile.WriteAllBytes(Path.Combine(directoryPath, file.Name), fileBytes);
+            //IOFile.WriteAllBytes(Path.Combine(directoryPath, file.Name), fileBytes);
         }
     }
 }

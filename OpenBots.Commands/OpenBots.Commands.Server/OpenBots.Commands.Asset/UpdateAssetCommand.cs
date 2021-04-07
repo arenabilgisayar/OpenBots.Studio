@@ -106,12 +106,12 @@ namespace OpenBots.Commands.Asset
 					asset.JsonValue = vAssetValue;
 					break;
 				case "File":
-					//AssetMethods.UpdateFileAsset(client, asset, vAssetFilePath);
+					AssetMethods.UpdateFileAsset(token, asset, vAssetFilePath);
 					break;
 			}
 
             if (v_AssetType != "File")
-                AssetMethods.PutAsset(token, asset.Id.ToString());
+                AssetMethods.PutAsset(token, asset);
         }
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)

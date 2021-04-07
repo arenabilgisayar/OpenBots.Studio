@@ -1,10 +1,7 @@
-﻿using Microsoft.Office.Interop.Word;
-using Microsoft.Win32;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Principal;
 
 namespace OpenBots.Core.Server.User
 {
@@ -17,6 +14,9 @@ namespace OpenBots.Core.Server.User
                         "OpenBots Agent"
                         );
         public static string SettingsFileName { get; } = "OpenBots.settings";
+        public static string apiVersion { get; } = "1";
+        public static Dictionary<string, string> settings = GetAgentSettings();
+        public static string serverURL = settings["OpenBotsServerUrl"];
 
         public static string GetEnvironmentVariable()
         {

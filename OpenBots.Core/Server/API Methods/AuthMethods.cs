@@ -4,6 +4,7 @@ using OpenBots.Server.SDK.Api;
 using OpenBots.Server.SDK.Model;
 using System;
 using System.Collections.Generic;
+using static OpenBots.Core.Server.User.EnvironmentSettings;
 
 namespace OpenBots.Core.Server.API_Methods
 {
@@ -11,8 +12,6 @@ namespace OpenBots.Core.Server.API_Methods
     {
         public static string GetAuthToken()
         {
-            var settings = EnvironmentSettings.GetAgentSettings();
-
             string agentId = settings["AgentId"];
             string serverURL = settings["OpenBotsServerUrl"];
 
@@ -29,7 +28,6 @@ namespace OpenBots.Core.Server.API_Methods
                 throw new Exception("Server URL not found");
 
             var apiInstance = new AuthApi(serverURL);
-            string apiVersion = "1";
             var login = new Login(username, password);
             string token;
 

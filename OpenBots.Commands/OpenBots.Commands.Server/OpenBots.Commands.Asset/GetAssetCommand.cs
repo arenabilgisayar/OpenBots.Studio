@@ -89,37 +89,37 @@ namespace OpenBots.Commands.Asset
 			var vOutputDirectoryPath = v_OutputDirectoryPath.ConvertUserVariableToString(engine);
 
 			var token = AuthMethods.GetAuthToken();
-			//var asset = AssetMethods.GetAsset(client, $"name eq '{vAssetName}' and type eq '{v_AssetType}'");
+			var asset = AssetMethods.GetAsset(token, vAssetName, v_AssetType);
 
-			//if (asset == null)
-			//	throw new DataException($"No Asset was found for '{vAssetName}' with type '{v_AssetType}'");
+			if (asset == null)
+				throw new DataException($"No Asset was found for '{vAssetName}' with type '{v_AssetType}'");
 
-			//dynamic assetValue;
-			//switch (v_AssetType)
-			//{
-			//	case "Text":
-			//		assetValue = asset.TextValue;
-			//		break;
-			//	case "Number":
-			//		assetValue = asset.NumberValue;
-			//		break;
-			//	case "JSON":
-			//		assetValue = asset.JsonValue;
-			//		break;
-			//	case "File":
-			//		var fileID = asset.FileID;
-			//		File file = FileMethods.GetFile(client, fileID);     
-			//		AssetMethods.DownloadFileAsset(client, asset.Id, vOutputDirectoryPath, file.Name);
-			//		assetValue = string.Empty;
-			//		break;
-			//	default:
-			//		assetValue = string.Empty;
-			//		break;
-			//}
-			
-			//if (v_AssetType != "File")
-			//	((object)assetValue).StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);
-		}
+            dynamic assetValue;
+            switch (v_AssetType)
+            {
+                case "Text":
+                    assetValue = asset.TextValue;
+                    break;
+                case "Number":
+                    assetValue = asset.NumberValue;
+                    break;
+                case "Json":
+                    assetValue = asset.JsonValue;
+                    break;
+                case "File":
+                    var fileId = asset.FileId;
+                    File file = FileMethods.GetFile(token, fileId);
+                    AssetMethods.DownloadFileAsset(token, asset.Id, vOutputDirectoryPath, file.Name);
+                    assetValue = string.Empty;
+                    break;
+                default:
+                    assetValue = string.Empty;
+                    break;
+            }
+
+            if (v_AssetType != "File")
+                ((object)assetValue).StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);
+        }
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
 		{

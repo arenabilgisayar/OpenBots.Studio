@@ -1,16 +1,19 @@
 ﻿using Newtonsoft.Json;
+using OpenBots.Server.SDK.Api;
+using OpenBots.Server.SDK.Model;
 using RestSharp;
-using RestSharp.Serialization.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using static OpenBots.Core.Server.User.EnvironmentSettings;
 using FileModel = OpenBots.Core.Server.Models.File;
 
 namespace OpenBots.Core.Server.API_Methods
 {
     public class FileMethods
     {
+        public static FilesApi apiInstance = new FilesApi(serverURL);
+
         public static void DownloadFile(RestClient client, Guid? fileID, string directoryPath, string fileName)
         {
             var request = new RestRequest("api/v1/Files/{id}/download", Method.GET);
@@ -26,24 +29,27 @@ namespace OpenBots.Core.Server.API_Methods
             File.WriteAllBytes(Path.Combine(directoryPath, fileName), file);
         }
 
-        public static FileModel GetFile(RestClient client, Guid? id, string driveName = null)
+        public static FileModel GetFile(string token, Guid? id)
         {
-            var request = new RestRequest($"api/v1/Files/{id}", Method.GET);
-            request.RequestFormat = DataFormat.Json;
+            apiInstance.Configuration.AccessToken = token;
 
-            if (!string.IsNullOrEmpty(driveName))
-                request.AddQueryParameter("driveName", driveName);
-
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
-
-            var deserializer = new JsonDeserializer();
-            var output = deserializer.Deserialize<Dictionary<string, string>>(response);
-            var items = output["items"];
-            var file = JsonConvert.DeserializeObject<List<FileModel>>(items)[0];
-            return file;
+            try
+            {
+                FileFolderViewModel response = apiInstance.GetFileFolderAsyncWithHttpInfo(id.ToString(), apiVersion).Result.Data;
+                var file = new FileModel()
+                {
+                    Name = response.Name,
+                    StoragePath = response.StoragePath,
+                    FullStoragePath = response.FullStoragePath,
+                    ContentType = response.ContentType
+                };
+                return file;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling FilesApi.GetFileFolderAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
         }
     }
 }

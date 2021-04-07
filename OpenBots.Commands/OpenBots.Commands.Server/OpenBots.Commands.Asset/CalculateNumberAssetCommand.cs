@@ -75,26 +75,26 @@ namespace OpenBots.Commands.Asset
             var vAssetActionValue = v_AssetActionValue.ConvertUserVariableToString(engine);
 
             var token = AuthMethods.GetAuthToken();
-            //var asset = AssetMethods.GetAsset(client, $"name eq '{vAssetName}' and type eq 'Number'");
+            var asset = AssetMethods.GetAsset(token, vAssetName, "Number");
 
-            //if (asset == null)
-            //    throw new DataException($"No Asset was found for '{vAssetName}' and type 'Number'");
+            if (asset == null)
+                throw new DataException($"No Asset was found for '{vAssetName}' and type 'Number'");
 
-            //switch (v_AssetActionType)
-            //{
-            //    case "Increment":
-            //        AssetMethods.IncrementAsset(client, asset.Id);
-            //        break;
-            //    case "Decrement":
-            //        AssetMethods.DecrementAsset(client, asset.Id);
-            //        break;
-            //    case "Add":
-            //        AssetMethods.AddAsset(client, asset.Id, vAssetActionValue);
-            //        break;
-            //    case "Subtract":
-            //        AssetMethods.SubtractAsset(client, asset.Id, vAssetActionValue);
-            //        break;
-            //}
+            switch (v_AssetActionType)
+            {
+                case "Increment":
+                    AssetMethods.IncrementAsset(token, asset.Id);
+                    break;
+                case "Decrement":
+                    AssetMethods.DecrementAsset(token, asset.Id);
+                    break;
+                case "Add":
+                    AssetMethods.AddAsset(token, asset.Id, vAssetActionValue);
+                    break;
+                case "Subtract":
+                    AssetMethods.SubtractAsset(token, asset.Id, vAssetActionValue);
+                    break;
+            }
         }
 
         public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
