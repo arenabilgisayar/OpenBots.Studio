@@ -14,6 +14,7 @@ using System.Windows.Forms;
 
 namespace OpenBots.Commands.Documents
 {
+    [Serializable]
     [Category("OpenBots Documents")]
     [Description("Compare two tables cell by cell and reports any mismatches")]
     public class CompareTablesCommand : ScriptCommand

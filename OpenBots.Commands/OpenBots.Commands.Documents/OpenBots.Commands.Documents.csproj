@@ -78,10 +78,9 @@
     <Compile Include="Interfaces\IGetStatusResult.cs" />
     <Compile Include="Interfaces\ISaveRequest.cs" />
     <Compile Include="Interfaces\ISaveResult.cs" />
-    <Compile Include="IsDocumentCompleted.cs" />
     <Compile Include="Interfaces\ISubmitFileRequest.cs" />
     <Compile Include="Interfaces\ISubmitFileResult.cs" />
-    <Compile Include="MarkDocumentAsVerified.cs" />
+    <Compile Include="MarkDocumentAsVerifiedCommand.cs" />
     <Compile Include="Library\MimeTypeMap.cs" />
     <Compile Include="Models\PageNumber.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

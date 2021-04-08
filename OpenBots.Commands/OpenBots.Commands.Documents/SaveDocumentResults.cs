@@ -12,9 +12,8 @@ using System.Windows.Forms;
 
 namespace OpenBots.Commands.Documents
 {
-
+    [Serializable]
     [Category("OpenBots Documents")]
-    [DisplayName("Save Document Results")]
     [Description("Saves the processing results in a file system folder.")]
     public class SaveDocumentResults : DocumentsBaseCommand, ISaveRequest, ISaveResult
     {

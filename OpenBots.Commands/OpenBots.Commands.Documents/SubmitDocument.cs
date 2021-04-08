@@ -11,8 +11,8 @@ using System.Windows.Forms;
 
 namespace OpenBots.Commands.Documents
 {
+    [Serializable]
     [Category("OpenBots Documents")]
-    [DisplayName("Submit Document")]
     [Description("Submits a file for Processing by creating a new Task")]
     public class SubmitDocument : DocumentsBaseCommand, ISubmitFileRequest, ISubmitFileResult
     {

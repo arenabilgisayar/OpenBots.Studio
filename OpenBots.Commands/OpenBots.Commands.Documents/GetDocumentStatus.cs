@@ -9,8 +9,8 @@ using System.Windows.Forms;
 
 namespace OpenBots.Commands.Documents
 {
+    [Serializable]
     [Category("OpenBots Documents")]
-    [DisplayName("Get Status")]
     [Description("Retrieves the current status of the document being processed. Also allows to wait for the completion.")]
     public class GetDocumentStatus : DocumentsBaseCommand, IGetStatusRequest, IGetStatusResult
     {
@@ -52,7 +52,6 @@ namespace OpenBots.Commands.Documents
         [DisplayName("Is Currently Processing")]
         [Description("Document is currently being processed")]
         public string v_IsCurrentlyProcessing { get; set; } //bool
-
 
         [Category("Output")]
         [DisplayName("Is Successful")]
