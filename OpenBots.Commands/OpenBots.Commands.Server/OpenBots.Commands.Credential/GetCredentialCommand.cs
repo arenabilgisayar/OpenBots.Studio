@@ -2,7 +2,6 @@
 using OpenBots.Core.Command;
 using OpenBots.Core.Enums;
 using OpenBots.Core.Infrastructure;
-using OpenBots.Core.Utilities;
 using OpenBots.Core.Server.API_Methods;
 using OpenBots.Core.Utilities.CommonUtilities;
 using System;
@@ -63,17 +62,17 @@ namespace OpenBots.Commands.Credential
 			var vCredentialName = v_CredentialName.ConvertUserVariableToString(engine);
 
 			var token = AuthMethods.GetAuthToken();
-			//var credential = CredentialMethods.GetCredential(client, $"name eq '{vCredentialName}'");
+            var credential = CredentialMethods.GetCredential(token, $"name eq '{vCredentialName}'");
 
-			//if (credential == null)
-			//	throw new Exception($"No Credential was found for '{vCredentialName}'");
+            if (credential == null)
+                throw new Exception($"No Credential was found for '{vCredentialName}'");
 
-			//string username = credential.UserName;
-			//SecureString password = credential.PasswordSecret.ConvertStringToSecureString();
+            string username = credential.UserName;
+            SecureString password = credential.PasswordSecret.ConvertStringToSecureString();
 
-			//username.StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);
-			//password.StoreInUserVariable(engine, v_OutputUserVariableName2, nameof(v_OutputUserVariableName2), this);
-		}
+            username.StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);
+            password.StoreInUserVariable(engine, v_OutputUserVariableName2, nameof(v_OutputUserVariableName2), this);
+        }
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
 		{

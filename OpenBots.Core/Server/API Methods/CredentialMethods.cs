@@ -1,43 +1,55 @@
 ﻿using Newtonsoft.Json;
 using OpenBots.Core.Server.Models;
+using OpenBots.Server.SDK.Api;
 using RestSharp;
 using RestSharp.Serialization.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using static OpenBots.Core.Server.User.EnvironmentSettings;
+
 
 namespace OpenBots.Core.Server.API_Methods
 {
     public class CredentialMethods
     {
-        public static Credential GetCredential(RestClient client, string filter)
+        public static CredentialsApi apiInstance = new CredentialsApi(serverURL);
+
+        public static Credential GetCredential(string token, string filter)
         {
-            var request = new RestRequest("api/v1/Credentials", Method.GET);
-            request.AddParameter("$filter", filter);
-            request.RequestFormat = DataFormat.Json;
+            apiInstance.Configuration.AccessToken = token;
 
-            var response = client.Execute(request);
+            try
+            {
+                var result = apiInstance.ApiVapiVersionCredentialsGetAsyncWithHttpInfo(apiVersion, filter).Result.Data.Items.FirstOrDefault();
+                var resultJson = JsonConvert.SerializeObject(result);
+                var credential = JsonConvert.DeserializeObject<Credential>(resultJson);
 
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
-
-            var deserializer = new JsonDeserializer();
-            var output = deserializer.Deserialize<Dictionary<string, string>>(response);
-            var items = output["items"];
-            return JsonConvert.DeserializeObject<List<Credential>>(items).FirstOrDefault();
+                return credential;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling CredentialsApi.ApiVapiVersionCredentialsGetAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
         }
 
-        public static void PutCredential(RestClient client, Credential credential)
+        public static void PutCredential(string token, Credential credential)
         {
-            var request = new RestRequest("api/v1/Credentials/{id}", Method.PUT);
-            request.AddUrlSegment("id", credential.Id.ToString());
-            request.RequestFormat = DataFormat.Json;
-            request.AddJsonBody(credential);
+            apiInstance.Configuration.AccessToken = token;
 
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
+            try
+            {
+                var credentialJson = JsonConvert.SerializeObject(credential);
+                var credentialSDK = JsonConvert.DeserializeObject<OpenBots.Server.SDK.Model.Credential>(credentialJson);
+                apiInstance.ApiVapiVersionCredentialsIdPutAsyncWithHttpInfo(credential.Id.ToString(), apiVersion, credentialSDK).Wait();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling CredentialsApi.ApiVapiVersionCredentialsIdPutAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
         }
     }
 }

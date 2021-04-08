@@ -1,24 +1,30 @@
-﻿using RestSharp;
-using System.Net.Http;
+﻿using OpenBots.Server.SDK.Api;
+using System;
+using System.IO;
+using static OpenBots.Core.Server.User.EnvironmentSettings;
 
 namespace OpenBots.Core.Server.API_Methods
 {
     public class AutomationMethods
     {
-        public static void UploadAutomation(RestClient client, string name, string filePath, string automationEngine)
+        public static AutomationsApi apiInstance = new AutomationsApi(serverURL);
+
+        public static void UploadAutomation(string token, string name, string filePath, string automationEngine)
         {
-            var request = new RestRequest("api/v1/Automations", Method.POST);
-            request.RequestFormat = DataFormat.Json;
+            apiInstance.Configuration.AccessToken = token;
 
-            request.AddHeader("Content-Type", "multipart/form-data"); 
-            request.AddFile("File", filePath);
-            request.AddParameter("Name", name);
-            request.AddParameter("AutomationEngine", automationEngine);
-
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
+            try
+            {
+                using (FileStream _file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    apiInstance.ApiVapiVersionAutomationsPostAsyncWithHttpInfo(apiVersion, name, _file, automationEngine).Wait();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling AutomationsApi.ApiVapiVersionAutomationsPostAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
         }
     }
 }

@@ -75,7 +75,7 @@ namespace OpenBots.Core.Server.API_Methods
 
             try
             {
-                using (System.IO.FileStream _file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                using (FileStream _file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
                     apiInstance.ApiVapiVersionAssetsIdUpdatePutAsyncWithHttpInfo(asset.Id.ToString(), apiVersion, asset.Name, asset.Type, null, 0, null, asset.FileId.Value, _file).Wait();
                 }

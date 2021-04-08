@@ -2,7 +2,6 @@
 using OpenBots.Core.Command;
 using OpenBots.Core.Enums;
 using OpenBots.Core.Infrastructure;
-using OpenBots.Core.Utilities;
 using OpenBots.Core.Server.API_Methods;
 using OpenBots.Core.Utilities.CommonUtilities;
 using System;
@@ -64,18 +63,18 @@ namespace OpenBots.Commands.Credential
 			var vCredentialPassword = v_CredentialPassword.ConvertUserVariableToString(engine);
 
 			var token = AuthMethods.GetAuthToken();
-			//var credential = CredentialMethods.GetCredential(client, $"name eq '{vCredentialName}'");
+			var credential = CredentialMethods.GetCredential(token, $"name eq '{vCredentialName}'");
 
-			//if (credential == null)
-			//	throw new Exception($"No Credential was found for '{vCredentialName}'");
+			if (credential == null)
+				throw new Exception($"No Credential was found for '{vCredentialName}'");
 
-			//credential.UserName = vCredentialUsername;
-			//credential.PasswordSecret = vCredentialPassword;
-			
-			//CredentialMethods.PutCredential(client, credential);
-		}
+            credential.UserName = vCredentialUsername;
+            credential.PasswordSecret = vCredentialPassword;
 
-		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
+            CredentialMethods.PutCredential(token, credential);
+        }
+
+        public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
 		{
 			base.Render(editor, commandControls);
 
