@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OpenBots.Commands.Documents.Exceptions;
 using OpenBots.Commands.Documents.Models;
 using RestSharp;

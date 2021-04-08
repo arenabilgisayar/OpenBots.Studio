@@ -2,48 +2,48 @@
 using OpenBots.Core.Command;
 using OpenBots.Core.Infrastructure;
 using OpenBots.Core.Utilities.CommonUtilities;
-using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Windows.Forms;
 
 namespace OpenBots.Commands.Documents
 {
-    [Category("Openbots Documents")]
-    [DisplayName("Compare Tables")]
+    [Category("OpenBots Documents")]
     [Description("Compare two tables cell by cell and reports any mismatches")]
-    public class CompareTables : ScriptCommand
+    public class CompareTablesCommand : ScriptCommand
     {
+        [Required]
         [Category("Input")]
         [DisplayName("Ignore Columns")]
-        [Required]
         [Description("Comma seperated list of all column names that would be IGNORED for comparison in both Tables.")]
 
         public string v_IgnoreColumns { get; set; }
 
+        [Required]
         [Category("Input")]
         [DisplayName("Lookup Columns")]
-        [Required]
         [Description("Comma seperated list of all column names that would be looked up in both Tables.")]
         public string v_LookupColumns { get; set; }
 
+        [Required]
         [Category("Input")]
         [DisplayName("Expected")]
-        [Required]
         [Description("DataTable that has values that are expected.")]
 
         public string v_Expected { get; set; }  //DataTable
 
+        [Required]
         [Category("Input")]
         [DisplayName("Actual")]
-        [Required]
         [Description("DataTable where values need to be looked up for potential mismatches.")]
 
         public string v_Actual { get; set; } //DataTable
 
+        [Required]
         [Category("Output")]
         [DisplayName("Differences")]
-        [Required]
         [Description("Resulting output DataTable that has a report of all matches & mismatches. Columns would be all the Key columns and additionally 'Results' and 'Error' columns to communicate the result. Results would be 'Passed', 'Failed' or 'Error' and Error column would communicate details")]
         public string v_Differences { get; set; } //DataTable
 
@@ -74,6 +74,18 @@ namespace OpenBots.Commands.Documents
             DataTable diff = tcm.Differences;
 
             diff.StoreInUserVariable(engine, v_Differences, nameof(v_Differences), this);
+        }
+
+        public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
+        {
+            base.Render(editor, commandControls);
+
+            return RenderedControls;
+        }
+
+        public override string GetDisplayValue()
+        {
+            return base.GetDisplayValue() + $" []";
         }
     }
 }

@@ -1,37 +1,47 @@
 ﻿using OpenBots.Commands.Documents.Interfaces;
 using OpenBots.Commands.Documents.Library;
 using OpenBots.Commands.Documents.Models;
+using OpenBots.Core.Attributes.PropertyAttributes;
 using OpenBots.Core.Command;
 using OpenBots.Core.Infrastructure;
 using OpenBots.Core.Utilities.CommonUtilities;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Security;
 
 namespace OpenBots.Commands.Documents
 {
-    public abstract class BaseActivity : ScriptCommand, IRequest
+    public abstract class DocumentsBaseCommand : ScriptCommand, IRequest
     {
-        [Category("Input")]
-        [DisplayName("Openbots Documents Username")]
         [Required]
-        [Description("Username for the Openbots Documents Service")]
+        [DisplayName("OpenBots Documents Username")]
+        [Description("Username for the Openbots Documents Service.")]
+        [SampleUsage("OBUser || {vUsername}")]
+        [Remarks("")]
+        [CompatibleTypes(null, true)]
         public string v_Username { get; set; }
 
-        [Category("Input")]
-        [DisplayName("Openbots Documents Password")]
         [Required]
-        [Description("Password for the Openbots Documents Service")]
+        [DisplayName("OpenBots Documents Password")]
+        [Description("Password for the Openbots Documents Service.")]
+        [SampleUsage("{vPassword}")]
+        [Remarks("Password input must be a SecureString variable.")]
+        [CompatibleTypes(new Type[] { typeof(SecureString) })]
         public string v_Password { get; set; }
 
-        [Category("Input")]
-        [DisplayName("Openbots Documents TenantId")]
-        [Description("TenantId for the Openbots Documents Service")]
+        [DisplayName("OpenBots Documents TenantId (Optional)")]
+        [Description("TenantId for the Openbots Documents Service.")]
+        [SampleUsage("12345 || {vTenantId}")]
+        [Remarks("")]
+        [CompatibleTypes(null, true)]
         public string v_TenantId { get; set; } //long?
 
-        [Category("Input")]
-        [DisplayName("Openbots Documents ApiKey")]
-        [Description("ApiKey for the Openbots Documents Service")]
+        [DisplayName("OpenBots Documents ApiKey (Optional)")]
+        [Description("ApiKey for the Openbots Documents Service.")]
+        [SampleUsage("123-456-789 || {vApiKey}")]
+        [Remarks("")]
+        [CompatibleTypes(null, true)]
         public string v_ApiKey { get; set; }
 
         //[Category("Input")]
@@ -39,7 +49,7 @@ namespace OpenBots.Commands.Documents
         //[Description("Proxy Server to use")]
         //public InArgument<string> ProxyServer { get; set; }
 
-        protected DocumentProcessingService CreateService(IAutomationEngineInstance engine)// CodeActivityContext context)
+        protected DocumentProcessingService CreateService(IAutomationEngineInstance engine)
         {
             var vTenantId = v_TenantId.ConvertUserVariableToString(engine);
             var vApiKey = v_ApiKey.ConvertUserVariableToString(engine);
@@ -47,9 +57,7 @@ namespace OpenBots.Commands.Documents
             var ds = new DocumentProcessingService();
 
             if (!string.IsNullOrEmpty(vTenantId))
-            //if (TenantId.Get(context).HasValue)
                 ds.TenantId = long.Parse(vTenantId).ToString();
-
 
             //ds.Proxy = ProxyServer.Get(context);
             ds.ApiKey = vApiKey;
@@ -57,10 +65,10 @@ namespace OpenBots.Commands.Documents
             return ds;
         }
 
-        protected DocumentProcessingService CreateAuthenticatedService(IAutomationEngineInstance engine) ///CodeActivityContext context)
+        protected DocumentProcessingService CreateAuthenticatedService(IAutomationEngineInstance engine)
         {
             var vUsername = v_Username.ConvertUserVariableToString(engine);
-            var vPassword = v_Password.ConvertUserVariableToString(engine);
+            var vPassword = ((SecureString)v_Password.ConvertUserVariableToObject(engine, nameof(v_Password), this)).ConvertSecureStringToString();
 
             DocumentProcessingService ds = CreateService(engine);
             AuthenticationRequest req = new AuthenticationRequest();
@@ -69,7 +77,5 @@ namespace OpenBots.Commands.Documents
             ds.Authenticate(req);
             return ds;
         }
-
     }
-
 }

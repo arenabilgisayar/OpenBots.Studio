@@ -4,17 +4,19 @@ using OpenBots.Commands.Documents.Models;
 using OpenBots.Core.Infrastructure;
 using OpenBots.Core.Utilities.CommonUtilities;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Windows.Forms;
 
 namespace OpenBots.Commands.Documents
 {
 
-    [Category("Openbots Documents")]
+    [Category("OpenBots Documents")]
     [DisplayName("Save Document Results")]
     [Description("Saves the processing results in a file system folder.")]
-    public class SaveDocumentResults : BaseActivity, ISaveRequest, ISaveResult
+    public class SaveDocumentResults : DocumentsBaseCommand, ISaveRequest, ISaveResult
     {
 
         [Category("Input")]
@@ -111,6 +113,24 @@ namespace OpenBots.Commands.Documents
             status.StoreInUserVariable(engine, v_Status, nameof(v_Status), this);
             isCompleted.StoreInUserVariable(engine, v_IsCompleted, nameof(v_IsCompleted), this);
             hasFailed.StoreInUserVariable(engine, v_HasFailedOrError, nameof(v_HasFailedOrError), this);
+        }
+
+        public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
+        {
+            base.Render(editor, commandControls);
+
+            //DocumentsBaseCommand Inputs
+            RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_Username", this, editor));
+            RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_Password", this, editor));
+            RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_TenantId", this, editor));
+            RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_ApiKey", this, editor));
+
+            return RenderedControls;
+        }
+
+        public override string GetDisplayValue()
+        {
+            return base.GetDisplayValue() + $" []";
         }
     }
 }

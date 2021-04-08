@@ -60,11 +60,11 @@
     <Compile Include="Models\ApiAuthenticateModel.cs" />
     <Compile Include="Models\ApiResponse.cs" />
     <Compile Include="Models\AuthenticationResponse.cs" />
-    <Compile Include="BaseActivity.cs" />
+    <Compile Include="DocumentsBaseCommand.cs" />
     <Compile Include="Exceptions\CannotRetrieveQueuesException.cs" />
     <Compile Include="Exceptions\CannotSubmitDocumentToServiceException.cs" />
-    <Compile Include="ChangeStatus.cs" />
-    <Compile Include="CompareTables.cs" />
+    <Compile Include="ChangeStatusCommand.cs" />
+    <Compile Include="CompareTablesCommand.cs" />
     <Compile Include="Models\CreateTaskRequest.cs" />
     <Compile Include="Models\DocumentContentView.cs" />
     <Compile Include="Models\DocumentHeader.cs" />
@@ -91,7 +91,6 @@
     <Compile Include="Models\SubmitDocumentResponse.cs" />
     <Compile Include="Library\TableComparisonManager.cs" />
     <Compile Include="Models\TaskStatusTypes.cs" />
-    <Compile Include="TextXtractorCodeActivity.cs" />
     <Compile Include="Exceptions\UnableToFindQueueException.cs" />
   </ItemGroup>
   <ItemGroup>

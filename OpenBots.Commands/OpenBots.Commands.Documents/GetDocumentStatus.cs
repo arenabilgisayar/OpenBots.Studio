@@ -3,14 +3,16 @@ using OpenBots.Commands.Documents.Library;
 using OpenBots.Core.Infrastructure;
 using OpenBots.Core.Utilities.CommonUtilities;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace OpenBots.Commands.Documents
 {
-    [Category("Openbots Documents")]
+    [Category("OpenBots Documents")]
     [DisplayName("Get Status")]
     [Description("Retrieves the current status of the document being processed. Also allows to wait for the completion.")]
-    public class GetDocumentStatus : BaseActivity, IGetStatusRequest, IGetStatusResult
+    public class GetDocumentStatus : DocumentsBaseCommand, IGetStatusRequest, IGetStatusResult
     {
 
         [Category("Input")]
@@ -102,6 +104,24 @@ namespace OpenBots.Commands.Documents
                 true.StoreInUserVariable(engine, v_HasError, nameof(v_HasError), this);
                 false.StoreInUserVariable(engine, v_IsCurrentlyProcessing, nameof(v_IsCurrentlyProcessing), this);
             }
+        }
+
+        public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
+        {
+            base.Render(editor, commandControls);
+
+            //DocumentsBaseCommand Inputs
+            RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_Username", this, editor));
+            RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_Password", this, editor));
+            RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_TenantId", this, editor));
+            RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_ApiKey", this, editor));
+
+            return RenderedControls;
+        }
+
+        public override string GetDisplayValue()
+        {
+            return base.GetDisplayValue() + $" []";
         }
     }
 }

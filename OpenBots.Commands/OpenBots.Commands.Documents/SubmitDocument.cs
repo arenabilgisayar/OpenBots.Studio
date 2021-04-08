@@ -3,16 +3,18 @@ using OpenBots.Commands.Documents.Library;
 using OpenBots.Core.Infrastructure;
 using OpenBots.Core.Utilities.CommonUtilities;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Windows.Forms;
 
 namespace OpenBots.Commands.Documents
 {
-    [Category("Openbots Documents")]
+    [Category("OpenBots Documents")]
     [DisplayName("Submit Document")]
     [Description("Submits a file for Processing by creating a new Task")]
-    public class SubmitDocument : BaseActivity, ISubmitFileRequest, ISubmitFileResult
+    public class SubmitDocument : DocumentsBaseCommand, ISubmitFileRequest, ISubmitFileResult
     {
 
         [Category("Input")]
@@ -110,6 +112,24 @@ namespace OpenBots.Commands.Documents
 
             humanTaskId.StoreInUserVariable(engine, v_TaskID, nameof(v_TaskID), this);
             status.StoreInUserVariable(engine, v_Status, nameof(v_TaskID), this);
+        }
+
+        public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
+        {
+            base.Render(editor, commandControls);
+
+            //DocumentsBaseCommand Inputs
+            RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_Username", this, editor));
+            RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_Password", this, editor));
+            RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_TenantId", this, editor));
+            RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_ApiKey", this, editor));
+
+            return RenderedControls;
+        }
+
+        public override string GetDisplayValue()
+        {
+            return base.GetDisplayValue() + $" []";
         }
     }
 }
