@@ -16,7 +16,7 @@ namespace OpenBots.Commands.Documents
 {
     [Serializable]
     [Category("OpenBots Documents")]
-    [Description("Compare two tables cell by cell and reports any mismatches")]
+    [Description("This command compares two tables cell by cell and reports any mismatches.")]
     public class CompareTablesCommand : ScriptCommand
     {
         [Required]
@@ -38,7 +38,7 @@ namespace OpenBots.Commands.Documents
         public string v_LookupColumns { get; set; }
 
         [Required]
-        [DisplayName("Expected")]
+        [DisplayName("Expected DataTable")]
         [Description("DataTable that has values that are expected.")]
         [SampleUsage("{vExpectedDT}")]
         [Remarks("")]
@@ -47,7 +47,7 @@ namespace OpenBots.Commands.Documents
         public string v_Expected { get; set; }  //DataTable
 
         [Required]
-        [DisplayName("Actual")]
+        [DisplayName("Actual DataTable")]
         [Description("DataTable where values need to be looked up for potential mismatches.")]
         [SampleUsage("{vActualDT}")]
         [Remarks("")]

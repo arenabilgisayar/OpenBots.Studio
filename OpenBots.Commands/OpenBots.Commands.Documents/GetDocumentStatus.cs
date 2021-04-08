@@ -11,7 +11,7 @@ namespace OpenBots.Commands.Documents
 {
     [Serializable]
     [Category("OpenBots Documents")]
-    [Description("Retrieves the current status of the document being processed. Also allows to wait for the completion.")]
+    [Description("This command retrieves the current status of the document being processed. It can also wait for the document's completion.")]
     public class GetDocumentStatus : DocumentsBaseCommand, IGetStatusRequest, IGetStatusResult
     {
 
@@ -23,7 +23,8 @@ namespace OpenBots.Commands.Documents
         [Category("Input")]
         [DisplayName("Await Completion")]
         [DefaultValue(false)]
-        [Description("Define if the activity should wait until the document processing is completed. Defaults to False. Awaiting queries the service for status every 10 seconds until completed.")]
+        [Description("Define if the activity should wait until the document processing is completed. Defaults to False. " +
+                     "Awaiting queries the service for status every 10 seconds until completed.")]
         public string v_AwaitCompletion { get; set; } //bool
 
         [Category("Input")]

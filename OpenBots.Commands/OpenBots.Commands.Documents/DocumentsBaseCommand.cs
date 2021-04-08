@@ -17,7 +17,7 @@ namespace OpenBots.Commands.Documents
     public abstract class DocumentsBaseCommand : ScriptCommand, IRequest
     {
         [Required]
-        [DisplayName("OpenBots Documents Username")]
+        [DisplayName("Username")]
         [Description("Username for the Openbots Documents Service.")]
         [SampleUsage("OBUser || {vUsername}")]
         [Remarks("")]
@@ -26,7 +26,7 @@ namespace OpenBots.Commands.Documents
         public string v_Username { get; set; }
 
         [Required]
-        [DisplayName("OpenBots Documents Password")]
+        [DisplayName("Password")]
         [Description("Password for the Openbots Documents Service.")]
         [SampleUsage("{vPassword}")]
         [Remarks("Password input must be a SecureString variable.")]
@@ -34,7 +34,7 @@ namespace OpenBots.Commands.Documents
         [CompatibleTypes(new Type[] { typeof(SecureString) })]
         public string v_Password { get; set; }
 
-        [DisplayName("OpenBots Documents TenantId (Optional)")]
+        [DisplayName("TenantId (Optional)")]
         [Description("TenantId for the Openbots Documents Service.")]
         [SampleUsage("12345 || {vTenantId}")]
         [Remarks("")]
@@ -42,7 +42,7 @@ namespace OpenBots.Commands.Documents
         [CompatibleTypes(null, true)]
         public string v_TenantId { get; set; } //long?
 
-        [DisplayName("OpenBots Documents ApiKey (Optional)")]
+        [DisplayName("ApiKey (Optional)")]
         [Description("ApiKey for the Openbots Documents Service.")]
         [SampleUsage("123-456-789 || {vApiKey}")]
         [Remarks("")]

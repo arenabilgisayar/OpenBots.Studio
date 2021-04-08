@@ -2,24 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace OpenBots.Commands.Documents.Library
 {
     public class TableComparisonManager
     {
         public string IgnoreColumns { get; set; }
-
         public string LookupColumns { get; set; }
 
-
         public DataTable Differences = new DataTable();
-
 
         public static DataTable ReadDataTable(string csvPath)
         {
@@ -37,18 +30,16 @@ namespace OpenBots.Commands.Documents.Library
             //}
         }
 
-
         public void Compare(DataTable expected, DataTable actual)
         {
-            List<string> ignoreColumns = IgnoreColumns.Split(new Char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList().Select( s => s.Trim()).ToList();
-            List<string> lookupColumns = LookupColumns.Split(new Char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList().Select(s => s.Trim()).ToList();
+            List<string> ignoreColumns = IgnoreColumns.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList().Select( s => s.Trim()).ToList();
+            List<string> lookupColumns = LookupColumns.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList().Select(s => s.Trim()).ToList();
 
             if(lookupColumns.Contains("Result"))
                 lookupColumns.Remove("Result");
 
             if (lookupColumns.Contains("Error"))
                 lookupColumns.Remove("Error");
-
 
             InitializeDifferences(expected, lookupColumns);
 
@@ -80,17 +71,21 @@ namespace OpenBots.Commands.Documents.Library
 
                     }
                 }
+
                 List<DataRow> actualRows = actual.Select(filterExpression.ToString(), sortExpression.ToString()).ToList();
+
                 if (actualRows.Count() == 0)
                 {
                     AddDiff_RowNotFound(lookupColumns, expectedRow);
                     continue;
                 }
+
                 if (actualRows.Count() > 1)
                 {
                     AddDiff_MultipleRowFound(lookupColumns, expectedRow);
                     continue;
                 }
+
                 DataRow actualRow = actualRows.FirstOrDefault();
                 List<string> columnsMismatch = new List<string>();
 
@@ -117,18 +112,16 @@ namespace OpenBots.Commands.Documents.Library
                 }
 
                 AddDiff_CompareResults(lookupColumns, expectedRow, columnsMismatch);
-
-
             }
         }
 
         private void AddDiff_CompareResults(List<string> lookupColumns, DataRow expectedRow, List<string> mismatchColumns)
         {
             DataRow DiffRow = Differences.NewRow();
+
             foreach (string key in lookupColumns)
-            {
                 DiffRow[key] = expectedRow[key];
-            }
+
             if (mismatchColumns.Count() > 0)
             {
                 DiffRow["Result"] = "Failed";
@@ -138,14 +131,13 @@ namespace OpenBots.Commands.Documents.Library
                 DiffRow["Result"] = "Passed";
 
             Differences.Rows.Add(DiffRow);
-
         }
 
         private bool AreLookupColumnsAvailableInBothTables(List<string> lookupColumns, DataTable expected, DataTable actual)
         {
-            
             List<string> expectedColumnsNotFound = new List<string>();
             List<string> actualColumnsNotFound = new List<string>();
+
             foreach (string key in lookupColumns)
             {
                 if (!expected.Columns.Contains(key))
@@ -157,6 +149,7 @@ namespace OpenBots.Commands.Documents.Library
 
             if (expectedColumnsNotFound.Count() == 0 && actualColumnsNotFound.Count() == 0)
                 return true;
+
             string expectedError = "";
             string actualError = "";
 
@@ -176,40 +169,39 @@ namespace OpenBots.Commands.Documents.Library
         private void AddDiff_MultipleRowFound(List<string> lookupColumns, DataRow expectedRow)
         {
             DataRow DiffRow = Differences.NewRow();
+
             foreach (string key in lookupColumns)
-            {
                 DiffRow[key] = expectedRow[key];
-            }
+
             DiffRow["Result"] = "Failed";
             DiffRow["Error"] = "Incorrect Lookup. More than one row found.";
             Differences.Rows.Add(DiffRow);
-
         }
 
         private void AddDiff_RowNotFound(List<string> keyColumns, DataRow expectedRow)
         {
             DataRow DiffRow = Differences.NewRow();
+
             foreach (string key in keyColumns)
-            {
                 DiffRow[key] = expectedRow[key];
-            }
+
             DiffRow["Result"] = "Failed";
             DiffRow["Error"] = "Row Not Found";
             Differences.Rows.Add(DiffRow);
-
         }
 
         private void InitializeDifferences(DataTable expected, List<string> lookupColumns)
         {
             Differences.TableName = "Differences";
+
             foreach (string key in lookupColumns)
             {
                 Type colType = expected.Columns[key].DataType;
                 Differences.Columns.Add(key, colType);
             }
+
             Differences.Columns.Add("Error", typeof(string));
             Differences.Columns.Add("Result", typeof(string));
-           
         }
     }
 }

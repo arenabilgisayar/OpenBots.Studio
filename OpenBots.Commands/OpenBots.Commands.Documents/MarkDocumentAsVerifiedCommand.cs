@@ -14,7 +14,7 @@ namespace OpenBots.Commands.Documents
 {
     [Serializable]
     [Category("OpenBots Documents")]
-    [Description("Marks a specific document in a bundle as Verfied. Remaining documents typically go for Human Review.")]
+    [Description("This command marks a specific document in a bundle as 'Verfied'. The remaining documents typically go for 'Human Review'.")]
     public class MarkDocumentAsVerifiedCommand : DocumentsBaseCommand
     {
         [Required]

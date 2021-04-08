@@ -11,9 +11,7 @@ namespace OpenBots.Commands.Documents.Library
         private static IDictionary<string, string> BuildMappings()
         {
             var mappings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
-
-                #region Big freaking list of mime types
-            
+                #region Big list of mime types        
                 // maps both ways,
                 // extension -> mime type
                 //   and
@@ -650,7 +648,6 @@ namespace OpenBots.Commands.Documents.Library
                 {".xwd", "image/x-xwindowdump"},
                 {".z", "application/x-compress"},
                 {".zip", "application/zip"},
-
                 {"application/fsharp-script", ".fsx"},
                 {"application/msaccess", ".adp"},
                 {"application/msword", ".doc"},
@@ -701,9 +698,7 @@ namespace OpenBots.Commands.Documents.Library
                 {"video/x-la-asf", ".lsf"},
                 {"video/x-ms-asf", ".asf"},
                 {"x-world/x-vrml", ".xof"},
-
                 #endregion
-
                 };
 
             var cache = mappings.ToList(); // need ToList() to avoid modifying while still enumerating
@@ -711,9 +706,7 @@ namespace OpenBots.Commands.Documents.Library
             foreach (var mapping in cache)
             {
                 if (!mappings.ContainsKey(mapping.Value))
-                {
                     mappings.Add(mapping.Value, mapping.Key);
-                }
             }
 
             return mappings;
@@ -722,14 +715,10 @@ namespace OpenBots.Commands.Documents.Library
         public static string GetMimeType(string extension)
         {
             if (extension == null)
-            {
                 throw new ArgumentNullException("extension");
-            }
 
             if (!extension.StartsWith("."))
-            {
                 extension = "." + extension;
-            }
 
             string mime;
 
@@ -744,29 +733,20 @@ namespace OpenBots.Commands.Documents.Library
         public static string GetExtension(string mimeType, bool throwErrorIfNotFound)
         {
             if (mimeType == null)
-            {
                 throw new ArgumentNullException("mimeType");
-            }
 
             if (mimeType.StartsWith("."))
-            {
                 throw new ArgumentException("Requested mime type is not valid: " + mimeType);
-            }
 
             string extension;
 
             if (_mappings.Value.TryGetValue(mimeType, out extension))
-            {
                 return extension;
-            }
+
             if (throwErrorIfNotFound)
-            {
                 throw new ArgumentException("Requested mime type is not registered: " + mimeType);
-            }
             else
-            {
                 return string.Empty;
-            }
         }
     }
 }

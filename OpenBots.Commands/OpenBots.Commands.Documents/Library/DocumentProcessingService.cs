@@ -35,7 +35,6 @@ namespace OpenBots.Commands.Documents.Library
 
         private const string CreateTaskUrlSegment = "/api/services/app/HumanTasks/CreateOrEdit";
 
-
         public Guid CreateTask(CreateTaskRequest task)
         {
            return Post<Guid>(CreateTaskUrlSegment, task);
@@ -47,9 +46,7 @@ namespace OpenBots.Commands.Documents.Library
             parameters.Add("humanTaskId", taskId.ToString());
             Task.Delay(TimeSpan.FromSeconds(5)).Wait();
             return Get<string>(GetStatusUrlSegment, parameters);
-
         }
-
         public string MarkDocumentAsVerified(Guid taskId, Guid documentId)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
@@ -57,7 +54,6 @@ namespace OpenBots.Commands.Documents.Library
             parameters.Add("documentId", taskId.ToString());
 
             return Post<string>(MarkDocumentAsVerifiedUrlSegment, null, parameters);
-
         }
 
         public void ChangeStatus(Guid taskId, TaskStatusTypes taskStatus)
@@ -67,7 +63,6 @@ namespace OpenBots.Commands.Documents.Library
             parameters.Add("newStatus", taskStatus.ToString());
 
             Post(ChangeStatusUrlSegment, null, parameters);
-
         }
 
         public List<ExtractedDocumentView> GetDocuments(Guid taskId)
@@ -84,7 +79,6 @@ namespace OpenBots.Commands.Documents.Library
             parameters.Add("documentId", documentId.ToString());
             return Get<DocumentContentView>(GetDocumentDataUrlSegment, parameters);
         }
-
 
         public string GetPageText(Guid taskId, Guid documentId, int page)
         {
@@ -105,7 +99,7 @@ namespace OpenBots.Commands.Documents.Library
 
             var imagedata = Convert.FromBase64String(pageDetails);
 
-            Bitmap bmp;
+            //Bitmap bmp;
             Image image;
             using (var ms = new MemoryStream(imagedata))
             {
@@ -116,14 +110,10 @@ namespace OpenBots.Commands.Documents.Library
             return image;
         }
 
-
-
         public Dictionary<string, string> GetQueues()
         {
             return Get<Dictionary<string, string>>(GetQueuesUrlSegment);
-            
         }
-
 
         public string AwaitProcessing(Guid humanTaskId, int timeoutInSeconds = 120)
         {
@@ -135,18 +125,12 @@ namespace OpenBots.Commands.Documents.Library
                 status = GetStatus(humanTaskId);
 
                 if (status == "Processed" || status == "CompletedWithError" || DateTime.Now.Subtract(startTime).TotalSeconds >= timeoutInSeconds)
-                {
                     continueTrying = false;
-                    break;
-                }
                 else
-                {
                     Task.Delay(TimeSpan.FromSeconds(20)).Wait();
-                }
             }
 
             return status;
-
         }
 
         public SubmitDocumentResponse Submit(
@@ -160,10 +144,7 @@ namespace OpenBots.Commands.Documents.Library
             string dueOn = "")
         {
             if (string.IsNullOrEmpty(taskQueueName))
-            {
                 taskQueueName = "Common";
-            }
-
 
             Dictionary<string, string> allQueues = null;
             allQueues = GetQueues();
@@ -181,14 +162,10 @@ namespace OpenBots.Commands.Documents.Library
             var docResponse = SubmitDocument(filePath, taskQueueId, name, description, caseNumber, caseType, assignedTo, dueOn);
 
             if (docResponse == null)
-            {
                 throw new CannotSubmitDocumentToServiceException();
-            }
 
             if (docResponse.humanTaskID == null || string.IsNullOrEmpty(docResponse.humanTaskID))
-            {
                 throw new InvalidDataException("ERROR: Service did not return any TaskID.");
-            }
 
             return docResponse;
         }
@@ -203,7 +180,6 @@ namespace OpenBots.Commands.Documents.Library
                 string assignedTo = "",
                 string dueOn = "")
         {
-
             CreateTaskRequest taskR = new CreateTaskRequest();
 
             if (taskQueueId != null && taskQueueId.HasValue)
@@ -243,10 +219,9 @@ namespace OpenBots.Commands.Documents.Library
 
             var res = client.Post<ApiResponse<SubmitDocumentResponse>>(request);
 
-            validateRespose<SubmitDocumentResponse>(res, "Submit");
+            validateRespose(res, "Submit");
 
             return res.Data.Result;
-            
        }
 
         public DocumentInfo SaveDocumentLocally(Guid humanTaskId, bool awaitCompletion, int timeout, bool savePageText, bool savePageImages, string outputFolder, ref DataTable dataTable, out string status, out bool hasFailed, out bool isCompleted)
@@ -261,9 +236,8 @@ namespace OpenBots.Commands.Documents.Library
 
             // Prepare DataTable if it doesnt have default rows
             if (dataTable == null)
-            {
                 dataTable = new DataTable("ExtractedData");
-            }
+
             if (dataTable != null)
             {
                 datacolumns = dataTable.Columns.Cast<DataColumn>()
@@ -288,21 +262,18 @@ namespace OpenBots.Commands.Documents.Library
                 if (!datacolumns.Contains("IsUnstructured"))
                     dataTable.Columns.Add(new DataColumn("IsUnstructured", typeof(bool)));
 
-
-
                 datacolumns = dataTable.Columns.Cast<DataColumn>()
                                  .Select(x => x.ColumnName).ToList();
-
             }
 
             status = GetStatus(humanTaskId);
-            
 
             if (awaitCompletion)
             {
                 // Await for the document to be processed. This is for synchronous wait.
                 status = AwaitProcessing(humanTaskId, timeout);
             }
+
             // Incase you dont want to wait for the processing, you can call GetStatus and check for status to be 'Processed'
             //string status  = service.GetStatus(humanTaskId).Result;
             if (string.IsNullOrEmpty(status))
@@ -324,23 +295,15 @@ namespace OpenBots.Commands.Documents.Library
             }
 
             if (string.IsNullOrEmpty(outputFolder))
-            {
                 throw new ArgumentNullException($"OutputFolder Directory not found");
-            }
-
 
             if (!Directory.Exists(outputFolder))
-            {
                 Directory.CreateDirectory(outputFolder);
-            }
 
             if (!Directory.Exists(outputFolder))
-            {
                 throw new DirectoryNotFoundException($"Directory {outputFolder} not found");
-            }
 
             DirectoryInfo targetFolder = new DirectoryInfo(outputFolder);
-           
 
             int dociterator = 1;
             foreach (var doc in docs.OrderBy(d => d.Order))
@@ -354,7 +317,6 @@ namespace OpenBots.Commands.Documents.Library
                 docSave.TaskID = humanTaskId;
                 docSave.Header = doc;
                 docSave.Content = docData;
-
 
                 string schemaName = doc.Schema.Replace(Path.DirectorySeparatorChar, '_').Replace("/", "_");
 
@@ -370,12 +332,10 @@ namespace OpenBots.Commands.Documents.Library
                     currentRow["FileName"] = doc.Name;
                     currentRow["TaskId"] = humanTaskId.ToString();
                     currentRow["DocumentId"] = doc.DocumentId.ToString();
-
                     currentRow["Pages"] = doc.PageRangeLabel;
                     currentRow["Schema"] = doc.Schema;
                     currentRow["IsUnstructured"] = true;
                 }
-
 
                 if (!schemaName.ToLowerInvariant().Equals("unstructured", StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -391,21 +351,19 @@ namespace OpenBots.Commands.Documents.Library
 
                             if (dataTable != null)
                             {
-
                                 var exData =  ExtractedContentField.Parse(jsonString);
                                 if (exData != null)
                                 {
                                     foreach (string key in exData.Keys)
                                     {
                                         if(!datacolumns.Contains(key))
-                                        {
                                             dataTable.Columns.Add(new DataColumn(key, typeof(string)));
-                                        }
                                     }
                                 }
 
                                 datacolumns = dataTable.Columns.Cast<DataColumn>()
-                               .Select(x => x.ColumnName).ToList();
+                                                               .Select(x => x.ColumnName)
+                                                               .ToList();
 
                                 if (dataTable != null)
                                 {
@@ -417,19 +375,18 @@ namespace OpenBots.Commands.Documents.Library
                                     currentRow["Pages"] = doc.PageRangeLabel;
                                     currentRow["Schema"] = doc.Schema;
                                     currentRow["IsUnstructured"] = false;
+
                                     foreach (string key in exData.Keys)
-                                    {
                                         currentRow[key] = exData[key].value;
-                                    }
                                 }
-
                             }
-
                         }
-                        catch { }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                        }
                     }
                 }
-
 
                 if (savePageText || savePageImages)
                 {
@@ -444,7 +401,10 @@ namespace OpenBots.Commands.Documents.Library
                                 pageImage = GetPageImage(humanTaskId, doc.DocumentId.Value, page.File.Value);
                                 Task.Delay(TimeSpan.FromSeconds(1)).Wait();
                             }
-                            catch { }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex);
+                            }
 
                             if (pageImage != null)
                             {
@@ -464,7 +424,10 @@ namespace OpenBots.Commands.Documents.Library
                                 pageText = GetPageText(humanTaskId, doc.DocumentId.Value, page.File.Value);
                                 Task.Delay(TimeSpan.FromSeconds(1)).Wait();
                             }
-                            catch { }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex);
+                            }
 
                             if (!string.IsNullOrEmpty(pageText))
                             {
@@ -474,6 +437,7 @@ namespace OpenBots.Commands.Documents.Library
                         }
                     }
                 }
+
                 if (docSave != null)
                 {
                     var docJsonContent = JsonConvert.SerializeObject(docSave, Formatting.Indented);
@@ -495,14 +459,10 @@ namespace OpenBots.Commands.Documents.Library
                 saveJson = docInfoContent;
             }
 
-        
-
             hasFailed = false;
             isCompleted = true;
 
             return docInfo;
         }
-
-
     }
 }

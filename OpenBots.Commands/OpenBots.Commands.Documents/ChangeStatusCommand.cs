@@ -15,20 +15,20 @@ namespace OpenBots.Commands.Documents
 {
     [Serializable]
     [Category("OpenBots Documents")]
-    [Description("Changes the status of the document/task. eg. Change Status to AwaitVerification for Human Review.")]
+    [Description("This command changes the status of the document/task. Eg. Change Status to AwaitVerification for Human Review.")]
     public class ChangeStatusCommand : DocumentsBaseCommand //IGetStatusRequest, IGetStatusResult
     {
         [Required]
-        [DisplayName("TaskID")]
+        [DisplayName("TaskId")]
         [Description("Task Identifier that was provided while submiting the document.")]
         [SampleUsage("1234 || {vTaskId}")]
         [Remarks("")]
         [Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
         [CompatibleTypes(null, true)]
-        public string v_TaskID { get; set; }  //Guid
+        public string v_TaskId { get; set; }  //Guid
 
         [Required]
-        [DisplayName("Status")]
+        [DisplayName("Task Status")]
         [Description("Status to change to.")]
         [SampleUsage("")]
         [Remarks("")]
@@ -47,7 +47,7 @@ namespace OpenBots.Commands.Documents
         public override void RunCommand(object sender)
         {
             var engine = (IAutomationEngineInstance)sender;
-            var vTaskID = Guid.Parse(v_TaskID.ConvertUserVariableToString(engine));
+            var vTaskID = Guid.Parse(v_TaskId.ConvertUserVariableToString(engine));
 
             DocumentProcessingService ds = CreateAuthenticatedService(engine);
 
@@ -64,7 +64,7 @@ namespace OpenBots.Commands.Documents
             RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_TenantId", this, editor));
             RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_ApiKey", this, editor));
 
-            RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_TaskID", this, editor));
+            RenderedControls.AddRange(commandControls.CreateDefaultInputGroupFor("v_TaskId", this, editor));
 
             var terminalKeyNameLabel = commandControls.CreateDefaultLabelFor("v_Status", this);
             var terminalKeyNameComboBox = commandControls.CreateDropdownFor("v_Status", this);
@@ -78,7 +78,7 @@ namespace OpenBots.Commands.Documents
 
         public override string GetDisplayValue()
         {
-            return base.GetDisplayValue() + $" [TaskId '{v_TaskID}' - Status '{v_Status}']";
+            return base.GetDisplayValue() + $" [TaskId '{v_TaskId}' - Task Status '{v_Status}']";
         }
     }
 }

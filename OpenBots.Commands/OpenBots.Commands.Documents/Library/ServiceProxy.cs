@@ -9,40 +9,36 @@ namespace OpenBots.Commands.Documents.Library
 {
     public class ServiceProxy
     {
-        private const string LoginUrlSegment = "api/TokenAuth/Authenticate";
+        public string AccessToken { get; set; }
+        public string MachineName { get; set; }
+        public string ApiKey { get; set; }
+        public string TenantId { get; set; }
+        public string ServiceUrl { get; set; }
+        public string Proxy { get; set; }
+        public int Timeout { get; set; }
+        
         public static string DefaultUserAgent = "ApiClient";
         public static string DefaultHostUrl = "https://dev-api.documents.openbots.io/"; //TODO: Replace with PROD url.
         public static string DefaultTenantResolveKey = "abp.tenantid";
         public static TimeSpan RefreshTokenExpiration = TimeSpan.FromDays(1);
-        public string AccessToken { get; set; }
-
-        public string MachineName { get; set; }
-
-        public string ApiKey { get; set; }
-
-        public string TenantId { get; set; }
-
-        public string ServiceUrl { get; set; }
-
-        public string Proxy { get; set; }
-
-        public int Timeout { get; set; }
+        private const string _loginUrlSegment = "api/TokenAuth/Authenticate";
 
         public ServiceProxy()
         {
             string endpoint = Environment.GetEnvironmentVariable("TEXTXTRACTOR_ENDPOINT", EnvironmentVariableTarget.User);
+
             if (endpoint == null || string.IsNullOrEmpty(endpoint))
                 ServiceUrl = DefaultHostUrl;
             else
                 ServiceUrl = endpoint;
 
             string proxy = Environment.GetEnvironmentVariable("TEXTXTRACTOR_PROXY", EnvironmentVariableTarget.User);
+
             if (proxy != null && !string.IsNullOrEmpty(proxy))
                 Proxy = proxy;
 
             Timeout = -1;
         }
-
 
         protected virtual O Get<O>(string url, IDictionary<string, string> parameters = null)
         {
@@ -90,7 +86,6 @@ namespace OpenBots.Commands.Documents.Library
             if (response.StatusCode != HttpStatusCode.OK )
                 throw new InvalidOperationException($"{method}:Url didnt return a HTTP 200");
 
-
             if (response.Data == null)
                 throw new InvalidCastException($"{method}:Url didnt return JSON with correct body");
 
@@ -111,7 +106,6 @@ namespace OpenBots.Commands.Documents.Library
             if (!string.IsNullOrEmpty(AccessToken))
                 request.AddHeader("Authorization", $"Bearer {AccessToken}");
 
-
             if (!string.IsNullOrEmpty(MachineName))
                 request.AddHeader("X-MACHINE", MachineName);
 
@@ -121,11 +115,8 @@ namespace OpenBots.Commands.Documents.Library
             if (parameters != null)
             {
                 foreach (var kvp in parameters)
-                {
                     request.AddQueryParameter(kvp.Key, kvp.Value);
-                }
             }
-
 
             return request;
         }
@@ -141,25 +132,25 @@ namespace OpenBots.Commands.Documents.Library
 
             if (!string.IsNullOrEmpty(Proxy))
                 client.Proxy = new WebProxy(Proxy);
+
             return client;
         }
 
         public virtual void Authenticate(AuthenticationRequest request)
         {
-
             string username = Environment.GetEnvironmentVariable("TEXTXTRACTOR_USERNAME", EnvironmentVariableTarget.User);
+
             if (username != null && !string.IsNullOrEmpty(username))
                request.UserNameOrEmailAddress = username;
 
             string password = Environment.GetEnvironmentVariable("TEXTXTRACTOR_PASSWORD", EnvironmentVariableTarget.User);
+
             if (password != null && !string.IsNullOrEmpty(password))
                 request.Password = password;
 
             Task.Delay(TimeSpan.FromSeconds(1)).Wait();
-            AuthenticationResponse response =  Post<AuthenticationResponse>(LoginUrlSegment, request);
+            AuthenticationResponse response =  Post<AuthenticationResponse>(_loginUrlSegment, request);
             AccessToken = response.AccessToken;
         }
-
-
     }
 }

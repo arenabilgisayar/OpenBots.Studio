@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OpenBots.Commands.Documents.Interfaces
+﻿namespace OpenBots.Commands.Documents.Interfaces
 {
     public interface ISubmitFileResult
     {
