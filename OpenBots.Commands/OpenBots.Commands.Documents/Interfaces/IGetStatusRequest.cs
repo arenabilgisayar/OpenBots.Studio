@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Activities;
 
-namespace TextXtractor.Activities
+namespace OpenBots.Commands.Documents.Interfaces
 {
     public interface IGetStatusRequest : IRequest
     {
-        InArgument<Guid> TaskID { get; set; }
+        string v_TaskID { get; set; } //Guid
 
-        InArgument<bool> AwaitCompletion { get; set; }
+        string v_AwaitCompletion { get; set; } //bool
 
-        InArgument<int> TimeoutInSeconds { get; set; }
+        string v_Timeout { get; set; } //int
     }
 }

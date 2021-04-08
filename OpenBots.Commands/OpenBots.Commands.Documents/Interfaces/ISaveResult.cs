@@ -1,11 +1,9 @@
-﻿using System.Activities;
-
-namespace TextXtractor.Activities
+﻿namespace OpenBots.Commands.Documents.Interfaces
 {
     public interface ISaveResult
     {
-        OutArgument<bool> HasFailedOrError { get; set; }
-        OutArgument<bool> IsCompleted { get; set; }
-        OutArgument<string> Status { get; set; }
+        string v_HasFailedOrError { get; set; } //bool
+        string v_IsCompleted { get; set; } //bool
+        string v_Status { get; set; }
     }
 }

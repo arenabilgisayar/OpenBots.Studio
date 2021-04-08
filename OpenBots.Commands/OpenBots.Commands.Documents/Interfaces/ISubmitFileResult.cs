@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Activities;
 
-namespace TextXtractor.Activities
+namespace OpenBots.Commands.Documents.Interfaces
 {
     public interface ISubmitFileResult
     {
-        OutArgument<string> Status { get; set; }
-        OutArgument<Guid> TaskID { get; set; }
+        string v_Status { get; set; }
+        string v_TaskID { get; set; } //Guid
     }
 }

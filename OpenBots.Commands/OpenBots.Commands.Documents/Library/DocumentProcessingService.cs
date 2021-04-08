@@ -1,4 +1,7 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using OpenBots.Commands.Documents.Exceptions;
+using OpenBots.Commands.Documents.Models;
 using RestSharp;
 //using SimpleJson;
 using System;
@@ -9,11 +12,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using TextXtractor.Activities.Model;
-using Newtonsoft.Json.Linq;
 
 namespace OpenBots.Commands.Documents.Library
 {

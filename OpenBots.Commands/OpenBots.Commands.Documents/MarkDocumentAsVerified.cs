@@ -1,10 +1,9 @@
-﻿using System;
-using System.Activities;
-using System.Collections.Generic;
+﻿using OpenBots.Commands.Documents.Library;
+using OpenBots.Core.Infrastructure;
+using OpenBots.Core.Utilities.CommonUtilities;
+using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace OpenBots.Commands.Documents
 {
@@ -16,23 +15,25 @@ namespace OpenBots.Commands.Documents
     {
         [Category("Input")]
         [DisplayName("TaskID")]
-        [RequiredArgument]
+        [Required]
         [Description("Task Identifier that was provided while submiting the document.")]
-        public InArgument<Guid> TaskID { get; set; }
+        public string v_TaskID { get; set; } //Guid
 
 
         [Category("Input")]
         [DisplayName("DocumentID")]
-        [RequiredArgument]
+        [Required]
         [Description("Document Identifier that was provided while retrieve the processing results.")]
-        public InArgument<Guid> DocumentID { get; set; }
+        public string v_DocumentID { get; set; } //Guid
 
-        protected override void Execute(CodeActivityContext context)
+        public override void RunCommand(object sender)
         {
-            DocumentProcessingService service = CreateAuthenticatedService(context);
+            var engine = (IAutomationEngineInstance)sender;
 
-            var humanTaskId = TaskID.Get(context);
-            var docId = DocumentID.Get(context);
+            DocumentProcessingService service = CreateAuthenticatedService(engine);
+
+            var humanTaskId = Guid.Parse(v_TaskID.ConvertUserVariableToString(engine));
+            var docId = Guid.Parse(v_DocumentID.ConvertUserVariableToString(engine));
 
             service.MarkDocumentAsVerified(humanTaskId, docId);
         }

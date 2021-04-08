@@ -1,62 +1,71 @@
-﻿using System;
-using System.Activities;
-using System.Collections.Generic;
+﻿using OpenBots.Commands.Documents.Interfaces;
+using OpenBots.Commands.Documents.Library;
+using OpenBots.Commands.Documents.Models;
+using OpenBots.Core.Command;
+using OpenBots.Core.Infrastructure;
+using OpenBots.Core.Utilities.CommonUtilities;
+using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TextXtractor.Activities.Model;
+using System.ComponentModel.DataAnnotations;
 
 namespace OpenBots.Commands.Documents
 {
-    public abstract class BaseActivity : CodeActivity, IRequest
+    public abstract class BaseActivity : ScriptCommand, IRequest
     {
         [Category("Input")]
         [DisplayName("Openbots Documents Username")]
-        [RequiredArgument]
+        [Required]
         [Description("Username for the Openbots Documents Service")]
-        public InArgument<string> Username { get; set; }
+        public string v_Username { get; set; }
 
         [Category("Input")]
         [DisplayName("Openbots Documents Password")]
-        [RequiredArgument]
+        [Required]
         [Description("Password for the Openbots Documents Service")]
-        public InArgument<string> Password { get; set; }
+        public string v_Password { get; set; }
 
         [Category("Input")]
         [DisplayName("Openbots Documents TenantId")]
         [Description("TenantId for the Openbots Documents Service")]
-        public InArgument<long?> TenantId { get; set; }
+        public string v_TenantId { get; set; } //long?
 
         [Category("Input")]
         [DisplayName("Openbots Documents ApiKey")]
         [Description("ApiKey for the Openbots Documents Service")]
-        public InArgument<string> ApiKey { get; set; }
+        public string v_ApiKey { get; set; }
 
         //[Category("Input")]
         //[DisplayName("Proxy Server")]
         //[Description("Proxy Server to use")]
         //public InArgument<string> ProxyServer { get; set; }
 
-        protected DocumentProcessingService CreateService(CodeActivityContext context)
+        protected DocumentProcessingService CreateService(IAutomationEngineInstance engine)// CodeActivityContext context)
         {
+            var vTenantId = v_TenantId.ConvertUserVariableToString(engine);
+            var vApiKey = v_ApiKey.ConvertUserVariableToString(engine);
+
             var ds = new DocumentProcessingService();
-            if (TenantId.Get(context).HasValue)
-                ds.TenantId = TenantId.Get(context).Value.ToString();
+
+            if (!string.IsNullOrEmpty(vTenantId))
+            //if (TenantId.Get(context).HasValue)
+                ds.TenantId = long.Parse(vTenantId).ToString();
 
 
             //ds.Proxy = ProxyServer.Get(context);
-            ds.ApiKey = ApiKey.Get(context);
+            ds.ApiKey = vApiKey;
             ds.MachineName = Environment.MachineName;
             return ds;
         }
 
-        protected DocumentProcessingService CreateAuthenticatedService(CodeActivityContext context)
+        protected DocumentProcessingService CreateAuthenticatedService(IAutomationEngineInstance engine) ///CodeActivityContext context)
         {
-            DocumentProcessingService ds = CreateService(context);
+            var vUsername = v_Username.ConvertUserVariableToString(engine);
+            var vPassword = v_Password.ConvertUserVariableToString(engine);
+
+            DocumentProcessingService ds = CreateService(engine);
             AuthenticationRequest req = new AuthenticationRequest();
-            req.UserNameOrEmailAddress = Username.Get(context);
-            req.Password = Password.Get(context);
+            req.UserNameOrEmailAddress = vUsername;
+            req.Password = vPassword;
             ds.Authenticate(req);
             return ds;
         }

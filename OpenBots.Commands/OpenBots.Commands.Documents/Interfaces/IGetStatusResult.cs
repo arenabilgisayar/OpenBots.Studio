@@ -1,9 +1,7 @@
-﻿using System.Activities;
-
-namespace TextXtractor.Activities
+﻿namespace OpenBots.Commands.Documents.Interfaces
 {
     public interface IGetStatusResult
     {
-        OutArgument<string> Status { get; set; }
+        string v_Status { get; set; }
     }
 }

@@ -1,13 +1,9 @@
-﻿using RestSharp;
+﻿using OpenBots.Commands.Documents.Models;
+using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Reflection.Emit;
-using System.Security.Authentication;
-using System.Text;
 using System.Threading.Tasks;
-using TextXtractor.Activities.Model;
 
 namespace OpenBots.Commands.Documents.Library
 {

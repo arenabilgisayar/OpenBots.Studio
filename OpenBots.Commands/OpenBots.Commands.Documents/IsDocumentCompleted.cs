@@ -1,32 +1,38 @@
-﻿using System;
-using System.Activities;
-using System.Collections.Generic;
+﻿using OpenBots.Core.Command;
+using OpenBots.Core.Infrastructure;
+using OpenBots.Core.Utilities.CommonUtilities;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OpenBots.Commands.Documents
 {
     [Category("Openbots Documents")]
     [DisplayName("Is Document Completed")]
     [Description("Evaluates Status. Determines if processing is completed based on Status message. Returns Boolean, can use in RetryScope ")]
-    public class IsDocumentCompleted : CodeActivity<bool>
+    public class IsDocumentCompleted : ScriptCommand//CodeActivity<bool>
     {
         [Category("Input")]
         [DisplayName("Document Status")]
         [Description("Status of the task/document submitted for processing. Expect 'Created' or 'InProgress'")]
-        public OutArgument<string> Status { get; set; }
+        public string v_Status { get; set; }
 
-        protected override bool Execute(CodeActivityContext context)
+        [Category("Output")]
+        [DisplayName("Is Document Completed")]
+        [Description("Status of the task/document submitted for processing. Expect 'Created' or 'InProgress'")] //Needs to be edited
+        public string v_IsDocumentCompleted { get; set; } //bool
+
+        public override void RunCommand(object sender)
         {
-            string status =  Status.Get(context);
+            var engine = (IAutomationEngineInstance)sender;
+            
+            string vStatus =  v_Status.ConvertUserVariableToString(engine);
+            bool isDocumentCompleted;
 
-            if (status == "InProgress" || status == "Created")
-            {
-                return false;
-            }
-            return true;
+            if (vStatus == "InProgress" || vStatus == "Created")
+                isDocumentCompleted =  false;
+            else
+                isDocumentCompleted = true;
+
+            isDocumentCompleted.StoreInUserVariable(engine, v_IsDocumentCompleted, nameof(v_IsDocumentCompleted), this);
         }
     }
 }

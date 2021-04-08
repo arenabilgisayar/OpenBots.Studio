@@ -1,12 +1,9 @@
-﻿using System;
-using System.Activities;
-using System.Collections.Generic;
+﻿using OpenBots.Commands.Documents.Interfaces;
+using OpenBots.Commands.Documents.Library;
+using OpenBots.Core.Infrastructure;
+using OpenBots.Core.Utilities.CommonUtilities;
+using System;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 
 namespace OpenBots.Commands.Documents
 {
@@ -19,96 +16,92 @@ namespace OpenBots.Commands.Documents
         [Category("Input")]
         [DisplayName("TaskID")]
         [Description("Task Identifier that was provided while submiting the document.")]
-        public InArgument<Guid> TaskID { get; set; }
+        public string v_TaskID { get; set; }  //Guid
 
         [Category("Input")]
         [DisplayName("Await Completion")]
         [DefaultValue(false)]
         [Description("Define if the activity should wait until the document processing is completed. Defaults to False. Awaiting queries the service for status every 10 seconds until completed.")]
-        public InArgument<bool> AwaitCompletion { get; set; }
+        public string v_AwaitCompletion { get; set; } //bool
 
         [Category("Input")]
         [DisplayName("Timeout (in seconds)")]
         [DefaultValue(120)]
         [Description("Timeout if awaiting for document processing to be completed.")]
-        public InArgument<int> TimeoutInSeconds { get; set; }
+        public string v_Timeout { get; set; } //int Timeout in seconds
 
 
         [Category("Output")]
         [DisplayName("Document Status")]
         [Description("Status of the task/document submitted for processing. Expect 'Created' or 'InProgress'")]
-        public OutArgument<string> Status { get; set; }
+        public string v_Status { get; set; }
 
         [Category("Output")]
         [DisplayName("Is Document Completed")]
         [Description("True if the document has finished Processing")]
-        public OutArgument<bool> IsDocumentCompleted { get; set; }
+        public string v_IsDocumentCompleted { get; set; } //bool
 
         [Category("Output")]
         [DisplayName("Has Error")]
         [Description("Document Processing has errors and couldnt complete.")]
-        public OutArgument<bool> HasError { get; set; }
+        public string v_HasError { get; set; } //bool
 
         [Category("Output")]
         [DisplayName("Is Currently Processing")]
         [Description("Document is currently being processed")]
-        public OutArgument<bool> IsCurrentlyProcessing { get; set; }
+        public string v_IsCurrentlyProcessing { get; set; } //bool
 
 
         [Category("Output")]
         [DisplayName("Is Successful")]
         [Description("Is Document Processing Completed Successfully and read for results data to be read")]
-        public OutArgument<bool> IsSuccessful { get; set; }
+        public string v_IsSuccessful { get; set; } //bool
 
 
-        protected override void Execute(CodeActivityContext context)
+        public override void RunCommand(object sender)
         {
-            DocumentProcessingService ds = CreateAuthenticatedService(context);
+            var engine = (IAutomationEngineInstance)sender;
+            var vTaskID = Guid.Parse(v_TaskID.ConvertUserVariableToString(engine));
+            var vAwaitCompletion = bool.Parse(v_AwaitCompletion.ConvertUserVariableToString(engine));
 
-            Guid taskid = TaskID.Get(context);
-            string status = ds.GetStatus(taskid);
+            DocumentProcessingService ds = CreateAuthenticatedService(engine);
 
-            if(AwaitCompletion.Get(context))
+            string status = ds.GetStatus(vTaskID);
+
+            if(vAwaitCompletion)
             {
-                int timeout = TimeoutInSeconds.Get(context);
-                status = ds.AwaitProcessing(taskid, timeout);
+                int vTimeout = int.Parse(v_Timeout.ConvertUserVariableToString(engine));
+                status = ds.AwaitProcessing(vTaskID, vTimeout);
             }
 
-            Status.Set(context, status);
+            status.StoreInUserVariable(engine, v_Status, nameof(v_Status), this);
 
             if (status == "Processed")
             {
-                IsDocumentCompleted.Set(context, true);
-                HasError.Set(context, false);
-                IsCurrentlyProcessing.Set(context, false);
-                IsSuccessful.Set(context, true);
+                true.StoreInUserVariable(engine, v_IsDocumentCompleted, nameof(v_IsDocumentCompleted), this);
+                false.StoreInUserVariable(engine, v_HasError, nameof(v_HasError), this);
+                false.StoreInUserVariable(engine, v_IsCurrentlyProcessing, nameof(v_IsCurrentlyProcessing), this);
+                true.StoreInUserVariable(engine, v_IsSuccessful, nameof(v_IsSuccessful), this);
             }
             else
             {
-                IsSuccessful.Set(context, false);
-                IsDocumentCompleted.Set(context, false);
+                false.StoreInUserVariable(engine, v_IsSuccessful, nameof(v_IsSuccessful), this);
+                false.StoreInUserVariable(engine, v_IsDocumentCompleted, nameof(v_IsDocumentCompleted), this);
             }
 
             if (status == "InProgress")
             {
-                HasError.Set(context, false);
-                IsCurrentlyProcessing.Set(context, true);
-                IsSuccessful.Set(context, false);
+                false.StoreInUserVariable(engine, v_HasError, nameof(v_HasError), this);
+                true.StoreInUserVariable(engine, v_IsCurrentlyProcessing, nameof(v_IsCurrentlyProcessing), this);
+                false.StoreInUserVariable(engine, v_IsSuccessful, nameof(v_IsSuccessful), this);
             }
 
             if (status == "CompletedWithError")
             {
-                IsDocumentCompleted.Set(context, true);
-                HasError.Set(context, true);
-                IsCurrentlyProcessing.Set(context, false);
+                true.StoreInUserVariable(engine, v_IsDocumentCompleted, nameof(v_IsDocumentCompleted), this);
+                true.StoreInUserVariable(engine, v_HasError, nameof(v_HasError), this);
+                false.StoreInUserVariable(engine, v_IsCurrentlyProcessing, nameof(v_IsCurrentlyProcessing), this);
             }
-
-            
-
         }
     }
-
-
-
-
 }

@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Activities;
 
-namespace TextXtractor.Activities
+namespace OpenBots.Commands.Documents.Interfaces
 {
     public interface ISaveRequest : IRequest
     {
-        InArgument<bool> AwaitCompletion { get; set; }
-        InArgument<Guid> TaskID { get; set; }
-        InArgument<int> TimeoutInSeconds { get; set; }
-        InArgument<string> OutputFolder { get; set; }
-        InArgument<bool> SavePageImages { get; set; }
-        InArgument<bool> SavePageText { get; set; }
+        string v_AwaitCompletion { get; set; } //bool
+        string v_TaskID { get; set; } //Guid
+        string v_Timeout { get; set; } //int
+        string v_OutputFolder { get; set; }
+        string v_SavePageImages { get; set; } //bool
+        string v_SavePageText { get; set; } //bool
     }
 }

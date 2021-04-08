@@ -1,17 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using OpenBots.Commands.Documents.Interfaces;
+using OpenBots.Commands.Documents.Library;
+using OpenBots.Commands.Documents.Models;
+using OpenBots.Core.Infrastructure;
+using OpenBots.Core.Utilities.CommonUtilities;
 using System;
-using System.Activities;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TextXtractor.Activities.Model;
 
 namespace OpenBots.Commands.Documents
 {
@@ -24,101 +19,98 @@ namespace OpenBots.Commands.Documents
 
         [Category("Input")]
         [DisplayName("TaskID")]
-        [RequiredArgument]
+        [Required]
         [Description("Task Identifier that was provided while submiting the document.")]
-        public InArgument<Guid> TaskID { get; set; }
+        public string v_TaskID { get; set; }  //Guid
 
         [Category("Input")]
         [DisplayName("Await Completion")]
         [DefaultValue(false)]
         [Description("Define if the activity should wait until the document processing is completed. Defaults to False. Awaiting queries the service for status every 10 seconds until completed.")]
-        public InArgument<bool> AwaitCompletion { get; set; }
+        public string v_AwaitCompletion { get; set; } //bool
 
         [Category("Input")]
         [DisplayName("Save Page Images")]
         [DefaultValue(false)]
         [Description("Allows the service to download Images of each page.")]
-        public InArgument<bool> SavePageImages { get; set; }
+        public string v_SavePageImages { get; set; } //bool
 
         [Category("Input")]
         [DisplayName("Save Page Text")]
         [DefaultValue(false)]
         [Description("Allows the service to download Text of each page.")]
-        public InArgument<bool> SavePageText { get; set; }
+        public string v_SavePageText { get; set; } //bool
 
         [Category("Input")]
         [DisplayName("Timeout (in seconds)")]
         [DefaultValue(120)]
         [Description("Timeout if awaiting for document processing to be completed.")]
-        public InArgument<int> TimeoutInSeconds { get; set; }
+        public string v_Timeout { get; set; } //int
 
         [Category("Input")]
         [DisplayName("Output Folder")]
         [Description("Folder in which the resulting text and documents are saved.")]
-        [RequiredArgument]
-        public InArgument<string> OutputFolder { get; set; }
+        [Required]
+        public string v_OutputFolder { get; set; }
 
         [Category("Output")]
         [DisplayName("Document Status")]
         [Description("Returns the status of the processing.")]
-        public OutArgument<string> Status { get; set; }
+        public string v_Status { get; set; }
 
         [Category("Output")]
         [DisplayName("Is Document Process Completed")]
         [Description("Returns if the document processing was completed.")]
-        public OutArgument<bool> IsCompleted { get; set; }
+        public string v_IsCompleted { get; set; } //bool
 
         [Category("Output")]
         [DisplayName("Has Failed or Has Errors")]
         [Description("Returns if the document processing has errors or has failed.")]
-        public OutArgument<bool> HasFailedOrError { get; set; }
+        public string v_HasFailedOrError { get; set; } //bool
 
         [Category("Output")]
         [DisplayName("OutputAsJSON")]
         [Description("Returns the documents extracted as an output for this task as a JSON String")]
-        public OutArgument<string> OutputAsJSON { get; set; }
+        public string v_OutputAsJSON { get; set; }
 
         [Category("Output")]
         [DisplayName("OutputAsTable")]
         [Description("Returns the documents extracted as an output for this task as a DataTable. Columns are DocumentNumber (int), Schema (string), PageNumbers (string), Folder (string), DocumentId (string), Confidence (double)")]
-        public OutArgument<DataTable> OutputAsTable { get; set; }
+        public string v_OutputAsTable { get; set; } //DataTable
 
 
         [Category("Output")]
         [DisplayName("DataAsTable")]
         [Description("Appends the data extracted as an output for this task in a DataTable. Columns are TaskId (string), DocumentId (string), DocumentNumber (int), Schema (string), PageNumbers (string), <fields of from all schemas found>. Simply use 'Write CSV' to save these results.")]
-        public InOutArgument<DataTable> DataAsTable { get; set; }
+        public string v_DataAsTable { get; set; } //DataTable
 
-        protected override void Execute(CodeActivityContext context)
+        public override void RunCommand(object sender)
         {
+            var engine = (IAutomationEngineInstance)sender;
 
-            DocumentProcessingService service = CreateAuthenticatedService(context);
+            DocumentProcessingService service = CreateAuthenticatedService(engine);
 
-            var humanTaskId = TaskID.Get(context);
-            bool awaitCompletion = AwaitCompletion.Get(context);
-            int timeout = TimeoutInSeconds.Get(context);
-            bool savePageText = SavePageText.Get(context);
-            bool savePageImages = SavePageImages.Get(context);
-            bool hasFailed = true;
-            bool isCompleted = false;
-            string status = "";
-            string outputFolder = OutputFolder.Get(context);
-            DataTable dataTable = DataAsTable.Get(context);
+            Guid vHumanTaskId = Guid.Parse(v_TaskID.ConvertUserVariableToString(engine));
+            bool vAwaitCompletion = bool.Parse(v_AwaitCompletion.ConvertUserVariableToString(engine));
+            int vTimeout = int.Parse(v_Timeout.ConvertUserVariableToString(engine));
+            bool vSavePageText = bool.Parse(v_SavePageText.ConvertUserVariableToString(engine));
+            bool vSavePageImages = bool.Parse(v_SavePageImages.ConvertUserVariableToString(engine));
+            string vOutputFolder = v_OutputFolder.ConvertUserVariableToString(engine);
+            DataTable vDataTable = (DataTable)v_DataAsTable.ConvertUserVariableToObject(engine, nameof(v_DataAsTable), this);
 
-            DocumentInfo docInfo =  service.SaveDocumentLocally(humanTaskId, awaitCompletion, timeout, savePageText, savePageImages, outputFolder,ref  dataTable, out status, out hasFailed, out isCompleted);
+            
+            DocumentInfo docInfo =  service.SaveDocumentLocally(vHumanTaskId, vAwaitCompletion, vTimeout, vSavePageText, vSavePageImages, vOutputFolder, 
+                                                                ref vDataTable, out string status, out bool hasFailed, out bool isCompleted);
 
-            OutputAsJSON.Set(context, docInfo.SerializeJSON());
-            OutputAsTable.Set(context, docInfo.CreateDataTable());
-            DataAsTable.Set(context, dataTable);
+            var docInfoAsJSON = docInfo.SerializeJSON();
+            var docInfoAsDataTable = docInfo.CreateDataTable();
 
-
-            Status.Set(context, status);
-            IsCompleted.Set(context, isCompleted);
-            HasFailedOrError.Set(context, hasFailed);
+            docInfoAsJSON.StoreInUserVariable(engine, v_OutputAsJSON, nameof(v_OutputAsJSON), this);
+            docInfoAsDataTable.StoreInUserVariable(engine, v_OutputAsTable, nameof(v_OutputAsTable), this);
+            vDataTable.StoreInUserVariable(engine, v_DataAsTable, nameof(v_DataAsTable), this);
+            status.StoreInUserVariable(engine, v_Status, nameof(v_Status), this);
+            isCompleted.StoreInUserVariable(engine, v_IsCompleted, nameof(v_IsCompleted), this);
+            hasFailed.StoreInUserVariable(engine, v_HasFailedOrError, nameof(v_HasFailedOrError), this);
         }
-
-
     }
-
-
 }

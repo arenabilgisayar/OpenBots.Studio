@@ -1,36 +1,33 @@
-﻿using System;
-using System.Activities;
-using System.Collections.Generic;
+﻿using OpenBots.Commands.Documents.Interfaces;
+using OpenBots.Core.Command;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace OpenBots.Commands.Documents
 {
-    public abstract class TextXtractorCodeActivity : CodeActivity, IRequest
+    public abstract class TextXtractorCodeActivity : ScriptCommand, IRequest
     {
         [Category("Input")]
         [DisplayName("Openbots Documents Username")]
-        [RequiredArgument]
+        [Required]
         [Description("Username for the Openbots Documents Service")]
-        public InArgument<string> Username { get; set; }
+        public string v_Username { get; set; }
 
         [Category("Input")]
         [DisplayName("Openbots Documents Password")]
-        [RequiredArgument]
+        [Required]
         [Description("Password for the Openbots Documents Service")]
-        public InArgument<string> Password { get; set; }
+        public string v_Password { get; set; }
 
         [Category("Input")]
         [DisplayName("Openbots Documents TenantId")]
         [Description("TenantId for the Openbots Documents Service")]
-        public InArgument<long?> TenantId { get; set; }
+        public string v_TenantId { get; set; } //long?
 
         [Category("Input")]
         [DisplayName("Openbots Documents ApiKey")]
         [Description("ApiKey for the Openbots Documents Service")]
-        public InArgument<string> ApiKey { get; set; }
+        public string v_ApiKey { get; set; }
 
 
         //protected IDocumentService CreateService(CodeActivityContext context)
