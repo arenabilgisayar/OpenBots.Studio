@@ -3,7 +3,9 @@ using OpenBots.Commands.Documents.Library;
 using OpenBots.Commands.Documents.Models;
 using OpenBots.Core.Attributes.PropertyAttributes;
 using OpenBots.Core.Command;
+using OpenBots.Core.Enums;
 using OpenBots.Core.Infrastructure;
+using OpenBots.Core.Properties;
 using OpenBots.Core.Utilities.CommonUtilities;
 using System;
 using System.ComponentModel;
@@ -19,6 +21,7 @@ namespace OpenBots.Commands.Documents
         [Description("Username for the Openbots Documents Service.")]
         [SampleUsage("OBUser || {vUsername}")]
         [Remarks("")]
+        [Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
         [CompatibleTypes(null, true)]
         public string v_Username { get; set; }
 
@@ -27,6 +30,7 @@ namespace OpenBots.Commands.Documents
         [Description("Password for the Openbots Documents Service.")]
         [SampleUsage("{vPassword}")]
         [Remarks("Password input must be a SecureString variable.")]
+        [Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
         [CompatibleTypes(new Type[] { typeof(SecureString) })]
         public string v_Password { get; set; }
 
@@ -34,6 +38,7 @@ namespace OpenBots.Commands.Documents
         [Description("TenantId for the Openbots Documents Service.")]
         [SampleUsage("12345 || {vTenantId}")]
         [Remarks("")]
+        [Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
         [CompatibleTypes(null, true)]
         public string v_TenantId { get; set; } //long?
 
@@ -41,6 +46,7 @@ namespace OpenBots.Commands.Documents
         [Description("ApiKey for the Openbots Documents Service.")]
         [SampleUsage("123-456-789 || {vApiKey}")]
         [Remarks("")]
+        [Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
         [CompatibleTypes(null, true)]
         public string v_ApiKey { get; set; }
 
@@ -48,6 +54,12 @@ namespace OpenBots.Commands.Documents
         //[DisplayName("Proxy Server")]
         //[Description("Proxy Server to use")]
         //public InArgument<string> ProxyServer { get; set; }
+
+        public DocumentsBaseCommand()
+        {
+            CommandEnabled = false;
+            CommandIcon = Resources.command_files;
+        }
 
         protected DocumentProcessingService CreateService(IAutomationEngineInstance engine)
         {

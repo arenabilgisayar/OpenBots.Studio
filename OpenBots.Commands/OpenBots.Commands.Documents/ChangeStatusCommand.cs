@@ -1,6 +1,7 @@
 ﻿using OpenBots.Commands.Documents.Library;
 using OpenBots.Commands.Documents.Models;
 using OpenBots.Core.Attributes.PropertyAttributes;
+using OpenBots.Core.Enums;
 using OpenBots.Core.Infrastructure;
 using OpenBots.Core.Properties;
 using OpenBots.Core.Utilities.CommonUtilities;
@@ -22,6 +23,7 @@ namespace OpenBots.Commands.Documents
         [Description("Task Identifier that was provided while submiting the document.")]
         [SampleUsage("1234 || {vTaskId}")]
         [Remarks("")]
+        [Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
         [CompatibleTypes(null, true)]
         public string v_TaskID { get; set; }  //Guid
 
