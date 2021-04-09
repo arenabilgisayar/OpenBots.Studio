@@ -224,7 +224,8 @@ namespace OpenBots.Commands.Documents.Library
             return res.Data.Result;
        }
 
-        public DocumentInfo SaveDocumentLocally(Guid humanTaskId, bool awaitCompletion, int timeout, bool savePageText, bool savePageImages, string outputFolder, ref DataTable dataTable, out string status, out bool hasFailed, out bool isCompleted)
+        public DocumentInfo SaveDocumentLocally(Guid humanTaskId, bool awaitCompletion, int timeout, bool savePageText, bool savePageImages, string outputFolder, 
+                                                ref DataTable dataTable, out string status, out bool hasFailed, out bool isCompleted)
         {
             hasFailed = true;
             isCompleted = false;

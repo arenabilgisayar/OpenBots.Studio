@@ -33,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -71,10 +68,16 @@
     <Compile Include="Models\DocumentContentView.cs" />
     <Compile Include="Models\DocumentHeader.cs" />
     <Compile Include="Library\DocumentProcessingService.cs" />
+    <Compile Include="Models\DocumentInfo.cs" />
     <Compile Include="Models\DocumentView.cs" />
+    <Compile Include="Models\ErrorInfo.cs" />
+    <Compile Include="Models\ExtractedContentContainer.cs" />
+    <Compile Include="Models\ExtractedContentDatas.cs" />
+    <Compile Include="Models\ExtractedContentDocument.cs" />
     <Compile Include="Models\ExtractedContentField.cs" />
     <Compile Include="Models\ExtractedDocumentView.cs" />
-    <Compile Include="GetDocumentStatus.cs" />
+    <Compile Include="GetDocumentStatusCommand.cs" />
+    <Compile Include="Models\GetQueueResponse.cs" />
     <Compile Include="Models\GetQueuesResponse.cs" />
     <Compile Include="Interfaces\IGetStatusRequest.cs" />
     <Compile Include="Interfaces\IGetStatusResult.cs" />
@@ -84,6 +87,7 @@
     <Compile Include="MarkDocumentAsVerifiedCommand.cs" />
     <Compile Include="Library\MimeTypeMap.cs" />
     <Compile Include="Models\PageNumber.cs" />
+    <Compile Include="Models\ValidationErrorInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveDocumentResultsCommand.cs" />
     <Compile Include="Library\ServiceProxy.cs" />

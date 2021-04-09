@@ -1,78 +1,77 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OpenBots.Commands.Documents.Models
 {
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.11.0 (Newtonsoft.Json v11.0.0.0)")]
+    [GeneratedCode("NJsonSchema", "10.1.11.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class ExtractedDocumentView
     {
-        [Newtonsoft.Json.JsonProperty("order", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("order", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public int? Order { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("tenantId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("tenantId", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public int? TenantId { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("name", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("numberOfPages", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("numberOfPages", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
         public int? NumberOfPages { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("qualityScore", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("qualityScore", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public double? QualityScore { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("pageRangeLabel", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("pageRangeLabel", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public string PageRangeLabel { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("isVerified", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("isVerified", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
         public bool? IsVerified { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("hasErrors", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("hasErrors", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
         public bool? HasErrors { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("documentClassificationType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("documentClassificationType", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public string DocumentClassificationType { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("isExtractedContentStructured", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("isExtractedContentStructured", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
         public bool? IsExtractedContentStructured { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("schema", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("schema", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public string Schema { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("sessionID", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("sessionID", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public System.Guid? SessionID { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("extractedFileId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("extractedFileId", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public System.Guid? ExtractedFileId { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("organizationUnitId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("organizationUnitId", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public long? OrganizationUnitId { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("documentId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("documentId", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public System.Guid? DocumentId { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("isReadOnly", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("isReadOnly", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
         public bool? IsReadOnly { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("version", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public int? Version { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("entityId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("entityId", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public System.Guid? EntityId { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("pages", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [JsonProperty("pages", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public List<PageNumber> Pages { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? Id { get; set; }
+        [JsonProperty("id", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+        public Guid? Id { get; set; }
 
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+        private IDictionary<string, object> _additionalProperties = new Dictionary<string, object>();
 
-        [Newtonsoft.Json.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        [JsonExtensionData]
+        public IDictionary<string, object> AdditionalProperties
         {
             get { return _additionalProperties; }
             set { _additionalProperties = value; }
@@ -80,14 +79,12 @@ namespace OpenBots.Commands.Documents.Models
 
         public string ToJson()
         {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+            return JsonConvert.SerializeObject(this);
         }
 
         public static ExtractedDocumentView FromJson(string data)
         {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<ExtractedDocumentView>(data);
+            return JsonConvert.DeserializeObject<ExtractedDocumentView>(data);
         }
-
     }
-
 }
