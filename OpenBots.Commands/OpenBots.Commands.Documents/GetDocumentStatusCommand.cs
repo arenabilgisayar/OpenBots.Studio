@@ -14,14 +14,14 @@ using System.Windows.Forms;
 namespace OpenBots.Commands.Documents
 {
     [Serializable]
-    [Category("OpenBots Documents")]
+    [Category("Documents Commands")]
     [Description("This command retrieves the current status of the document being processed. It can also wait for the document's completion.")]
     public class GetDocumentStatusCommand : DocumentsBaseCommand, IGetStatusRequest//, IGetStatusResult
     {
         [Required]
         [DisplayName("TaskId")]
         [Description("Task Identifier that was provided while submiting the document.")]
-        [SampleUsage("1234 || {vTaskId}")]
+        [SampleUsage("13db91cf-1f65-4a14-a1cc-bf7aff751b83 || {vTaskId}")]
         [Remarks("")]
         [Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
         [CompatibleTypes(null, true)]

@@ -15,7 +15,7 @@ using System.Windows.Forms;
 namespace OpenBots.Commands.Documents
 {
     [Serializable]
-    [Category("OpenBots Documents")]
+    [Category("Documents Commands")]
     [Description("This command submits a file for processing by creating a new Task.")]
     public class SubmitDocumentCommand : DocumentsBaseCommand, ISubmitFileRequest//, ISubmitFileResult
     {
@@ -80,10 +80,10 @@ namespace OpenBots.Commands.Documents
 
         [DisplayName("Task Due Date (Optional)")]
         [Description("Due Date for the Task.")]
-        [SampleUsage("{vDueDate}")]
+        [SampleUsage("1/1/2000 || {vDate} || {DateTime.Now}")]
         [Remarks("")]
         [Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
-        [CompatibleTypes(new Type[] { typeof(DateTime) })]
+        [CompatibleTypes(new Type[] { typeof(DateTime), typeof(string) })]
         public string v_DueDate { get; set; } //DateTime
 
         [Required]
@@ -129,8 +129,18 @@ namespace OpenBots.Commands.Documents
             string vCaseType = v_CaseType.ConvertUserVariableToString(engine);
             string vAssignedTo = v_AssignedTo.ConvertUserVariableToString(engine);
 
-            var vDueOn = v_DueDate.ConvertUserVariableToObject(engine, nameof(v_DueDate), this);
-            string vDueOnStr = vDueOn == null ? null : ((DateTime)vDueOn).ToString();
+            dynamic inputDate = v_DueDate.ConvertUserVariableToString(engine);
+            if (inputDate == v_DueDate && inputDate.StartsWith("{") && inputDate.EndsWith("}"))
+                inputDate = v_DueDate.ConvertUserVariableToObject(engine, nameof(v_DueDate), this);
+
+            string vDueOnStr;
+
+            if (inputDate is DateTime)
+                vDueOnStr = ((DateTime)inputDate).ToString();
+            else if (inputDate is string)
+                vDueOnStr = DateTime.Parse((string)inputDate).ToString();
+            else
+                throw new InvalidDataException($"{v_DueDate} is not a valid DateTime");
 
             //Trace.WriteLine($"Processing File {fileToProcess}");
 

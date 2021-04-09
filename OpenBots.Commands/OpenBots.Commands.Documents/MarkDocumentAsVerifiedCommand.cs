@@ -13,7 +13,7 @@ using System.Windows.Forms;
 namespace OpenBots.Commands.Documents
 {
     [Serializable]
-    [Category("OpenBots Documents")]
+    [Category("Documents Commands")]
     [Description("This command marks a specific document in a bundle as 'Verfied'. The remaining documents typically go for 'Human Review'.")]
     public class MarkDocumentAsVerifiedCommand : DocumentsBaseCommand
     {

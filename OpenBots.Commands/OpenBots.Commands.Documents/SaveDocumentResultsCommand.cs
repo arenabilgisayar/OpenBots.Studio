@@ -16,14 +16,14 @@ using System.Windows.Forms;
 namespace OpenBots.Commands.Documents
 {
     [Serializable]
-    [Category("OpenBots Documents")]
+    [Category("Documents Commands")]
     [Description("This command saves the processing results in a file system folder.")]
     public class SaveDocumentResultsCommand : DocumentsBaseCommand, ISaveRequest//, ISaveResult
     {
         [Required]
         [DisplayName("TaskId")]
         [Description("Task Identifier that was provided while submiting the document.")]
-        [SampleUsage("1234 || {vTaskId}")]
+        [SampleUsage("13db91cf-1f65-4a14-a1cc-bf7aff751b83 || {vTaskId}")]
         [Remarks("")]
         [Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
         [CompatibleTypes(null, true)]

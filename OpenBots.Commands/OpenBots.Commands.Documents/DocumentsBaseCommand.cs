@@ -36,7 +36,7 @@ namespace OpenBots.Commands.Documents
 
         [DisplayName("TenantId (Optional)")]
         [Description("TenantId for the Openbots Documents Service.")]
-        [SampleUsage("12345 || {vTenantId}")]
+        [SampleUsage("123456789 || {vTenantId}")]
         [Remarks("")]
         [Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
         [CompatibleTypes(null, true)]
