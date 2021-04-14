@@ -1,4 +1,10 @@
-﻿using OpenBots.Server.SDK.Api;
+﻿using Newtonsoft.Json;
+using OpenBots.Core.Server.Models;
+using RestSharp;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using OpenBots.Server.SDK.Api;
 using System;
 using System.IO;
 using static OpenBots.Core.Server.User.EnvironmentSettings;
@@ -25,6 +31,20 @@ namespace OpenBots.Core.Server.API_Methods
                 throw new InvalidOperationException("Exception when calling AutomationsApi.ApiVapiVersionAutomationsPostAsyncWithHttpInfo: "
                     + ex.Message);
             }
+        }
+
+        public static void UpdateParameters(RestClient client, Guid? automationId, IEnumerable<AutomationParameter> automationParameters)
+        {
+            var request = new RestRequest("api/v1/Automations/{automationId}/UpdateParameters", Method.POST);
+            request.RequestFormat = DataFormat.Json;
+
+            request.AddUrlSegment("automationId", automationId.ToString());
+            request.AddJsonBody(automationParameters);
+
+            var response = client.Execute(request);
+
+            if (!response.IsSuccessful)
+                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
         }
     }
 }
