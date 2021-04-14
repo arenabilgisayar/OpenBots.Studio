@@ -244,12 +244,10 @@
     <Compile Include="Script\ScriptElement.cs" />
     <Compile Include="Script\ScriptObject.cs" />
     <Compile Include="Script\ScriptVariable.cs" />
-    <Compile Include="Server\API Methods\AgentMethods.cs" />
     <Compile Include="Server\API Methods\AssetMethods.cs" />
     <Compile Include="Server\API Methods\AuthMethods.cs" />
     <Compile Include="Server\API Methods\FileMethods.cs" />
     <Compile Include="Server\API Methods\CredentialMethods.cs" />
-    <Compile Include="Server\API Methods\JobMethods.cs" />
     <Compile Include="Server\API Methods\AutomationMethods.cs" />
     <Compile Include="Server\API Methods\QueueItemMethods.cs" />
     <Compile Include="Server\API Methods\QueueMethods.cs" />

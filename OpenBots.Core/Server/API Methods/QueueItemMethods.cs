@@ -1,167 +1,205 @@
 ﻿using Newtonsoft.Json;
 using OpenBots.Core.Server.Models;
-using RestSharp;
-using RestSharp.Serialization.Json;
+using OpenBots.Server.SDK.Api;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
-using IOFile = System.IO.File;
+using static OpenBots.Core.Server.User.EnvironmentSettings;
 
 namespace OpenBots.Core.Server.API_Methods
 {
     public class QueueItemMethods
     {
-        public static QueueItem GetQueueItemById(RestClient client, Guid? queueItemId)
+        public static QueueItemsApi apiInstance = new QueueItemsApi(serverURL);
+        public static QueueItemAttachmentsApi attachmentApiInstance = new QueueItemAttachmentsApi(serverURL);
+
+        public static QueueItem GetQueueItemById(string token, Guid? id)
         {
-            var request = new RestRequest("api/v1/QueueItems/{id}", Method.GET);
-            request.RequestFormat = DataFormat.Json;
-            request.AddUrlSegment("id", queueItemId.ToString());
-            request.AddParameter("id", queueItemId.ToString());
+            apiInstance.Configuration.AccessToken = token;
 
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
-
-            var item = response.Content;
-            return JsonConvert.DeserializeObject<QueueItem>(item);
-        }
-
-        public static QueueItem GetQueueItemByLockTransactionKey(RestClient client, string transactionKey)
-        {
-            var request = new RestRequest("api/v1/QueueItems", Method.GET);
-            request.RequestFormat = DataFormat.Json;
-            request.AddParameter("$filter", $"LockTransactionKey eq guid'{transactionKey}'");
-
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
-
-            var deserializer = new JsonDeserializer();
-            var output = deserializer.Deserialize<Dictionary<string, string>>(response);
-            var items = output["items"];
-            return JsonConvert.DeserializeObject<List<QueueItem>>(items).FirstOrDefault();
-        }
-
-        public static void EnqueueQueueItem(RestClient client, QueueItem queueItem)
-        {
-            var request = new RestRequest("api/v1/QueueItems/Enqueue", Method.POST);
-            request.RequestFormat = DataFormat.Json;
-            request.AddJsonBody(queueItem);
-
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
-        }
-
-        public static void AttachFiles(RestClient client, Guid? queueItemId, string attachments)
-        {
-            var request = new RestRequest("api/v1/QueueItems/{queueItemId}/QueueItemAttachments", Method.POST);
-            request.RequestFormat = DataFormat.Json;
-            request.AddUrlSegment("queueItemId", queueItemId.ToString());
-
-            if (!string.IsNullOrEmpty(attachments))
+            try
             {
-                var splitAttachments = attachments.Split(';');
-                foreach (var vAttachment in splitAttachments)
-                    request.AddFile("files", vAttachment);
+                var result = apiInstance.GetQueueItemAsyncWithHttpInfo(id.ToString(), apiVersion).Result.Data;
+                string queueItemString = JsonConvert.SerializeObject(result);
+                var queueItem = JsonConvert.DeserializeObject<QueueItem>(queueItemString);
+                return queueItem;
             }
-
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling QueueItemsApi.GetQueueItemAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
         }
 
-        public static QueueItem DequeueQueueItem(RestClient client, Guid? agentId, Guid? queueId)
+        public static QueueItem GetQueueItemByLockTransactionKey(string token, string transactionKey)
         {
-            var request = new RestRequest("api/v1/QueueItems/Dequeue", Method.GET);
-            request.RequestFormat = DataFormat.Json;
-            request.AddParameter("agentId", agentId.ToString());
-            request.AddParameter("queueId", queueId.ToString());
+            apiInstance.Configuration.AccessToken = token;
 
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                return null;
-
-            return JsonConvert.DeserializeObject<QueueItem>(response.Content);
+            try
+            {
+                string filter = $"LockTransactionKey eq guid'{transactionKey}'";
+                var result = apiInstance.ApiVapiVersionQueueItemsGetAsyncWithHttpInfo(apiVersion, filter).Result.Data.Items.FirstOrDefault();
+                string queueItemString = JsonConvert.SerializeObject(result);
+                var queueItem = JsonConvert.DeserializeObject<QueueItem>(queueItemString);
+                return queueItem;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling QueueItemsApi.ApiVapiVersionQueueItemsGetAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
         }
 
-        public static void CommitQueueItem(RestClient client, Guid transactionKey)
+        public static void EnqueueQueueItem(string token, QueueItem queueItem)
         {
-            var request = new RestRequest($"api/v1/QueueItems/Commit", Method.PUT);
-            request.RequestFormat = DataFormat.Json;
-            request.AddParameter("transactionKey", transactionKey.ToString(), ParameterType.QueryString);
+            apiInstance.Configuration.AccessToken = token;
 
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
+            try
+            {
+                var queueItemString = JsonConvert.SerializeObject(queueItem);
+                var queueItemSDK = JsonConvert.DeserializeObject<OpenBots.Server.SDK.Model.QueueItem>(queueItemString);
+                apiInstance.ApiVapiVersionQueueItemsEnqueuePostAsyncWithHttpInfo(apiVersion, queueItemSDK).Wait();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling QueueItemsApi.ApiVapiVersionQueueItemsEnqueuePostAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
         }
 
-        public static void RollbackQueueItem(RestClient client, Guid transactionKey, string code, string error, bool isFatal)
+        public static void AttachFiles(string token, Guid? queueItemId, string attachments)
         {
-            var request = new RestRequest($"api/v1/QueueItems/Rollback", Method.PUT);
-            request.RequestFormat = DataFormat.Json;
-            request.AddParameter("transactionKey", transactionKey.ToString(), ParameterType.QueryString);
-            request.AddParameter("errorCode", code, ParameterType.QueryString);
-            request.AddParameter("errorMessage", error, ParameterType.QueryString);
-            request.AddParameter("isFatal", isFatal, ParameterType.QueryString);
+            attachmentApiInstance.Configuration.AccessToken = token;
 
-            var response = client.Execute(request);
+            try
+            {
+                List<FileStream> attachmentsList = new List<FileStream>();
+                if (!string.IsNullOrEmpty(attachments))
+                {
+                    var splitAttachments = attachments.Split(';');
+                    foreach (var vAttachment in splitAttachments)
+                    {
+                        FileStream _file = new FileStream(vAttachment, FileMode.Open, FileAccess.Read);
+                        attachmentsList.Add(_file);
+                    }
+                }
 
-            if (response.Content.Contains("failed fatally"))
-                return;
-            else if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
+                attachmentApiInstance.ApiVapiVersionQueueItemsQueueItemIdQueueItemAttachmentsPostAsyncWithHttpInfo(queueItemId.ToString(), apiVersion, attachmentsList).Wait();
+
+                foreach(var file in attachmentsList)
+                {
+                    file.Flush();
+                    file.Dispose();
+                    file.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling QueueItemAttachmentsApi.ApiVapiVersionQueueItemsQueueItemIdQueueItemAttachmentsPostAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
         }
 
-        public static void ExtendQueueItem(RestClient client, Guid transactionKey)
-        {           
-            var request = new RestRequest($"api/v1/QueueItems/Extend", Method.PUT);
-            request.RequestFormat = DataFormat.Json;
-            request.AddParameter("transactionKey", transactionKey.ToString(), ParameterType.QueryString);
-
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
-        }
-
-        public static List<QueueItemAttachment> GetAttachments(RestClient client, Guid? queueItemId)
+        public static QueueItem DequeueQueueItem(string token, string agentId, Guid? queueId)
         {
-            var request = new RestRequest($"api/v1/QueueItems/{queueItemId}/QueueItemAttachments", Method.GET);
-            request.RequestFormat = DataFormat.Json;
+            apiInstance.Configuration.AccessToken = token;
 
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
-
-            var deserializer = new JsonDeserializer();
-            var output = deserializer.Deserialize<Dictionary<string, string>>(response);
-            var items = output["items"];
-            return JsonConvert.DeserializeObject<List<QueueItemAttachment>>(items);
+            try
+            {
+                var result = apiInstance.ApiVapiVersionQueueItemsDequeueGetAsyncWithHttpInfo(apiVersion, agentId, queueId.ToString()).Result.Data;
+                //may have to map here since result returns a view model
+                var queueItemString = JsonConvert.SerializeObject(result);
+                var queueItem = JsonConvert.DeserializeObject<QueueItem>(queueItemString);
+                return queueItem;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling QueueItemsApi.ApiVapiVersionQueueItemsDequeueGetAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
         }
 
-        public static void DownloadFile(RestClient client, QueueItemAttachment attachment, string directoryPath)
+        public static void CommitQueueItem(string token, Guid transactionKey)
         {
-            //var file = FileMethods.GetFile(client, attachment.FileId);
-            var request = new RestRequest($"api/v1/QueueItems/{attachment.QueueItemId}/QueueItemAttachments/{attachment.Id}/Export", Method.GET);
-            request.RequestFormat = DataFormat.Json;
+            apiInstance.Configuration.AccessToken = token;
 
-            var response = client.Execute(request);
+            try
+            {
+                apiInstance.ApiVapiVersionQueueItemsCommitPutAsyncWithHttpInfo(apiVersion, transactionKey.ToString()).Wait();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling QueueItemsApi.ApiVapiVersionQueueItemsCommitPutAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
+        }
 
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
+        public static void RollbackQueueItem(string token, Guid transactionKey, string code, string error, bool isFatal)
+        {
+            apiInstance.Configuration.AccessToken = token;
 
-            byte[] fileBytes = response.RawBytes;
-            //IOFile.WriteAllBytes(Path.Combine(directoryPath, file.Name), fileBytes);
+            try
+            {
+                apiInstance.ApiVapiVersionQueueItemsRollbackPutAsyncWithHttpInfo(apiVersion, transactionKey.ToString(), code, error, isFatal).Wait();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling QueueItemsApi.ApiVapiVersionQueueItemsRollbackPutAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
+        }
+
+        public static void ExtendQueueItem(string token, Guid transactionKey)
+        {
+            apiInstance.Configuration.AccessToken = token;
+
+            try
+            {
+                apiInstance.ApiVapiVersionQueueItemsExtendPutAsyncWithHttpInfo(apiVersion, transactionKey.ToString()).Wait();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling QueueItemsApi.ApiVapiVersionQueueItemsExtendPutAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
+        }
+
+        public static List<QueueItemAttachment> GetAttachments(string token, Guid? queueItemId)
+        {
+            attachmentApiInstance.Configuration.AccessToken = token;
+
+            try
+            {
+                var attachments = attachmentApiInstance.ApiVapiVersionQueueItemsQueueItemIdQueueItemAttachmentsGetAsyncWithHttpInfo(queueItemId.ToString(), apiVersion).Result.Data.Items;
+                var listString = JsonConvert.SerializeObject(attachments);
+                var attachmentsList = JsonConvert.DeserializeObject<List<QueueItemAttachment>>(listString);
+
+                return attachmentsList;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling QueueItemAttachmentsApi.GetQueueItemAttachmentsAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
+        }
+
+        public static void DownloadFile(string token, QueueItemAttachment attachment, string directoryPath)
+        {
+            attachmentApiInstance.Configuration.AccessToken = token;
+
+            try
+            {
+                var file = FileMethods.GetFile(token, attachment.FileId);
+                MemoryStream response = attachmentApiInstance.ExportQueueItemAttachmentAsyncWithHttpInfo(attachment.Id.ToString(), apiVersion, attachment.QueueItemId.ToString()).Result.Data;
+                byte[] fileArray = response.ToArray();
+                System.IO.File.WriteAllBytes(Path.Combine(directoryPath, file.Name), fileArray);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling QueueItemAttachmentsApi.ExportQueueItemAttachmentAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
         }
     }
 }

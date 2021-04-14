@@ -10,21 +10,6 @@ namespace OpenBots.Core.Server.API_Methods
     {
         public static FilesApi apiInstance = new FilesApi(serverURL);
 
-        //public static void DownloadFile(RestClient client, Guid? fileID, string directoryPath, string fileName)
-        //{
-        //    var request = new RestRequest("api/v1/Files/{id}/download", Method.GET);
-        //    request.AddUrlSegment("id", fileID.ToString());
-        //    request.RequestFormat = DataFormat.Json;
-
-        //    var response = client.Execute(request);
-
-        //    if (!response.IsSuccessful)
-        //        throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
-
-        //    byte[] file = response.RawBytes;
-        //    File.WriteAllBytes(Path.Combine(directoryPath, fileName), file);
-        //}
-
         public static FileModel GetFile(string token, Guid? id)
         {
             apiInstance.Configuration.AccessToken = token;

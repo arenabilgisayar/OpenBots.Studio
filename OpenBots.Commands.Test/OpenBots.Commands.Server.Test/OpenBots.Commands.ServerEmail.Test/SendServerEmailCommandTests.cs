@@ -34,7 +34,7 @@ namespace OpenBots.Commands.ServerEmail.Test
             string email = filePath + @"Download\" + $"{subject}.msg";
 
             //Send Server email with no account name (gets default email account)
-            _sendServerEmail.v_AccountName = "";
+            _sendServerEmail.v_AccountName = "NicolePersonalTest";
             _sendServerEmail.v_ToRecipients = "openbots.test.1@outlook.com";
             _sendServerEmail.v_CCRecipients = "";
             _sendServerEmail.v_BCCRecipients = "";
@@ -69,7 +69,7 @@ namespace OpenBots.Commands.ServerEmail.Test
             string subject = "Multiple Attachments";
             string email = filePath + @"Download\" + $"{subject}.msg";
 
-            _sendServerEmail.v_AccountName = "";
+            _sendServerEmail.v_AccountName = "NicolePersonalTest";
             _sendServerEmail.v_ToRecipients = "openbots.test.1@outlook.com";
             _sendServerEmail.v_CCRecipients = "";
             _sendServerEmail.v_BCCRecipients = "";
@@ -103,7 +103,7 @@ namespace OpenBots.Commands.ServerEmail.Test
             string subject = "No Attachments";
             string email = filePath + @"Download\" + $"{subject}.msg";
 
-            _sendServerEmail.v_AccountName = "";
+            _sendServerEmail.v_AccountName = "NicolePersonalTest";
             _sendServerEmail.v_ToRecipients = "openbots.test.1@outlook.com";
             _sendServerEmail.v_CCRecipients = "";
             _sendServerEmail.v_BCCRecipients = "";
@@ -132,7 +132,7 @@ namespace OpenBots.Commands.ServerEmail.Test
             string subject = "Account Name";
             string email = filePath + @"Download\" + $"{subject}.msg";
 
-            _sendServerEmail.v_AccountName = "Nicole-Accounts";
+            _sendServerEmail.v_AccountName = "NicolePersonalTest";
             _sendServerEmail.v_ToRecipients = "openbots.test.1@outlook.com";
             _sendServerEmail.v_CCRecipients = "";
             _sendServerEmail.v_BCCRecipients = "";
@@ -160,7 +160,7 @@ namespace OpenBots.Commands.ServerEmail.Test
             string subject = "One CC";
             string email = filePath + @"Download\" + $"{subject}.msg";
 
-            _sendServerEmail.v_AccountName = "";
+            _sendServerEmail.v_AccountName = "NicolePersonalTest";
             _sendServerEmail.v_ToRecipients = "openbots.test.2@outlook.com";
             _sendServerEmail.v_CCRecipients = "openbots.test.1@outlook.com";
             _sendServerEmail.v_BCCRecipients = "";
@@ -189,7 +189,7 @@ namespace OpenBots.Commands.ServerEmail.Test
             string subject = "One BCC";
             string email = filePath + @"Download\" + $"{subject}.msg";
 
-            _sendServerEmail.v_AccountName = "";
+            _sendServerEmail.v_AccountName = "NicolePersonalTest";
             _sendServerEmail.v_ToRecipients = "openbots.test.2@outlook.com";
             _sendServerEmail.v_CCRecipients = "";
             _sendServerEmail.v_BCCRecipients = "openbots.test.1@outlook.com";
@@ -218,7 +218,7 @@ namespace OpenBots.Commands.ServerEmail.Test
             string subject = "Multiple CC";
             string email = filePath + @"Download\" + $"{subject}.msg";
 
-            _sendServerEmail.v_AccountName = "";
+            _sendServerEmail.v_AccountName = "NicolePersonalTest";
             _sendServerEmail.v_ToRecipients = "openbots.test.2@outlook.com";
             _sendServerEmail.v_CCRecipients = "openbots.test@outlook.com;openbots.test.1@outlook.com";
             _sendServerEmail.v_BCCRecipients = "";
@@ -247,7 +247,7 @@ namespace OpenBots.Commands.ServerEmail.Test
             string subject = "Multiple BCC";
             string email = filePath + @"Download\" + $"{subject}.msg";
 
-            _sendServerEmail.v_AccountName = "";
+            _sendServerEmail.v_AccountName = "NicolePersonalTest";
             _sendServerEmail.v_ToRecipients = "openbots.test.2@outlook.com";
             _sendServerEmail.v_CCRecipients = "";
             _sendServerEmail.v_BCCRecipients = "openbots.test@outlook.com;openbots.test.1@outlook.com";

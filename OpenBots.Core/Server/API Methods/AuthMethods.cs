@@ -37,13 +37,12 @@ namespace OpenBots.Core.Server.API_Methods
                 JObject jsonObj = JObject.Parse(result.Replace("[]", "null"));
                 Dictionary<string, string> resultDict = jsonObj.ToObject<Dictionary<string, string>>();
                 token = resultDict["token"].ToString();
+                return token;
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException("Exception when calling AuthApi.ApiVapiVersionAuthTokenPostAsync: " + ex.Message);
             }
-
-            return token;
         }
     }
 }

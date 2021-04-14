@@ -120,7 +120,7 @@ namespace OpenBots.Commands.ServerEmail
                 throw new NullReferenceException("To Recipient(s) cannot be empty");
 
             var token = AuthMethods.GetAuthToken();
-            //ServerEmailMethods.SendServerEmail(client, emailMessage, vAttachments, vAccountName);
+            ServerEmailMethods.SendServerEmail(token, emailMessage, vAttachments, vAccountName);
         }
 
         public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)

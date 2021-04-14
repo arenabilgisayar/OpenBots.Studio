@@ -50,7 +50,7 @@ namespace OpenBots.Commands.QueueItem
 			if (transactionKey == null || transactionKey == Guid.Empty)
 				throw new NullReferenceException($"Transaction key {transactionKey} is invalid or not found");
 
-			//QueueItemMethods.ExtendQueueItem(client, transactionKey);
+			QueueItemMethods.ExtendQueueItem(token, transactionKey);
 		}
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)

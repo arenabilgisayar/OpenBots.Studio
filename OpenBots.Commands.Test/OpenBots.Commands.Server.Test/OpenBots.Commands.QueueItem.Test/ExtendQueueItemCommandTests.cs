@@ -44,16 +44,16 @@ namespace OpenBots.Commands.QueueItem.Test
             var queueItemDict = (Dictionary<string, object>)"{output}".ConvertUserVariableToObject(_engine, typeof(Dictionary<,>));
             var transactionKey = queueItemDict["LockTransactionKey"].ToString();
             var token = AuthMethods.GetAuthToken();
-            //var queueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(client, transactionKey);
+            var queueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(token, transactionKey);
 
-            //_extendQueueItem.v_QueueItem = "{vQueueItem}";
-            //queueItemDict.StoreInUserVariable(_engine, _extendQueueItem.v_QueueItem, typeof(Dictionary<,>));
+            _extendQueueItem.v_QueueItem = "{vQueueItem}";
+            queueItemDict.StoreInUserVariable(_engine, _extendQueueItem.v_QueueItem, typeof(Dictionary<,>));
 
-            //_extendQueueItem.RunCommand(_engine);
+            _extendQueueItem.RunCommand(_engine);
 
-            //var extendedQueueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(client, transactionKey);
+            var extendedQueueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(token, transactionKey);
 
-            //Assert.True(queueItem.LockedUntilUTC < extendedQueueItem.LockedUntilUTC);
+            Assert.True(queueItem.LockedUntilUTC < extendedQueueItem.LockedUntilUTC);
         }
 
         [Fact]

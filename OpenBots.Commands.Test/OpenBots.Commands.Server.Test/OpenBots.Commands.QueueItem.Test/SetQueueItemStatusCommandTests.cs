@@ -26,18 +26,18 @@ namespace OpenBots.Commands.QueueItem.Test
 
             var token = AuthMethods.GetAuthToken();
             var transactionKey = queueItemDict["LockTransactionKey"].ToString();
-            //var queueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(client, transactionKey);
+            var queueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(token, transactionKey);
 
-            //VariableMethods.CreateTestVariable(null, _engine, "vQueueItem", typeof(Dictionary<,>));
-            //_setQueueItem.v_QueueItem = "{vQueueItem}";
-            //queueItemDict.StoreInUserVariable(_engine, _setQueueItem.v_QueueItem, typeof(Dictionary<,>));
-            //_setQueueItem.v_QueueItemStatusType = "Successful";
+            VariableMethods.CreateTestVariable(null, _engine, "vQueueItem", typeof(Dictionary<,>));
+            _setQueueItem.v_QueueItem = "{vQueueItem}";
+            queueItemDict.StoreInUserVariable(_engine, _setQueueItem.v_QueueItem, typeof(Dictionary<,>));
+            _setQueueItem.v_QueueItemStatusType = "Successful";
 
-            //_setQueueItem.RunCommand(_engine);
+            _setQueueItem.RunCommand(_engine);
 
-            //queueItem = QueueItemMethods.GetQueueItemById(client, queueItem.Id);
+            queueItem = QueueItemMethods.GetQueueItemById(token, queueItem.Id);
 
-            //Assert.Equal("Success", queueItem.State);
+            Assert.Equal("Success", queueItem.State);
         }
 
         [Fact]
@@ -51,19 +51,19 @@ namespace OpenBots.Commands.QueueItem.Test
             var queueItemDict = WorkQueueItem();
 
             var token = AuthMethods.GetAuthToken();
-            //var transactionKey = queueItemDict["LockTransactionKey"].ToString();
-            //var queueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(client, transactionKey);
+            var transactionKey = queueItemDict["LockTransactionKey"].ToString();
+            var queueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(token, transactionKey);
 
-            //VariableMethods.CreateTestVariable(null, _engine, "vQueueItem", typeof(Dictionary<,>));
-            //_setQueueItem.v_QueueItem = "{vQueueItem}";
-            //queueItemDict.StoreInUserVariable(_engine, _setQueueItem.v_QueueItem, typeof(Dictionary<,>));
-            //_setQueueItem.v_QueueItemStatusType = "Failed - Should Retry";
+            VariableMethods.CreateTestVariable(null, _engine, "vQueueItem", typeof(Dictionary<,>));
+            _setQueueItem.v_QueueItem = "{vQueueItem}";
+            queueItemDict.StoreInUserVariable(_engine, _setQueueItem.v_QueueItem, typeof(Dictionary<,>));
+            _setQueueItem.v_QueueItemStatusType = "Failed - Should Retry";
 
-            //_setQueueItem.RunCommand(_engine);
+            _setQueueItem.RunCommand(_engine);
 
-            //queueItem = QueueItemMethods.GetQueueItemById(client, queueItem.Id);
+            queueItem = QueueItemMethods.GetQueueItemById(token, queueItem.Id);
 
-            //Assert.Equal("New", queueItem.State);
+            Assert.Equal("New", queueItem.State);
         }
 
         [Fact]
@@ -78,18 +78,18 @@ namespace OpenBots.Commands.QueueItem.Test
 
             var token = AuthMethods.GetAuthToken();
             var transactionKey = queueItemDict["LockTransactionKey"].ToString();
-            //var queueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(client, transactionKey);
+            var queueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(token, transactionKey);
 
-            //VariableMethods.CreateTestVariable(null, _engine, "vQueueItem", typeof(Dictionary<,>));
-            //_setQueueItem.v_QueueItem = "{vQueueItem}";
-            //queueItemDict.StoreInUserVariable(_engine, _setQueueItem.v_QueueItem, typeof(Dictionary<,>));
-            //_setQueueItem.v_QueueItemStatusType = "Failed - Fatal";
+            VariableMethods.CreateTestVariable(null, _engine, "vQueueItem", typeof(Dictionary<,>));
+            _setQueueItem.v_QueueItem = "{vQueueItem}";
+            queueItemDict.StoreInUserVariable(_engine, _setQueueItem.v_QueueItem, typeof(Dictionary<,>));
+            _setQueueItem.v_QueueItemStatusType = "Failed - Fatal";
 
-            //_setQueueItem.RunCommand(_engine);
+            _setQueueItem.RunCommand(_engine);
 
-            //queueItem = QueueItemMethods.GetQueueItemById(client, queueItem.Id);
+            queueItem = QueueItemMethods.GetQueueItemById(token, queueItem.Id);
 
-            //Assert.Equal("Failed", queueItem.State);
+            Assert.Equal("Failed", queueItem.State);
         }
 
         [Fact]

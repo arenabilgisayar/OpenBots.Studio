@@ -1,30 +1,32 @@
 ﻿using Newtonsoft.Json;
 using OpenBots.Core.Server.Models;
-using RestSharp;
-using RestSharp.Serialization.Json;
-using System.Collections.Generic;
+using OpenBots.Server.SDK.Api;
+using System;
 using System.Linq;
-using System.Net.Http;
+using static OpenBots.Core.Server.User.EnvironmentSettings;
 
 namespace OpenBots.Core.Server.API_Methods
 {
     public class QueueMethods
     {
-        public static Queue GetQueue(RestClient client, string filter)
+        public static QueuesApi apiInstance = new QueuesApi(serverURL);
+
+        public static Queue GetQueue(string token, string filter)
         {
-            var request = new RestRequest("api/v1/Queues", Method.GET);
-            request.AddParameter("$filter", filter);
-            request.RequestFormat = DataFormat.Json;
+            apiInstance.Configuration.AccessToken = token;
 
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
-
-            var deserializer = new JsonDeserializer();
-            var output = deserializer.Deserialize<Dictionary<string, string>>(response);
-            var items = output["items"];
-            return JsonConvert.DeserializeObject<List<Queue>>(items).FirstOrDefault();
+            try
+            {
+                var result = apiInstance.ApiVapiVersionQueuesGetAsyncWithHttpInfo(apiVersion, filter).Result.Data.Items.FirstOrDefault();
+                string queueString = JsonConvert.SerializeObject(result);
+                var queue = JsonConvert.DeserializeObject<Queue>(queueString);
+                return queue;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling QueuesApi.ApiVapiVersionQueuesGetAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
         }
     }
 }

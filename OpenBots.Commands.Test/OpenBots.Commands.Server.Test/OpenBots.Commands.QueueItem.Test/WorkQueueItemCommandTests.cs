@@ -43,9 +43,9 @@ namespace OpenBots.Commands.QueueItem.Test
 
             var queueItemObject = (Dictionary<string, object>)"{output}".ConvertUserVariableToObject(_engine, typeof(Dictionary<,>));
             var token = AuthMethods.GetAuthToken();
-            //var queueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(client, queueItemObject["LockTransactionKey"].ToString());
+            var queueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(token, queueItemObject["LockTransactionKey"].ToString());
 
-            //Assert.Equal("InProgress", queueItem.State);
+            Assert.Equal("InProgress", queueItem.State);
         }
 
         [Fact]
@@ -83,12 +83,12 @@ namespace OpenBots.Commands.QueueItem.Test
             var vQueueItem = JsonConvert.DeserializeObject<QueueItemModel>(queueItemString);
 
             var token = AuthMethods.GetAuthToken();
-            //var queueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(client, vQueueItem.LockTransactionKey.ToString());
+            var queueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(token, vQueueItem.LockTransactionKey.ToString());
 
-            //Assert.Equal("InProgress", queueItem.State);
-            //Assert.True(File.Exists(attachment));
+            Assert.Equal("InProgress", queueItem.State);
+            Assert.True(File.Exists(attachment));
 
-            //File.Delete(attachment);
+            File.Delete(attachment);
         }
 
         [Fact]
@@ -129,14 +129,14 @@ namespace OpenBots.Commands.QueueItem.Test
             var vQueueItem = JsonConvert.DeserializeObject<QueueItemModel>(queueItemString);
 
             var token = AuthMethods.GetAuthToken();
-            //var queueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(client, vQueueItem.LockTransactionKey.ToString());
+            var queueItem = QueueItemMethods.GetQueueItemByLockTransactionKey(token, vQueueItem.LockTransactionKey.ToString());
 
-            //Assert.Equal("InProgress", queueItem.State);
-            //Assert.True(File.Exists(attachment1));
-            //Assert.True(File.Exists(attachment2));
+            Assert.Equal("InProgress", queueItem.State);
+            Assert.True(File.Exists(attachment1));
+            Assert.True(File.Exists(attachment2));
 
-            //File.Delete(attachment1);
-            //File.Delete(attachment2);
+            File.Delete(attachment1);
+            File.Delete(attachment2);
         }
 
         [Fact]
@@ -145,13 +145,16 @@ namespace OpenBots.Commands.QueueItem.Test
             _engine = new AutomationEngineInstance(null);
             _addQueueItem = new AddQueueItemCommand();
             _workQueueItem = new WorkQueueItemCommand();
+            
+            var textValue = "{ \"text\": \"testText\" }";
             VariableMethods.CreateTestVariable(null, _engine, "output", typeof(Dictionary<,>));
+            VariableMethods.CreateTestVariable(textValue, _engine, "textValue", typeof(string));
 
             _addQueueItem.v_QueueName = "UnitTestQueue";
             _addQueueItem.v_QueueItemName = "WorkQueueItemJsonTest";
             _addQueueItem.v_QueueItemType = "Json";
             _addQueueItem.v_JsonType = "Test Type";
-            _addQueueItem.v_QueueItemTextValue = "{'text':'testText'}";
+            _addQueueItem.v_QueueItemTextValue = "{textValue}";
             _addQueueItem.v_Priority = "10";
 
             _addQueueItem.RunCommand(_engine);

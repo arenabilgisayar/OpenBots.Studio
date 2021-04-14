@@ -98,52 +98,52 @@ namespace OpenBots.Commands.QueueItem
 			if (string.IsNullOrEmpty(agentId))
 				throw new NullReferenceException("Agent is not connected");
 
-			//Queue queue = QueueMethods.GetQueue(client, $"name eq '{vQueueName}'");
+            Queue queue = QueueMethods.GetQueue(token, $"name eq '{vQueueName}'");
 
-			//if (queue == null)
-			//	throw new DataException($"Queue with name '{vQueueName}' not found");
+            if (queue == null)
+                throw new DataException($"Queue with name '{vQueueName}' not found");
 
-			//var queueItem = QueueItemMethods.DequeueQueueItem(client, Guid.Parse(agentId), queue.Id);
+            var queueItem = QueueItemMethods.DequeueQueueItem(token, agentId, queue.Id);
 
-			//if (queueItem == null)
-			//{
-			//	queueItemDict = null;
-			//	queueItemDict.StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);
-			//	return;
-			//}
+            if (queueItem == null)
+            {
+                queueItemDict = null;
+                queueItemDict.StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);
+                return;
+            }
 
-			//queueItemDict = queueItem.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public)
-			//								   .ToDictionary(prop => prop.Name, prop => prop.GetValue(queueItem, null));
+            queueItemDict = queueItem.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                                               .ToDictionary(prop => prop.Name, prop => prop.GetValue(queueItem, null));
 
-			//queueItemDict = queueItemDict.Where(kvp => kvp.Key == "LockTransactionKey" ||
-			//										   kvp.Key == "Name" ||
-			//										   kvp.Key == "Source" ||
-			//										   kvp.Key == "Event" ||
-			//										   kvp.Key == "Type" ||
-			//										   kvp.Key == "JsonType" ||
-			//										   kvp.Key == "DataJson" ||
-			//										   kvp.Key == "Priority" ||
-			//										   kvp.Key == "LockedUntilUTC")
-			//							 .ToDictionary(i => i.Key, i => i.Value);
+            queueItemDict = queueItemDict.Where(kvp => kvp.Key == "LockTransactionKey" ||
+                                                       kvp.Key == "Name" ||
+                                                       kvp.Key == "Source" ||
+                                                       kvp.Key == "Event" ||
+                                                       kvp.Key == "Type" ||
+                                                       kvp.Key == "JsonType" ||
+                                                       kvp.Key == "DataJson" ||
+                                                       kvp.Key == "Priority" ||
+                                                       kvp.Key == "LockedUntilUTC")
+                                         .ToDictionary(i => i.Key, i => i.Value);
 
-			//queueItemDict.StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);
+            queueItemDict.StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);
 
-			//if (v_SaveAttachments == "Yes")
-			//{
-				
-			//	if (Directory.Exists(vAttachmentDirectory))
-			//	{
-			//		//get all queue item attachments
-			//		var attachments = QueueItemMethods.GetAttachments(client, queueItem.Id);
-			//		//save each attachment in the directory
-			//		foreach (var attachment in attachments)
-			//		{
-			//			//export (save) in appropriate directory
-			//			QueueItemMethods.DownloadFile(client, attachment, vAttachmentDirectory);
-			//		}
-			//	}
-			//}
-		}
+            if (v_SaveAttachments == "Yes")
+            {
+
+                if (Directory.Exists(vAttachmentDirectory))
+                {
+                    //get all queue item attachments
+                    var attachments = QueueItemMethods.GetAttachments(token, queueItem.Id);
+                    //save each attachment in the directory
+                    foreach (var attachment in attachments)
+                    {
+                        //export (save) in appropriate directory
+                        QueueItemMethods.DownloadFile(token, attachment, vAttachmentDirectory);
+                    }
+                }
+            }
+        }
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
 		{

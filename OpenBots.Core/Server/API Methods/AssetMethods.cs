@@ -15,35 +15,30 @@ namespace OpenBots.Core.Server.API_Methods
         public static Asset GetAsset(string token, string assetName, string assetType)
         {
             apiInstance.Configuration.AccessToken = token;
-            var asset = new Asset();
 
             try
             {
                 var result = apiInstance.ApiVapiVersionAssetsGetAssetByNameAssetNameGetAsyncWithHttpInfo(assetName, apiVersion, assetType).Result.Data;
                 string assetString = JsonConvert.SerializeObject(result);
-                asset = JsonConvert.DeserializeObject<Asset>(assetString);
+                var asset = JsonConvert.DeserializeObject<Asset>(assetString);
+                return asset;
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException("Exception when calling AssetsApi.ApiVapiVersionAssetsGetAssetByNameAssetNameGetAsyncWithHttpInfo: "
                     + ex.Message);
             }
-
-            return asset;
         }       
 
-        public static void PutAsset(string token, Asset updatedAsset)
+        public static void PutAsset(string token, Asset asset)
         {
             apiInstance.Configuration.AccessToken = token;
 
             try
             {
-                var asset = new OpenBots.Server.SDK.Model.Asset(updatedAsset.Id, updatedAsset.IsDeleted, updatedAsset.CreatedBy, updatedAsset.CreatedOn,
-                    updatedAsset.DeletedBy, updatedAsset.DeleteOn, updatedAsset.Timestamp, updatedAsset.UpdatedOn, updatedAsset.UpdatedBy, updatedAsset.Name,
-                    updatedAsset.Type, updatedAsset.TextValue, updatedAsset.NumberValue, updatedAsset.JsonValue, updatedAsset.FileId, updatedAsset.SizeInBytes,
-                    updatedAsset.AgentId);
-
-                apiInstance.ApiVapiVersionAssetsIdPutAsyncWithHttpInfo(asset.Id.ToString(), apiVersion, asset).Wait();
+                var assetString = JsonConvert.SerializeObject(asset);
+                var assetSDK = JsonConvert.DeserializeObject<OpenBots.Server.SDK.Model.Asset>(assetString);
+                apiInstance.ApiVapiVersionAssetsIdPutAsyncWithHttpInfo(asset.Id.ToString(), apiVersion, assetSDK).Wait();
             }
             catch (Exception ex)
             {

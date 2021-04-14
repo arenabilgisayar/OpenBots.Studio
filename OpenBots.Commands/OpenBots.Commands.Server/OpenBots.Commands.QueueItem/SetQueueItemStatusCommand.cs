@@ -88,19 +88,19 @@ namespace OpenBots.Commands.QueueItem
 			if (transactionKey == null || transactionKey == Guid.Empty)
 				throw new NullReferenceException($"Transaction key {transactionKey} is invalid or not found");
 
-			//switch (v_QueueItemStatusType)
-			//{
-			//	case "Successful":
-			//		QueueItemMethods.CommitQueueItem(client, transactionKey);
-			//		break;
-			//	case "Failed - Should Retry":
-			//		QueueItemMethods.RollbackQueueItem(client, transactionKey, vQueueItemErrorCode, vQueueItemErrorMessage, false);
-			//		break;
-			//	case "Failed - Fatal":
-			//		QueueItemMethods.RollbackQueueItem(client, transactionKey, vQueueItemErrorCode, vQueueItemErrorMessage, true);
-			//		break;
-			//}
-		}
+            switch (v_QueueItemStatusType)
+            {
+                case "Successful":
+                    QueueItemMethods.CommitQueueItem(token, transactionKey);
+                    break;
+                case "Failed - Should Retry":
+                    QueueItemMethods.RollbackQueueItem(token, transactionKey, vQueueItemErrorCode, vQueueItemErrorMessage, false);
+                    break;
+                case "Failed - Fatal":
+                    QueueItemMethods.RollbackQueueItem(token, transactionKey, vQueueItemErrorCode, vQueueItemErrorMessage, true);
+                    break;
+            }
+        }
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
 		{
