@@ -133,18 +133,21 @@ namespace OpenBots.UI.Supplement_Forms
                 try {
                     lblError.Text = $"Publishing {_projectName} to the server...";
 
-                    var client = AuthMethods.GetAuthToken();
-                    var automation = AutomationMethods.UploadAutomation(client, _projectName, nugetFilePath, _automationEngine);
+                    var token = AuthMethods.GetAuthToken();
+                    var automation = AutomationMethods.UploadAutomation(token, _projectName, nugetFilePath, _automationEngine);
 
-                    IEnumerable<AutomationParameter> automationParameters = _projectArguments.Select(arg => new AutomationParameter()
+                    if (_projectArguments.Count > 0)
                     {
-                        Name = arg.ArgumentName,
-                        DataType = GetServerType(arg.ArgumentType),
-                        Value = arg.ArgumentValue?.ToString(),
-                        AutomationId = automation.Id
-                    });
+                        IEnumerable<AutomationParameter> automationParameters = _projectArguments.Select(arg => new AutomationParameter()
+                        {
+                            Name = arg.ArgumentName,
+                            DataType = GetServerType(arg.ArgumentType),
+                            Value = arg.ArgumentValue?.ToString(),
+                            AutomationId = automation.Id
+                        });
 
-                    AutomationMethods.UpdateParameters(client, automation.Id, automationParameters);
+                        AutomationMethods.UpdateParameters(token, automation.Id, automationParameters);
+                    }
                 }
                 catch (Exception)
                 {

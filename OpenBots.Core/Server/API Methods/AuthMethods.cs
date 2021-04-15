@@ -33,7 +33,7 @@ namespace OpenBots.Core.Server.API_Methods
 
             try
             {
-                var result = apiInstance.ApiVapiVersionAuthTokenPostAsyncWithHttpInfo(apiVersion, login).Result.Data.ToString();
+                var result = apiInstance.ApiVapiVersionAuthTokenPostWithHttpInfo(apiVersion, login).Data.ToString();
                 JObject jsonObj = JObject.Parse(result.Replace("[]", "null"));
                 Dictionary<string, string> resultDict = jsonObj.ToObject<Dictionary<string, string>>();
                 token = resultDict["token"].ToString();

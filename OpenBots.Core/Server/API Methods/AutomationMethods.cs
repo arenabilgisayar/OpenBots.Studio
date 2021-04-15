@@ -1,11 +1,8 @@
 ﻿using Newtonsoft.Json;
 using OpenBots.Core.Server.Models;
-using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using OpenBots.Server.SDK.Api;
-using System;
 using System.IO;
 using static OpenBots.Core.Server.User.EnvironmentSettings;
 
@@ -15,7 +12,7 @@ namespace OpenBots.Core.Server.API_Methods
     {
         public static AutomationsApi apiInstance = new AutomationsApi(serverURL);
 
-        public static void UploadAutomation(string token, string name, string filePath, string automationEngine)
+        public static Automation UploadAutomation(string token, string name, string filePath, string automationEngine)
         {
             apiInstance.Configuration.AccessToken = token;
 
@@ -23,7 +20,10 @@ namespace OpenBots.Core.Server.API_Methods
             {
                 using (FileStream _file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
-                    apiInstance.ApiVapiVersionAutomationsPostAsyncWithHttpInfo(apiVersion, name, _file, automationEngine).Wait();
+                    var result = apiInstance.ApiVapiVersionAutomationsPostWithHttpInfo(apiVersion, name, _file, automationEngine);
+                    string automationString = JsonConvert.SerializeObject(result);
+                    var automation = JsonConvert.DeserializeObject<Automation>(automationString);
+                    return automation;
                 }
             }
             catch (Exception ex)
@@ -33,18 +33,26 @@ namespace OpenBots.Core.Server.API_Methods
             }
         }
 
-        public static void UpdateParameters(RestClient client, Guid? automationId, IEnumerable<AutomationParameter> automationParameters)
+        public static void UpdateParameters(string token, Guid? automationId, IEnumerable<AutomationParameter> automationParameters)
         {
-            var request = new RestRequest("api/v1/Automations/{automationId}/UpdateParameters", Method.POST);
-            request.RequestFormat = DataFormat.Json;
+            apiInstance.Configuration.AccessToken = token;
 
-            request.AddUrlSegment("automationId", automationId.ToString());
-            request.AddJsonBody(automationParameters);
-
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-                throw new HttpRequestException($"Status Code: {response.StatusCode} - Error Message: {response.ErrorMessage}");
+            try
+            {
+                var automationParametersList = new List<OpenBots.Server.SDK.Model.AutomationParameter>();
+                foreach (var parameter in automationParameters)
+                {
+                    var parameterString = JsonConvert.SerializeObject(parameter);
+                    var parameterSDK = JsonConvert.DeserializeObject<OpenBots.Server.SDK.Model.AutomationParameter>(parameterString);
+                    automationParametersList.Add(parameterSDK);
+                }
+                apiInstance.ApiVapiVersionAutomationsAutomationIdUpdateParametersPostWithHttpInfo(automationId.ToString(), apiVersion, automationParametersList);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception when calling AutomationsApi.ApiVapiVersionAutomationsPostAsyncWithHttpInfo: "
+                    + ex.Message);
+            }
         }
     }
 }
