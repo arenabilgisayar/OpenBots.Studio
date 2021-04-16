@@ -259,6 +259,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AmazonOCRCommand.cs" />
     <Compile Include="Library\AmazonAws\AmazonTextractFactory.cs" />
     <Compile Include="Library\AmazonAws\AmazonTextractService.cs" />
     <Compile Include="Library\AmazonAws\AmazonTextractSetting.cs" />

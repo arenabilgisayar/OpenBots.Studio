@@ -42,7 +42,7 @@ namespace OpenBots.Commands.Image
 
 		public GoogleOCRCommand()
 		{
-			CommandName = "GoogleCRCommand";
+			CommandName = "GoogleOCRCommand";
 			SelectionName = "Google OCR";
 			CommandEnabled = true;
 			CommandIcon = Resources.command_camera;

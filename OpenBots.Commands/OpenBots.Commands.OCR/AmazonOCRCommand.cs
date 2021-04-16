@@ -8,17 +8,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using TextXtractor.Ocr;
-using TextXtractor.Ocr.Core;
 
 namespace OpenBots.Commands.Image
 {
 	[Serializable]
 	[Category("OCR Commands")]
-	[Description("This command extracts text from an image file using Microsoft OCR.")]
-	public class MicrosoftOCRCommand : ScriptCommand
+	[Description("This command extracts text from an image file using Amazon OCR.")]
+	public class AmazonOCRCommand : ScriptCommand
 	{
 
 		[Required]
@@ -40,10 +40,10 @@ namespace OpenBots.Commands.Image
 		[CompatibleTypes(new Type[] { typeof(string) })]
 		public string v_OutputUserVariableName { get; set; }
 
-		public MicrosoftOCRCommand()
+		public AmazonOCRCommand()
 		{
-			CommandName = "MicrosoftOCRCommand";
-			SelectionName = "Microsoft OCR";
+			CommandName = "AmazonOCRCommand";
+			SelectionName = "Amazon OCR";
 			CommandEnabled = true;
 			CommandIcon = Resources.command_camera;
 		}
@@ -53,9 +53,15 @@ namespace OpenBots.Commands.Image
 			var engine = (IAutomationEngineInstance)sender;
 			var vFilePath = v_FilePath.ConvertUserVariableToString(engine);
 
-			//OcrFactory.CreateEngine()
+			var googleassemblies = AppDomain.CurrentDomain.GetAssemblies().Where(x => x.FullName.ToLower().StartsWith("g")).ToList();
+			//byte[] img = File.ReadAllBytes(vFilePath);
+			var ocrEngine = OcrFactory.CreateEngine();
+			var ocrResult = ocrEngine.PerformRecognition(vFilePath);
 
-			"".StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);
+
+			var text = ocrResult.Text; 
+
+			text.StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);
 		}
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
