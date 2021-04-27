@@ -264,20 +264,20 @@ namespace OpenBots.Commands.Task
 			//load arguments if selected and file exists
 			if (assignArgCheckBox.Checked)
 			{
-				var currentScriptEngine = commandControls.CreateAutomationEngineInstance(editor.ScriptEngineContext);
+				var scriptContext = editor.ScripContext;
 
-				currentScriptEngine.AutomationEngineContext.Variables.Where(x => x.VariableName == "ProjectPath").FirstOrDefault().VariableValue = "@\"" + editor.ScriptEngineContext.ProjectPath + '"';
-				foreach (var var in currentScriptEngine.AutomationEngineContext.Variables)
-					await VariableMethods.InstantiateVariable(var.VariableName, (string)var.VariableValue, var.VariableType, currentScriptEngine);
+				scriptContext.Variables.Where(x => x.VariableName == "ProjectPath").FirstOrDefault().VariableValue = "@\"" + editor.ProjectPath + '"';
+				foreach (var var in scriptContext.Variables)
+					await VariableMethods.InstantiateVariable(var.VariableName, (string)var.VariableValue, var.VariableType, scriptContext);
 
-				foreach (var arg in currentScriptEngine.AutomationEngineContext.Arguments)
-					await VariableMethods.InstantiateVariable(arg.ArgumentName, (string)arg.ArgumentValue, arg.ArgumentType, currentScriptEngine);
+				foreach (var arg in scriptContext.Arguments)
+					await VariableMethods.InstantiateVariable(arg.ArgumentName, (string)arg.ArgumentValue, arg.ArgumentType, scriptContext);
 
 				string startFile = "";
 
 				try
                 {
-					startFile = (string)await v_TaskPath.EvaluateCode(currentScriptEngine);
+					startFile = (string)await v_TaskPath.EvaluateCode(scriptContext);
 				}
                 catch (Exception)
                 {

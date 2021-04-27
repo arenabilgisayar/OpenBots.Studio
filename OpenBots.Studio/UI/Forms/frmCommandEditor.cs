@@ -41,7 +41,9 @@ namespace OpenBots.UI.Forms
         //list of available commands
         public List<AutomationCommand> CommandList { get; set; } = new List<AutomationCommand>();
         //engine context assigned from frmScriptBuilder
-        public EngineContext ScriptEngineContext { get; set; } = new EngineContext();
+        public ScriptContext ScripContext { get; set; } = new ScriptContext();
+        public string ProjectPath { get; set; }
+        public IContainer AContainer { get; set; }
         //reference to currently selected command
         public ScriptCommand SelectedCommand { get; set; }
         //reference to original command
@@ -73,7 +75,7 @@ namespace OpenBots.UI.Forms
         private void frmNewCommand_Load(object sender, EventArgs e)
         {
             // Initialize CommandControls with Current Editor
-            _commandControls = new CommandControls(this, ScriptEngineContext, TypeContext);
+            _commandControls = new CommandControls(this, TypeContext, AContainer, ProjectPath);
             _errorToolTip = AddValidationErrorToolTip();
 
             //order list
@@ -291,7 +293,7 @@ namespace OpenBots.UI.Forms
         private bool ValidateInputs()
         {
             bool isAllValid = true;
-            AutomationEngineInstance testEngine = new AutomationEngineInstance(ScriptEngineContext);
+            var testEngine = new AutomationEngineInstance(null);//ScriptEngineContext);
             dynamic currentControl;
             _errorToolTip.RemoveAll();
 

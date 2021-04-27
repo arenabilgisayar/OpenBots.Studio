@@ -321,13 +321,13 @@ namespace OpenBots.UI.Forms.Sequence_Forms
             if (specificCommand != "")
                 newCommandForm.DefaultStartupCommand = specificCommand;
 
-            newCommandForm.ScriptEngineContext.Variables = new List<ScriptVariable>(ScriptVariables);
-            newCommandForm.ScriptEngineContext.Arguments = new List<ScriptArgument>(ScriptArguments);
-            newCommandForm.ScriptEngineContext.Elements = new List<ScriptElement>(ScriptElements);
-            newCommandForm.ScriptEngineContext.ImportedNamespaces = ImportedNamespaces;
+            newCommandForm.ScripContext.Variables = new List<ScriptVariable>(ScriptVariables);
+            newCommandForm.ScripContext.Arguments = new List<ScriptArgument>(ScriptArguments);
+            newCommandForm.ScripContext.Elements = new List<ScriptElement>(ScriptElements);
+            newCommandForm.ScripContext.ImportedNamespaces = ImportedNamespaces;
 
-            newCommandForm.ScriptEngineContext.Container = AContainer;
-            newCommandForm.ScriptEngineContext.ProjectPath = ScriptProjectPath;
+            newCommandForm.AContainer = AContainer;
+            newCommandForm.ProjectPath = ScriptProjectPath;
             newCommandForm.HTMLElementRecorderURL = HTMLElementRecorderURL;
 
             //if a command was selected
@@ -337,14 +337,14 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                 CreateUndoSnapshot();
                 AddCommandToListView(newCommandForm.SelectedCommand);
 
-                ScriptVariables = newCommandForm.ScriptEngineContext.Variables;
-                ScriptArguments = newCommandForm.ScriptEngineContext.Arguments;                
+                ScriptVariables = newCommandForm.ScripContext.Variables;
+                ScriptArguments = newCommandForm.ScripContext.Arguments;                
             }
 
             if (newCommandForm.SelectedCommand.CommandName == "SeleniumElementActionCommand")
             {
                 CreateUndoSnapshot();
-                ScriptElements = newCommandForm.ScriptEngineContext.Elements;
+                ScriptElements = newCommandForm.ScripContext.Elements;
                 HTMLElementRecorderURL = newCommandForm.HTMLElementRecorderURL;
             }
 

@@ -628,13 +628,13 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             if (specificCommand != "")
                 newCommandForm.DefaultStartupCommand = specificCommand;
 
-            newCommandForm.ScriptEngineContext.Variables = new List<OBScriptVariable>(_scriptContext.ScriptVariables);
-            newCommandForm.ScriptEngineContext.Arguments = new List<ScriptArgument>(_scriptContext.ScriptArguments);
-            newCommandForm.ScriptEngineContext.Elements = new List<ScriptElement>(_scriptContext.ScriptElements);
-            newCommandForm.ScriptEngineContext.ImportedNamespaces = _scriptContext.ImportedNamespaces;
+            newCommandForm.ScripContext.Variables = new List<OBScriptVariable>(_scriptContext.Variables);
+            newCommandForm.ScripContext.Arguments = new List<ScriptArgument>(_scriptContext.Arguments);
+            newCommandForm.ScripContext.Elements = new List<ScriptElement>(_scriptContext.Elements);
+            newCommandForm.ScripContext.ImportedNamespaces = _scriptContext.ImportedNamespaces;
 
-            newCommandForm.ScriptEngineContext.Container = AContainer;
-            newCommandForm.ScriptEngineContext.ProjectPath = ScriptProjectPath;
+            newCommandForm.AContainer = AContainer;
+            newCommandForm.ProjectPath = ScriptProjectPath;
             newCommandForm.HTMLElementRecorderURL = HTMLElementRecorderURL;
 
             //if a command was selected
@@ -644,15 +644,15 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                 CreateUndoSnapshot();
                 AddCommandToListView(newCommandForm.SelectedCommand);
 
-                _scriptContext.ScriptVariables = newCommandForm.ScriptEngineContext.Variables;
-                _scriptContext.ScriptArguments = newCommandForm.ScriptEngineContext.Arguments;
+                _scriptContext.Variables = newCommandForm.ScripContext.Variables;
+                _scriptContext.Arguments = newCommandForm.ScripContext.Arguments;
                 uiScriptTabControl.SelectedTab.Tag = _scriptContext;
             }
 
             if (newCommandForm.SelectedCommand.CommandName == "SeleniumElementActionCommand")
             {
                 CreateUndoSnapshot();
-                _scriptContext.ScriptElements = newCommandForm.ScriptEngineContext.Elements;
+                _scriptContext.Elements = newCommandForm.ScripContext.Elements;
                 HTMLElementRecorderURL = newCommandForm.HTMLElementRecorderURL;
             }
 

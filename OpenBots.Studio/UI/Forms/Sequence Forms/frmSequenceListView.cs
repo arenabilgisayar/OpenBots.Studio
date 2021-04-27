@@ -255,7 +255,7 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                 //create new command editor form
                 frmCommandEditor editCommand = new frmCommandEditor(_automationCommands, GetConfiguredCommands(), TypeContext);
 
-                editCommand.ScriptEngineContext.Container = AContainer;
+                editCommand.AContainer = AContainer;
 
                 //creation mode edit locks form to current command
                 editCommand.CreationModeInstance = CreationMode.Edit;
@@ -265,12 +265,12 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                 //create clone of current command so databinding does not affect if changes are not saved
                 editCommand.OriginalCommand = CommonMethods.Clone(currentCommand);
 
-                editCommand.ScriptEngineContext.Variables = new List<ScriptVariable>(ScriptVariables);
-                editCommand.ScriptEngineContext.Arguments = new List<ScriptArgument>(ScriptArguments);
-                editCommand.ScriptEngineContext.Elements = new List<ScriptElement>(ScriptElements);
-                editCommand.ScriptEngineContext.ImportedNamespaces = ImportedNamespaces;
+                editCommand.ScripContext.Variables = new List<ScriptVariable>(ScriptVariables);
+                editCommand.ScripContext.Arguments = new List<ScriptArgument>(ScriptArguments);
+                editCommand.ScripContext.Elements = new List<ScriptElement>(ScriptElements);
+                editCommand.ScripContext.ImportedNamespaces = ImportedNamespaces;
 
-                editCommand.ScriptEngineContext.ProjectPath = ScriptProjectPath;
+                editCommand.ProjectPath = ScriptProjectPath;
 
                 if (currentCommand.CommandName == "SeleniumElementActionCommand")
                     editCommand.HTMLElementRecorderURL = HTMLElementRecorderURL;
@@ -283,14 +283,14 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                     selectedCommandItem.Text = editCommand.SelectedCommand.GetDisplayValue();
                     selectedCommandItem.SubItems.Add(editCommand.SelectedCommand.GetDisplayValue());
 
-                    ScriptVariables = editCommand.ScriptEngineContext.Variables;
-                    ScriptArguments = editCommand.ScriptEngineContext.Arguments;                    
+                    ScriptVariables = editCommand.ScripContext.Variables;
+                    ScriptArguments = editCommand.ScripContext.Arguments;                    
                 }
 
                 if (editCommand.SelectedCommand.CommandName == "SeleniumElementActionCommand")
                 {
                     CreateUndoSnapshot();
-                    ScriptElements = editCommand.ScriptEngineContext.Elements;
+                    ScriptElements = editCommand.ScripContext.Elements;
                     HTMLElementRecorderURL = editCommand.HTMLElementRecorderURL;
                 }
 

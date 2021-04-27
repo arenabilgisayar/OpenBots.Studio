@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis.Scripting;
+using OpenBots.Core.Script;
 using OpenBots.Core.Utilities.CommonUtilities;
 using System;
 using System.Linq;

@@ -16,6 +16,7 @@ using System.Data.OleDb;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Threading.Tasks;
+using OpenBots.Core.Script;
 
 namespace OpenBots.Commands.Database
 {
@@ -86,7 +87,7 @@ namespace OpenBots.Commands.Database
 			var engine = (IAutomationEngineInstance)sender;
 
 			//create connection
-			var oleDBConnection = await CreateConnection(sender);
+			var oleDBConnection = await CreateConnection(engine);
 
 			//attempt to open and close connection
 			if (v_TestConnection == "Yes")
@@ -98,11 +99,25 @@ namespace OpenBots.Commands.Database
 			oleDBConnection.AddAppInstance(engine, v_InstanceName);
 		}
 
-		private async Task<OleDbConnection> CreateConnection(object sender)
+		private async Task<OleDbConnection> CreateConnection(IAutomationEngineInstance engine)
 		{
-			var engine = (IAutomationEngineInstance)sender;
 			var connection = (string)await v_ConnectionString.EvaluateCode(engine);
 			var connectionPass = (string)await v_ConnectionStringPassword.EvaluateCode(engine);
+
+			if (connectionPass.StartsWith("!"))
+			{
+				connectionPass = connectionPass.Substring(1);
+				connectionPass = EncryptionServices.DecryptString(connectionPass, "OPENBOTS");
+			}
+			connection = connection.Replace("#pwd", connectionPass);
+
+			return new OleDbConnection(connection);
+		}
+
+		private async Task<OleDbConnection> CreateConnection(ScriptContext scriptContext)
+		{
+			var connection = (string)await v_ConnectionString.EvaluateCode(scriptContext);
+			var connectionPass = (string)await v_ConnectionStringPassword.EvaluateCode(scriptContext);
 
 			if (connectionPass.StartsWith("!"))
 			{
@@ -202,8 +217,7 @@ namespace OpenBots.Commands.Database
 			
 			try
 			{
-				var engine = (IAutomationEngineInstance)commandControls.CreateAutomationEngineInstance(editor.ScriptEngineContext);
-				var oleDBConnection = await CreateConnection(engine);
+				var oleDBConnection = await CreateConnection(editor.ScripContext);
 				oleDBConnection.Open();
 				oleDBConnection.Close();
 				MessageBox.Show("Connection Successful", "Test Connection", MessageBoxButtons.OK, MessageBoxIcon.Information);

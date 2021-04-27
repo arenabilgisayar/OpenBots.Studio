@@ -27,8 +27,8 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                 _preEditVarArgName = dgv.Rows[e.RowIndex].Cells[0].Value?.ToString();
 
                 _existingVarArgSearchList = new List<string>();
-                _existingVarArgSearchList.AddRange(_scriptContext.ScriptArguments.Select(arg => arg.ArgumentName).ToList());
-                _existingVarArgSearchList.AddRange(_scriptContext.ScriptVariables.Select(var => var.VariableName).ToList());
+                _existingVarArgSearchList.AddRange(_scriptContext.Arguments.Select(arg => arg.ArgumentName).ToList());
+                _existingVarArgSearchList.AddRange(_scriptContext.Variables.Select(var => var.VariableName).ToList());
             }
             catch (Exception ex)
             {
@@ -376,8 +376,8 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
 
         private void ResetVariableArgumentBindings()
         {
-            dgvVariables.DataSource = new BindingList<ScriptVariable>(_scriptContext.ScriptVariables);
-            dgvArguments.DataSource = new BindingList<ScriptArgument>(_scriptContext.ScriptArguments);
+            dgvVariables.DataSource = new BindingList<ScriptVariable>(_scriptContext.Variables);
+            dgvArguments.DataSource = new BindingList<ScriptArgument>(_scriptContext.Arguments);
 
             TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(_scriptContext.ImportedNamespaces), _typeContext.GroupedTypes);
 

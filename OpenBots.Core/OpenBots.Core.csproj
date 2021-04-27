@@ -222,6 +222,7 @@
     <Compile Include="Command\ScriptCommand.cs" />
     <Compile Include="Project\ProjectArgument.cs" />
     <Compile Include="Script\AssemblyReference.cs" />
+    <Compile Include="Script\ScriptContext.cs" />
     <Compile Include="Script\ScriptDefaultNamespaces.cs" />
     <Compile Include="Script\ScriptDefaultTypes.cs" />
     <Compile Include="Script\TypeContext.cs" />

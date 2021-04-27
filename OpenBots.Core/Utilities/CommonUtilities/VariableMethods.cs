@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.Scripting;
 using OpenBots.Core.Infrastructure;
+using OpenBots.Core.Script;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -33,6 +34,26 @@ namespace OpenBots.Core.Utilities.CommonUtilities
             return engine.AutomationEngineContext.EngineScriptState.GetVariable(varName).Value;
         }
 
+        public async static Task<object> InstantiateVariable(string varName, string code, Type varType, ScriptContext scriptContext)
+        {
+            string type = varType.GetRealTypeName();
+
+            if (string.IsNullOrEmpty(code))
+                code = "null";
+
+            if (scriptContext.EngineScriptState == null)
+                scriptContext.EngineScriptState = await scriptContext.EngineScript.RunAsync();
+
+            string script = $"{type}? {varName} = {code};";
+
+            scriptContext.EngineScriptState = await scriptContext.EngineScriptState
+                .ContinueWithAsync(script, ScriptOptions.Default
+                .WithReferences(scriptContext.AssembliesList)
+                .WithImports(scriptContext.NamespacesList));
+
+            return scriptContext.EngineScriptState.GetVariable(varName).Value;
+        }
+
         public async static Task<bool> EvaluateSnippet(this string code, IAutomationEngineInstance engine)
         {
             if (engine.AutomationEngineContext.EngineScriptState == null)
@@ -64,6 +85,24 @@ namespace OpenBots.Core.Utilities.CommonUtilities
                 .WithImports(engine.AutomationEngineContext.NamespacesList));
 
             return engine.AutomationEngineContext.EngineScriptState.GetVariable($"{engine.AutomationEngineContext.GuidPlaceholder}").Value;
+        }
+
+        public async static Task<object> EvaluateCode(this string code, ScriptContext scriptContext)
+        {
+            if (string.IsNullOrEmpty(code))
+                return null;
+
+            if (scriptContext.EngineScriptState == null)
+                scriptContext.EngineScriptState = await scriptContext.EngineScript.RunAsync();
+
+            string script = $"object {scriptContext.GuidPlaceholder} = {code};";
+
+            scriptContext.EngineScriptState = await scriptContext.EngineScriptState
+                .ContinueWithAsync(script, ScriptOptions.Default
+                .WithReferences(scriptContext.AssembliesList)
+                .WithImports(scriptContext.NamespacesList));
+
+            return scriptContext.EngineScriptState.GetVariable($"{scriptContext.GuidPlaceholder}").Value;
         }
 
         public static void SetVariableValue(this object newVal, IAutomationEngineInstance engine, string varName)

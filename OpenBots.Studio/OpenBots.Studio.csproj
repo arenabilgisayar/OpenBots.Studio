@@ -534,7 +534,6 @@
     <Compile Include="UI\Forms\Supplement Forms\frmWebElementRecorderSettings.Designer.cs">
       <DependentUpon>frmWebElementRecorderSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Models\ScriptContext.cs" />
     <Compile Include="UI\Models\StudioVariableMethods.cs" />
     <Compile Include="Utilities\Documentation\CommandMetaData.cs" />
     <Compile Include="Utilities\Documentation\DocumentationGeneration.cs" />

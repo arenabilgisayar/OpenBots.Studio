@@ -44,9 +44,9 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                 ScriptContext scriptObject = (ScriptContext)uiScriptTabControl.SelectedTab.Tag;
                 if (scriptObject != null)
                 {
-                    _scriptContext.ScriptVariables = scriptObject.ScriptVariables;
-                    _scriptContext.ScriptArguments = scriptObject.ScriptArguments;
-                    _scriptContext.ScriptElements = scriptObject.ScriptElements;
+                    _scriptContext.Variables = scriptObject.Variables;
+                    _scriptContext.Arguments = scriptObject.Arguments;
+                    _scriptContext.Elements = scriptObject.Elements;
                     _scriptContext.ImportedNamespaces = scriptObject.ImportedNamespaces;
 
                     if (!_isRunTaskCommand)

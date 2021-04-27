@@ -305,7 +305,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                     //create new command editor form
                     frmCommandEditor editCommand = new frmCommandEditor(_automationCommands, GetConfiguredCommands(), _typeContext);
 
-                    editCommand.ScriptEngineContext.Container = AContainer;
+                    editCommand.AContainer = AContainer;
 
                     //creation mode edit locks form to current command
                     editCommand.CreationModeInstance = CreationMode.Edit;
@@ -315,12 +315,12 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                     //create clone of current command so databinding does not affect if changes are not saved
                     editCommand.OriginalCommand = CommonMethods.Clone(currentCommand);
 
-                    editCommand.ScriptEngineContext.Variables = new List<ScriptVariable>(_scriptContext.ScriptVariables);
-                    editCommand.ScriptEngineContext.Arguments = new List<ScriptArgument>(_scriptContext.ScriptArguments);
-                    editCommand.ScriptEngineContext.Elements = new List<ScriptElement>(_scriptContext.ScriptElements);
-                    editCommand.ScriptEngineContext.ImportedNamespaces = _scriptContext.ImportedNamespaces;
+                    editCommand.ScripContext.Variables = new List<ScriptVariable>(_scriptContext.Variables);
+                    editCommand.ScripContext.Arguments = new List<ScriptArgument>(_scriptContext.Arguments);
+                    editCommand.ScripContext.Elements = new List<ScriptElement>(_scriptContext.Elements);
+                    editCommand.ScripContext.ImportedNamespaces = _scriptContext.ImportedNamespaces;
 
-                    editCommand.ScriptEngineContext.ProjectPath = ScriptProjectPath;
+                    editCommand.ProjectPath = ScriptProjectPath;
 
                     if (currentCommand.CommandName == "SeleniumElementActionCommand")
                         editCommand.HTMLElementRecorderURL = HTMLElementRecorderURL;
@@ -333,15 +333,15 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                         selectedCommandItem.Text = editCommand.SelectedCommand.GetDisplayValue();
                         selectedCommandItem.SubItems.Add(editCommand.SelectedCommand.GetDisplayValue());
 
-                        _scriptContext.ScriptVariables = editCommand.ScriptEngineContext.Variables;
-                        _scriptContext.ScriptArguments = editCommand.ScriptEngineContext.Arguments;
+                        _scriptContext.Variables = editCommand.ScripContext.Variables;
+                        _scriptContext.Arguments = editCommand.ScripContext.Arguments;
                         uiScriptTabControl.SelectedTab.Tag = _scriptContext;
                     }
 
                     if (editCommand.SelectedCommand.CommandName == "SeleniumElementActionCommand")
                     {
                         CreateUndoSnapshot();
-                        _scriptContext.ScriptElements = editCommand.ScriptEngineContext.Elements;
+                        _scriptContext.Elements = editCommand.ScripContext.Elements;
                         HTMLElementRecorderURL = editCommand.HTMLElementRecorderURL;
                     }
 
@@ -358,13 +358,13 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
         private void LoadSequenceCommand(ListViewItem selectedCommandItem, ScriptCommand currentCommand)
         {
             List<ScriptVariable> originalStudioVariables = new List<ScriptVariable>();
-            originalStudioVariables.AddRange(_scriptContext.ScriptVariables);
+            originalStudioVariables.AddRange(_scriptContext.Variables);
 
             List<ScriptElement> originalStudioElements = new List<ScriptElement>();
-            originalStudioElements.AddRange(_scriptContext.ScriptElements);
+            originalStudioElements.AddRange(_scriptContext.Elements);
 
             List<ScriptArgument> originalStudioArguments = new List<ScriptArgument>();
-            originalStudioArguments.AddRange(_scriptContext.ScriptArguments);
+            originalStudioArguments.AddRange(_scriptContext.Arguments);
 
             Dictionary<string, AssemblyReference> originalStudioNamespaces = new Dictionary<string, AssemblyReference>();
             originalStudioNamespaces.AddRange(_scriptContext.ImportedNamespaces);
@@ -384,14 +384,14 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             newSequence.LoadCommands();
 
             //add variables/elements/arguments
-            newSequence.ScriptVariables = _scriptContext.ScriptVariables;
-            newSequence.ScriptElements = _scriptContext.ScriptElements;
-            newSequence.ScriptArguments = _scriptContext.ScriptArguments;
+            newSequence.ScriptVariables = _scriptContext.Variables;
+            newSequence.ScriptElements = _scriptContext.Elements;
+            newSequence.ScriptArguments = _scriptContext.Arguments;
             newSequence.ImportedNamespaces = _scriptContext.ImportedNamespaces;
             newSequence.AllNamespaces = _allNamespaces;
 
-            newSequence.dgvVariables.DataSource = new BindingList<ScriptVariable>(_scriptContext.ScriptVariables);
-            newSequence.dgvArguments.DataSource = new BindingList<ScriptArgument>(_scriptContext.ScriptArguments);
+            newSequence.dgvVariables.DataSource = new BindingList<ScriptVariable>(_scriptContext.Variables);
+            newSequence.dgvArguments.DataSource = new BindingList<ScriptArgument>(_scriptContext.Arguments);
 
             TabPage newtabPage = new TabPage("Sequence");
             newtabPage.Name = "Sequence";
@@ -445,16 +445,16 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                 selectedCommandItem.Text = sequence.GetDisplayValue();
 
                 //update variables/elements/arguments
-                _scriptContext.ScriptVariables = newSequence.ScriptVariables.Where(x => !string.IsNullOrEmpty(x.VariableName)).ToList();
-                _scriptContext.ScriptElements = newSequence.ScriptElements.Where(x => !string.IsNullOrEmpty(x.ElementName)).ToList();
-                _scriptContext.ScriptArguments = newSequence.ScriptArguments.Where(x => !string.IsNullOrEmpty(x.ArgumentName)).ToList();
+                _scriptContext.Variables = newSequence.ScriptVariables.Where(x => !string.IsNullOrEmpty(x.VariableName)).ToList();
+                _scriptContext.Elements = newSequence.ScriptElements.Where(x => !string.IsNullOrEmpty(x.ElementName)).ToList();
+                _scriptContext.Arguments = newSequence.ScriptArguments.Where(x => !string.IsNullOrEmpty(x.ArgumentName)).ToList();
                 _scriptContext.ImportedNamespaces = newSequence.ImportedNamespaces;
             }
             else
             {
-                _scriptContext.ScriptVariables = originalStudioVariables;
-                _scriptContext.ScriptElements = originalStudioElements;
-                _scriptContext.ScriptArguments = originalStudioArguments;
+                _scriptContext.Variables = originalStudioVariables;
+                _scriptContext.Elements = originalStudioElements;
+                _scriptContext.Arguments = originalStudioArguments;
                 _scriptContext.ImportedNamespaces = originalStudioNamespaces;
             }
 

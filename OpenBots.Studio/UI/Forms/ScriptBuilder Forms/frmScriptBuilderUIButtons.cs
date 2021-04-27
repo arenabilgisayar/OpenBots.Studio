@@ -81,7 +81,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                         VariableType = typeof(string),
                         VariableValue = "\"Value Provided at Runtime\""
                     };
-                    _scriptContext.ScriptVariables.Add(projectPathVariable);
+                    _scriptContext.Variables.Add(projectPathVariable);
 
                     ResetVariableArgumentBindings();
 
@@ -104,7 +104,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                         Direction = ScriptArgumentDirection.In,
                         ArgumentValue = "main"
                     };
-                    _scriptContext.ScriptArguments.Add(mainFunctionArgument);
+                    _scriptContext.Arguments.Add(mainFunctionArgument);
 
                     var pythonVersionArgument = new ScriptArgument
                     {
@@ -112,7 +112,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                         ArgumentType = typeof(string),
                         Direction = ScriptArgumentDirection.In                      
                     };
-                    _scriptContext.ScriptArguments.Add(pythonVersionArgument);
+                    _scriptContext.Arguments.Add(pythonVersionArgument);
 
                     SetVarArgTabControlSettings(ScriptProject.ProjectType);
                     ResetVariableArgumentBindings();
@@ -130,7 +130,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                         ArgumentType = typeof(string),
                         Direction = ScriptArgumentDirection.In
                     };
-                    _scriptContext.ScriptArguments.Add(reportArgument);
+                    _scriptContext.Arguments.Add(reportArgument);
 
                     SetVarArgTabControlSettings(ScriptProject.ProjectType);
                     ResetVariableArgumentBindings();
@@ -257,18 +257,18 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                     _selectedTabScriptActions.Name = $"{scriptFileName}ScriptActions";
 
                     //assign variables
-                    _scriptContext.ScriptVariables.AddRange(deserializedScript.Variables);
-                    _scriptContext.ScriptElements.AddRange(deserializedScript.Elements);
-                    _scriptContext.ScriptArguments.AddRange(deserializedScript.Arguments);
+                    _scriptContext.Variables.AddRange(deserializedScript.Variables);
+                    _scriptContext.Elements.AddRange(deserializedScript.Elements);
+                    _scriptContext.Arguments.AddRange(deserializedScript.Arguments);
                     _scriptContext.ImportedNamespaces.Clear();
                     _scriptContext.ImportedNamespaces.AddRange(deserializedScript.ImportedNamespaces);
 
                     uiScriptTabControl.SelectedTab.Tag = _scriptContext;
 
-                    foreach (var variable in _scriptContext.ScriptVariables)
+                    foreach (var variable in _scriptContext.Variables)
                         await StudioVariableMethods.AddVariable(variable.VariableName, variable.VariableType, variable.VariableValue.ToString(), _scriptContext);
 
-                    foreach (var argument in _scriptContext.ScriptArguments)
+                    foreach (var argument in _scriptContext.Arguments)
                         await StudioVariableMethods.AddVariable(argument.ArgumentName, argument.ArgumentType, argument.ArgumentValue.ToString(), _scriptContext);
 
                     //populate commands
@@ -343,7 +343,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                 _selectedTabScriptActions.Name = $"{scriptFileName}ScriptActions";
 
                 //assign project arguments
-                _scriptContext.ScriptArguments.AddRange(ScriptProject.ProjectArguments.Select(arg => new ScriptArgument 
+                _scriptContext.Arguments.AddRange(ScriptProject.ProjectArguments.Select(arg => new ScriptArgument 
                                                                                         { 
                                                                                             ArgumentName = arg.ArgumentName,
                                                                                             ArgumentType = arg.ArgumentType,
@@ -442,7 +442,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                     if (_isMainScript)
                     {
                         ScriptProject.ProjectArguments.Clear();
-                        ScriptProject.ProjectArguments.AddRange(_scriptContext.ScriptArguments.Select(arg => new ProjectArgument()
+                        ScriptProject.ProjectArguments.AddRange(_scriptContext.Arguments.Select(arg => new ProjectArgument()
                         {
                             ArgumentName = arg.ArgumentName,
                             ArgumentType = arg.ArgumentType,
@@ -632,9 +632,9 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             {
                 EngineContext engineContext = new EngineContext
                 {
-                    Variables = _scriptContext.ScriptVariables.Where(x => !string.IsNullOrEmpty(x.VariableName)).ToList(),
-                    Arguments = _scriptContext.ScriptArguments.Where(x => !string.IsNullOrEmpty(x.ArgumentName)).ToList(),
-                    Elements = _scriptContext.ScriptElements.Where(x => !string.IsNullOrEmpty(x.ElementName)).ToList(),
+                    Variables = _scriptContext.Variables.Where(x => !string.IsNullOrEmpty(x.VariableName)).ToList(),
+                    Arguments = _scriptContext.Arguments.Where(x => !string.IsNullOrEmpty(x.ArgumentName)).ToList(),
+                    Elements = _scriptContext.Elements.Where(x => !string.IsNullOrEmpty(x.ElementName)).ToList(),
                     ImportedNamespaces = _scriptContext.ImportedNamespaces,
                     FilePath = ScriptFilePath,
                     Container = AContainer
@@ -650,7 +650,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                     if (_isMainScript)
                     {
                         ScriptProject.ProjectArguments.Clear();
-                        ScriptProject.ProjectArguments.AddRange(_scriptContext.ScriptArguments.Select(arg => new ProjectArgument()
+                        ScriptProject.ProjectArguments.AddRange(_scriptContext.Arguments.Select(arg => new ProjectArgument()
                                                                                     {
                                                                                         ArgumentName = arg.ArgumentName,
                                                                                         ArgumentType = arg.ArgumentType,
@@ -804,29 +804,29 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                 PopulateExecutionCommands(deserializedScript.Commands);
                 foreach (ScriptVariable newVar in deserializedScript.Variables)
                 {
-                    var existingVar = _scriptContext.ScriptVariables.Find(alreadyExists => alreadyExists.VariableName == newVar.VariableName);
+                    var existingVar = _scriptContext.Variables.Find(alreadyExists => alreadyExists.VariableName == newVar.VariableName);
                     if (existingVar != null)
-                        _scriptContext.ScriptVariables.Remove(existingVar);
+                        _scriptContext.Variables.Remove(existingVar);
 
-                    _scriptContext.ScriptVariables.Add(newVar);                        
+                    _scriptContext.Variables.Add(newVar);                        
                 }
 
                 foreach (ScriptArgument newArg in deserializedScript.Arguments)
                 {
-                    var existingArg = _scriptContext.ScriptArguments.Find(alreadyExists => alreadyExists.ArgumentName == newArg.ArgumentName);
+                    var existingArg = _scriptContext.Arguments.Find(alreadyExists => alreadyExists.ArgumentName == newArg.ArgumentName);
                     if (existingArg != null)
-                        _scriptContext.ScriptArguments.Remove(existingArg);
+                        _scriptContext.Arguments.Remove(existingArg);
 
-                    _scriptContext.ScriptArguments.Add(newArg);
+                    _scriptContext.Arguments.Add(newArg);
                 }
 
                 foreach (ScriptElement newElem in deserializedScript.Elements)
                 {
-                    var existingElem = _scriptContext.ScriptElements.Find(alreadyExists => alreadyExists.ElementName == newElem.ElementName);
+                    var existingElem = _scriptContext.Elements.Find(alreadyExists => alreadyExists.ElementName == newElem.ElementName);
                     if (existingElem != null)
-                        _scriptContext.ScriptElements.Remove(newElem);
+                        _scriptContext.Elements.Remove(newElem);
 
-                    _scriptContext.ScriptElements.Add(newElem);
+                    _scriptContext.Elements.Add(newElem);
                 }
 
                 foreach (var nsp in deserializedScript.ImportedNamespaces)
@@ -924,14 +924,14 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             frmScriptVariables scriptVariableEditor = new frmScriptVariables(_typeContext)
             {
                 ScriptName = uiScriptTabControl.SelectedTab.Name,
-                ScriptVariables = new List<ScriptVariable>(_scriptContext.ScriptVariables),
-                ScriptArguments = new List<ScriptArgument>(_scriptContext.ScriptArguments)
+                ScriptVariables = new List<ScriptVariable>(_scriptContext.Variables),
+                ScriptArguments = new List<ScriptArgument>(_scriptContext.Arguments)
             };
 
             if (scriptVariableEditor.ShowDialog() == DialogResult.OK)
             {
                 Invalidate();
-                _scriptContext.ScriptVariables = scriptVariableEditor.ScriptVariables;
+                _scriptContext.Variables = scriptVariableEditor.ScriptVariables;
                 uiScriptTabControl.SelectedTab.Tag = _scriptContext;
 
                 if (!uiScriptTabControl.SelectedTab.Text.Contains(" *"))
@@ -960,13 +960,13 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             frmScriptArguments scriptArgumentEditor = new frmScriptArguments(_typeContext)
             {
                 ScriptName = uiScriptTabControl.SelectedTab.Name,
-                ScriptVariables = new List<ScriptVariable>(_scriptContext.ScriptVariables),
-                ScriptArguments = new List<ScriptArgument>(_scriptContext.ScriptArguments)
+                ScriptVariables = new List<ScriptVariable>(_scriptContext.Variables),
+                ScriptArguments = new List<ScriptArgument>(_scriptContext.Arguments)
             };
 
             if (scriptArgumentEditor.ShowDialog() == DialogResult.OK)
             {
-                _scriptContext.ScriptArguments = scriptArgumentEditor.ScriptArguments;
+                _scriptContext.Arguments = scriptArgumentEditor.ScriptArguments;
                 uiScriptTabControl.SelectedTab.Tag = _scriptContext;
 
                 if (!uiScriptTabControl.SelectedTab.Text.Contains(" *"))
@@ -995,13 +995,13 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             frmScriptElements scriptElementEditor = new frmScriptElements
             {
                 ScriptName = uiScriptTabControl.SelectedTab.Name,
-                ScriptElements = new List<ScriptElement>(_scriptContext.ScriptElements)
+                ScriptElements = new List<ScriptElement>(_scriptContext.Elements)
             };
 
             if (scriptElementEditor.ShowDialog() == DialogResult.OK)
             {
                 CreateUndoSnapshot();
-                _scriptContext.ScriptElements = scriptElementEditor.ScriptElements;
+                _scriptContext.Elements = scriptElementEditor.ScriptElements;
                 uiScriptTabControl.SelectedTab.Tag = _scriptContext;
             }
 
@@ -1363,7 +1363,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             {
                 CallBackForm = this,
                 IsRecordingSequence = true,
-                ScriptElements = _scriptContext.ScriptElements
+                ScriptElements = _scriptContext.Elements
             };
             elementRecorder.chkStopOnClick.Visible = false;
             elementRecorder.IsCommandItemSelected = _selectedTabScriptActions.SelectedItems.Count > 0;
@@ -1373,7 +1373,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             elementRecorder.ShowDialog();
 
             HTMLElementRecorderURL = elementRecorder.StartURL;
-            _scriptContext.ScriptElements = elementRecorder.ScriptElements;
+            _scriptContext.Elements = elementRecorder.ScriptElements;
 
             elementRecorder.Dispose();
         }
