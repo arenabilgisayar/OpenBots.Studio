@@ -534,6 +534,8 @@
     <Compile Include="UI\Forms\Supplement Forms\frmWebElementRecorderSettings.Designer.cs">
       <DependentUpon>frmWebElementRecorderSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Models\ScriptContext.cs" />
+    <Compile Include="UI\Models\StudioVariableMethods.cs" />
     <Compile Include="Utilities\Documentation\CommandMetaData.cs" />
     <Compile Include="Utilities\Documentation\DocumentationGeneration.cs" />
     <Compile Include="Utilities\ExecutionManager.cs" />
@@ -1053,7 +1055,6 @@
     <None Include="Resources\ActionBar\action_bar_close.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="UI\DTOs\" />
     <Folder Include="UI\FormEventArgs\" />
   </ItemGroup>
   <ItemGroup>

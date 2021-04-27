@@ -2,6 +2,7 @@
 using OpenBots.Core.Script;
 using OpenBots.Properties;
 using OpenBots.UI.CustomControls.CustomUIControls;
+using OpenBots.UI.Models;
 using ScintillaNET;
 using System;
 using System.Collections.Generic;
@@ -40,13 +41,13 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                         break;
                 }
 
-                ScriptObject scriptObject = (ScriptObject)uiScriptTabControl.SelectedTab.Tag;
+                ScriptContext scriptObject = (ScriptContext)uiScriptTabControl.SelectedTab.Tag;
                 if (scriptObject != null)
                 {
-                    _scriptVariables = scriptObject.ScriptVariables;
-                    _scriptArguments = scriptObject.ScriptArguments;
-                    _scriptElements = scriptObject.ScriptElements;
-                    _importedNamespaces = scriptObject.ImportedNamespaces;
+                    _scriptContext.ScriptVariables = scriptObject.ScriptVariables;
+                    _scriptContext.ScriptArguments = scriptObject.ScriptArguments;
+                    _scriptContext.ScriptElements = scriptObject.ScriptElements;
+                    _scriptContext.ImportedNamespaces = scriptObject.ImportedNamespaces;
 
                     if (!_isRunTaskCommand)
                     {

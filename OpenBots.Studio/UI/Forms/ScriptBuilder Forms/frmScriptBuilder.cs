@@ -37,6 +37,12 @@ using System.Windows.Forms;
 using AContainer = Autofac.IContainer;
 using CoreResources = OpenBots.Properties.Resources;
 using Point = System.Drawing.Point;
+using OBScriptVariable = OpenBots.Core.Script.ScriptVariable;
+using RSScript = Microsoft.CodeAnalysis.Scripting.Script;
+using Microsoft.CodeAnalysis.Scripting;
+using OpenBots.Core.Utilities.CommonUtilities;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using OpenBots.UI.Models;
 
 namespace OpenBots.UI.Forms.ScriptBuilder_Forms
 {
@@ -46,11 +52,8 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
     {
         #region Instance Variables
         //engine context variables
+        private ScriptContext _scriptContext;
         private List<ListViewItem> _rowsSelectedForCopy;
-        private List<ScriptVariable> _scriptVariables;
-        private List<ScriptArgument> _scriptArguments;
-        private List<ScriptElement> _scriptElements;
-        private Dictionary<string, AssemblyReference> _importedNamespaces;
         private Dictionary<string, AssemblyReference> _allNamespaces;
         private string _scriptFilePath;
         public string ScriptFilePath
@@ -71,7 +74,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
         private string _scriptFileExtension;
         private bool _isMainScript;
         public Logger EngineLogger { get; set; }
-        public IfrmScriptEngine CurrentEngine { get; set; }      
+        public IfrmScriptEngine CurrentEngine { get; set; }
 
         //notification variables
         private List<Tuple<string, Color>> _notificationList = new List<Tuple<string, Color>>();
@@ -224,6 +227,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
         public frmScriptBuilder(string projectPath)
         {
             ScriptProjectPath = projectPath;
+            _scriptContext = new ScriptContext();
             _selectedTabScriptActions = NewLstScriptActions();
             InitializeComponent();
 
@@ -246,7 +250,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
 
             var defaultTypes = ScriptDefaultTypes.DefaultVarArgTypes;
             _typeContext = new TypeContext(groupedTypes, defaultTypes);
-            _importedNamespaces = new Dictionary<string, AssemblyReference>(ScriptDefaultNamespaces.DefaultNamespaces);
+            _scriptContext.ImportedNamespaces = new Dictionary<string, AssemblyReference>(ScriptDefaultNamespaces.DefaultNamespaces);
             _allNamespaces = new Dictionary<string, AssemblyReference>() 
             { 
                 { 
@@ -295,7 +299,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             argumentType.DisplayMember = "Key";
             argumentType.ValueMember = "Value";
 
-            var importedNameSpacesBinding = new BindingSource(_importedNamespaces, null);
+            var importedNameSpacesBinding = new BindingSource(_scriptContext.ImportedNamespaces, null);
             lbxImportedNamespaces.DataSource = importedNameSpacesBinding;
             lbxImportedNamespaces.DisplayMember = "Key";
             lbxImportedNamespaces.ValueMember = "Value";
@@ -624,10 +628,10 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             if (specificCommand != "")
                 newCommandForm.DefaultStartupCommand = specificCommand;
 
-            newCommandForm.ScriptEngineContext.Variables = new List<ScriptVariable>(_scriptVariables);
-            newCommandForm.ScriptEngineContext.Arguments = new List<ScriptArgument>(_scriptArguments);
-            newCommandForm.ScriptEngineContext.Elements = new List<ScriptElement>(_scriptElements);
-            newCommandForm.ScriptEngineContext.ImportedNamespaces = _importedNamespaces;
+            newCommandForm.ScriptEngineContext.Variables = new List<OBScriptVariable>(_scriptContext.ScriptVariables);
+            newCommandForm.ScriptEngineContext.Arguments = new List<ScriptArgument>(_scriptContext.ScriptArguments);
+            newCommandForm.ScriptEngineContext.Elements = new List<ScriptElement>(_scriptContext.ScriptElements);
+            newCommandForm.ScriptEngineContext.ImportedNamespaces = _scriptContext.ImportedNamespaces;
 
             newCommandForm.ScriptEngineContext.Container = AContainer;
             newCommandForm.ScriptEngineContext.ProjectPath = ScriptProjectPath;
@@ -640,15 +644,15 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                 CreateUndoSnapshot();
                 AddCommandToListView(newCommandForm.SelectedCommand);
 
-                _scriptVariables = newCommandForm.ScriptEngineContext.Variables;
-                _scriptArguments = newCommandForm.ScriptEngineContext.Arguments;
-                uiScriptTabControl.SelectedTab.Tag = new ScriptObject(_scriptVariables, _scriptArguments, _scriptElements, _importedNamespaces);
+                _scriptContext.ScriptVariables = newCommandForm.ScriptEngineContext.Variables;
+                _scriptContext.ScriptArguments = newCommandForm.ScriptEngineContext.Arguments;
+                uiScriptTabControl.SelectedTab.Tag = _scriptContext;
             }
 
             if (newCommandForm.SelectedCommand.CommandName == "SeleniumElementActionCommand")
             {
                 CreateUndoSnapshot();
-                _scriptElements = newCommandForm.ScriptEngineContext.Elements;
+                _scriptContext.ScriptElements = newCommandForm.ScriptEngineContext.Elements;
                 HTMLElementRecorderURL = newCommandForm.HTMLElementRecorderURL;
             }
 
@@ -806,7 +810,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             NotifySync("Loading package assemblies...", Color.White);
             string configPath = Path.Combine(ScriptProjectPath, "project.obconfig");
             var assemblyList = NugetPackageManager.LoadPackageAssemblies(configPath);
-            _builder = AppDomainSetupManager.LoadBuilder(assemblyList, _typeContext.GroupedTypes, _allNamespaces, _importedNamespaces);            
+            _builder = AppDomainSetupManager.LoadBuilder(assemblyList, _typeContext.GroupedTypes, _allNamespaces, _scriptContext.ImportedNamespaces);            
             AContainer = _builder.Build();
             LoadCommands(this);
             ReloadAllFiles();

@@ -3,12 +3,14 @@ using OpenBots.Core.Script;
 using OpenBots.Core.Utilities.CommonUtilities;
 using OpenBots.Studio.Utilities;
 using OpenBots.UI.Forms.Supplement_Forms;
+using OpenBots.UI.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using System.CodeDom.Compiler;
 
 namespace OpenBots.UI.Forms.ScriptBuilder_Forms
 {
@@ -25,8 +27,8 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                 _preEditVarArgName = dgv.Rows[e.RowIndex].Cells[0].Value?.ToString();
 
                 _existingVarArgSearchList = new List<string>();
-                _existingVarArgSearchList.AddRange(_scriptArguments.Select(arg => arg.ArgumentName).ToList());
-                _existingVarArgSearchList.AddRange(_scriptVariables.Select(var => var.VariableName).ToList());
+                _existingVarArgSearchList.AddRange(_scriptContext.ScriptArguments.Select(arg => arg.ArgumentName).ToList());
+                _existingVarArgSearchList.AddRange(_scriptContext.ScriptVariables.Select(var => var.VariableName).ToList());
             }
             catch (Exception ex)
             {
@@ -35,37 +37,45 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             }
         }
 
-        private void dgvVariablesArguments_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private async void dgvVariablesArguments_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
                 DataGridView dgv = (DataGridView)sender;
+                var nameCell = dgv.Rows[e.RowIndex].Cells[0];
+                var typeCell = dgv.Rows[e.RowIndex].Cells[1];
+                var valueCell = dgv.Rows[e.RowIndex].Cells[2];
 
                 //variable/argument name column
                 if (e.ColumnIndex == 0)
                 {
-                    var cellValue = dgv.Rows[e.RowIndex].Cells[0].Value;
+                    var cellValue = nameCell.Value;
+
+                    CodeDomProvider provider = CodeDomProvider.CreateProvider("C#");
 
                     //deletes an empty row if it's created without assigning values
                     if ((cellValue == null && _preEditVarArgName != null) ||
-                        (cellValue != null && string.IsNullOrEmpty(cellValue.ToString().Trim())))
+                        (cellValue != null && string.IsNullOrEmpty(cellValue.ToString().Trim())) || 
+                        (cellValue != null && !provider.IsValidIdentifier(cellValue.ToString())))
                     {
                         dgv.Rows.RemoveAt(e.RowIndex);
+                        await StudioVariableMethods.RemoveVariable(_preEditVarArgName, _scriptContext);
                         return;
                     }
                     //removes an empty uncommitted row
-                    else if (dgv.Rows[e.RowIndex].Cells[0].Value == null)
+                    else if (nameCell.Value == null)
                         return;
 
                     //trims any space characters before reassigning the value to the cell
-                    string variableName = dgv.Rows[e.RowIndex].Cells[0].Value.ToString().Trim();
-                    dgv.Rows[e.RowIndex].Cells[0].Value = variableName;
+                    string variableName = nameCell.Value.ToString().Trim();
+                    nameCell.Value = variableName;
 
                     //prevents user from creating a new variable/argument with an already used name
                     if (_existingVarArgSearchList.Contains(variableName) && variableName != _preEditVarArgName)
                     {
                         Notify($"An Error Occurred: A variable or argument with the name '{variableName}' already exists", Color.Red);
                         dgv.Rows.RemoveAt(e.RowIndex);
+                        await StudioVariableMethods.RemoveVariable(_preEditVarArgName, _scriptContext);
                         return;
                     }
                     //if the variable/argument name is valid, set value cell's readonly as false
@@ -80,7 +90,22 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                         else
                             dgv.Rows[e.RowIndex].Cells[2].ReadOnly = false;
 
-                        dgv.Rows[e.RowIndex].Cells[0].Value = variableName.Trim(); 
+                        nameCell.Value = variableName.Trim();
+
+                        await StudioVariableMethods.AddVariable(nameCell.Value.ToString(), (Type)typeCell.Value, valueCell.Value?.ToString(), _scriptContext);
+                    }
+                }
+
+                else if (e.ColumnIndex == 2)
+                {
+                    try
+                    {
+                        await StudioVariableMethods.UpdateVariable(nameCell.Value.ToString(), (Type)typeCell.Value, valueCell.Value?.ToString(), _scriptContext);
+                        valueCell.Style = new DataGridViewCellStyle { ForeColor = Color.Black };
+                    }
+                    catch(Exception)
+                    {
+                        valueCell.Style = new DataGridViewCellStyle { ForeColor = Color.Red };
                     }
                 }
 
@@ -118,7 +143,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             }
         }
 
-        private void dgvVariablesArguments_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        private async void dgvVariablesArguments_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
         {
             try
             {
@@ -133,6 +158,8 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                     //marks the script as unsaved with changes
                     if (!uiScriptTabControl.SelectedTab.Text.Contains(" *"))
                         uiScriptTabControl.SelectedTab.Text += " *";
+
+                    await StudioVariableMethods.RemoveVariable(e.Row.Cells[0].Value.ToString(), _scriptContext);
                 }
             }
             catch (Exception ex)
@@ -200,11 +227,15 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             }
         }
 
-        private void dgvVariablesArguments_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        private async void dgvVariablesArguments_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
                 DataGridView dgv = (DataGridView)sender;
+                var nameCell = dgv.Rows[e.RowIndex].Cells[0];
+                var typeCell = dgv.Rows[e.RowIndex].Cells[1];
+                var valueCell = dgv.Rows[e.RowIndex].Cells[2];
+
                 if (e.RowIndex != -1)
                 {
                     var selectedCell = dgv.Rows[e.RowIndex].Cells[e.ColumnIndex];
@@ -225,41 +256,54 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                         else if ((ScriptArgumentDirection)selectedCell.Value == ScriptArgumentDirection.In)
                             dgv.Rows[e.RowIndex].Cells["ArgumentValue"].ReadOnly = false;
                     }
-
-                    else if (selectedCell.Value is Type && ((Type)selectedCell.Value).Name == "MoreOptions")
+                    else if (e.ColumnIndex == 1)
                     {
-                        //triggers the type form to open if 'More Options...' is selected
-                        frmTypes typeForm = new frmTypes(_typeContext);
-                        typeForm.ShowDialog();
-
-                        //adds type to defaults if new, then commits selection to the cell
-                        if (typeForm.DialogResult == DialogResult.OK)
+                        if (selectedCell.Value is Type && ((Type)selectedCell.Value).Name == "MoreOptions")
                         {
-                            if (!_typeContext.DefaultTypes.ContainsKey(typeForm.SelectedType.GetRealTypeName()))
+                            //triggers the type form to open if 'More Options...' is selected
+                            frmTypes typeForm = new frmTypes(_typeContext);
+                            typeForm.ShowDialog();
+
+                            //adds type to defaults if new, then commits selection to the cell
+                            if (typeForm.DialogResult == DialogResult.OK)
                             {
-                                _typeContext.DefaultTypes.Add(typeForm.SelectedType.GetRealTypeName(), typeForm.SelectedType);
-                                variableType.DataSource = new BindingSource(_typeContext.DefaultTypes, null);
-                                argumentType.DataSource = new BindingSource(_typeContext.DefaultTypes, null);
+                                if (!_typeContext.DefaultTypes.ContainsKey(typeForm.SelectedType.GetRealTypeName()))
+                                {
+                                    _typeContext.DefaultTypes.Add(typeForm.SelectedType.GetRealTypeName(), typeForm.SelectedType);
+                                    variableType.DataSource = new BindingSource(_typeContext.DefaultTypes, null);
+                                    argumentType.DataSource = new BindingSource(_typeContext.DefaultTypes, null);
+                                }
+
+                                dgv.Rows[e.RowIndex].Cells[e.ColumnIndex].Tag = typeForm.SelectedType;
+                                ((DataGridViewComboBoxCell)typeCell).Value = typeForm.SelectedType;
+                            }
+                            //returns the cell to its original value
+                            else
+                            {
+                                dgv.Rows[e.RowIndex].Cells[e.ColumnIndex].Tag = _preEditVarArgType;
+                                ((DataGridViewComboBoxCell)typeCell).Value = _preEditVarArgType;
                             }
 
-                            dgv.Rows[e.RowIndex].Cells[e.ColumnIndex].Tag = typeForm.SelectedType;
-                            ((DataGridViewComboBoxCell)dgv.Rows[e.RowIndex].Cells[1]).Value = typeForm.SelectedType;
+                            typeForm.Dispose();
+
+                            //necessary hack to force the set value to update
+                            SendKeys.Send("{TAB}");
+                            SendKeys.Send("+{TAB}");
                         }
-                        //returns the cell to its original value
-                        else
+
+                        await StudioVariableMethods.RemoveVariable(nameCell.Value.ToString(), _scriptContext);
+
+                        try
                         {
-                            dgv.Rows[e.RowIndex].Cells[e.ColumnIndex].Tag = _preEditVarArgType;
-                            ((DataGridViewComboBoxCell)dgv.Rows[e.RowIndex].Cells[1]).Value = _preEditVarArgType;
+                            await StudioVariableMethods.AddVariable(nameCell.Value.ToString(), (Type)typeCell.Value, valueCell.Value?.ToString(), _scriptContext);
+                            valueCell.Style = new DataGridViewCellStyle { ForeColor = Color.Black };
                         }
-
-                        typeForm.Dispose();
-
-                        //necessary hack to force the set value to update
-                        SendKeys.Send("{TAB}");
-                        SendKeys.Send("+{TAB}");
+                        catch (Exception)
+                        {
+                            valueCell.Style = new DataGridViewCellStyle { ForeColor = Color.Red };
+                        }
                     }
                 }
-                
             }
             catch (Exception ex)
             {
@@ -332,16 +376,16 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
 
         private void ResetVariableArgumentBindings()
         {
-            dgvVariables.DataSource = new BindingList<ScriptVariable>(_scriptVariables);
-            dgvArguments.DataSource = new BindingList<ScriptArgument>(_scriptArguments);
+            dgvVariables.DataSource = new BindingList<ScriptVariable>(_scriptContext.ScriptVariables);
+            dgvArguments.DataSource = new BindingList<ScriptArgument>(_scriptContext.ScriptArguments);
 
-            TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(_importedNamespaces), _typeContext.GroupedTypes);
+            TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(_scriptContext.ImportedNamespaces), _typeContext.GroupedTypes);
 
             var defaultTypesBinding = new BindingSource(_typeContext.DefaultTypes, null);
             variableType.DataSource = defaultTypesBinding;
             argumentType.DataSource = defaultTypesBinding;
 
-            var importedNameSpacesBinding = new BindingSource(_importedNamespaces, null);
+            var importedNameSpacesBinding = new BindingSource(_scriptContext.ImportedNamespaces, null);
             lbxImportedNamespaces.DataSource = importedNameSpacesBinding;
 
             var allNameSpacesBinding = new BindingSource(_allNamespaces, null);
@@ -431,13 +475,13 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
         private void cbxAllNamespaces_SelectionChangeCommitted(object sender, EventArgs e)
         {
             var pair = (KeyValuePair<string, AssemblyReference>)cbxAllNamespaces.SelectedItem;
-            if (!_importedNamespaces.ContainsKey(pair.Key))
+            if (!_scriptContext.ImportedNamespaces.ContainsKey(pair.Key))
             {
-                _importedNamespaces.Add(pair.Key, pair.Value);
-                var importedNameSpacesBinding = new BindingSource(_importedNamespaces, null);
+                _scriptContext.ImportedNamespaces.Add(pair.Key, pair.Value);
+                var importedNameSpacesBinding = new BindingSource(_scriptContext.ImportedNamespaces, null);
                 lbxImportedNamespaces.DataSource = importedNameSpacesBinding;
 
-                TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(_importedNamespaces), _typeContext.GroupedTypes);
+                TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(_scriptContext.ImportedNamespaces), _typeContext.GroupedTypes);
 
                 //marks the script as unsaved with changes
                 if (uiScriptTabControl.SelectedTab != null && !uiScriptTabControl.SelectedTab.Text.Contains(" *"))
@@ -457,11 +501,11 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                     removaList.Add(pair.Key);
                 }
 
-                removaList.ForEach(x => _importedNamespaces.Remove(x));
-                var importedNameSpacesBinding = new BindingSource(_importedNamespaces, null);
+                removaList.ForEach(x => _scriptContext.ImportedNamespaces.Remove(x));
+                var importedNameSpacesBinding = new BindingSource(_scriptContext.ImportedNamespaces, null);
                 lbxImportedNamespaces.DataSource = importedNameSpacesBinding;
 
-                TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(_importedNamespaces), _typeContext.GroupedTypes);
+                TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(_scriptContext.ImportedNamespaces), _typeContext.GroupedTypes);
 
                 //marks the script as unsaved with changes
                 if (uiScriptTabControl.SelectedTab != null && !uiScriptTabControl.SelectedTab.Text.Contains(" *"))

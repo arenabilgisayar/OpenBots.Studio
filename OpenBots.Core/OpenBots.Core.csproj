@@ -267,7 +267,6 @@
     <Compile Include="Script\ScriptArgument.cs" />
     <Compile Include="Script\ScriptAutofacContractResolver.cs" />
     <Compile Include="Script\ScriptElement.cs" />
-    <Compile Include="Script\ScriptObject.cs" />
     <Compile Include="Script\ScriptVariable.cs" />
     <Compile Include="Server\API Methods\AgentMethods.cs" />
     <Compile Include="Server\API Methods\AssetMethods.cs" />
