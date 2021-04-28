@@ -628,11 +628,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             if (specificCommand != "")
                 newCommandForm.DefaultStartupCommand = specificCommand;
 
-            newCommandForm.ScripContext.Variables = new List<OBScriptVariable>(_scriptContext.Variables);
-            newCommandForm.ScripContext.Arguments = new List<ScriptArgument>(_scriptContext.Arguments);
-            newCommandForm.ScripContext.Elements = new List<ScriptElement>(_scriptContext.Elements);
-            newCommandForm.ScripContext.ImportedNamespaces = _scriptContext.ImportedNamespaces;
-
+            newCommandForm.ScriptContext = _scriptContext;
             newCommandForm.AContainer = AContainer;
             newCommandForm.ProjectPath = ScriptProjectPath;
             newCommandForm.HTMLElementRecorderURL = HTMLElementRecorderURL;
@@ -644,15 +640,12 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                 CreateUndoSnapshot();
                 AddCommandToListView(newCommandForm.SelectedCommand);
 
-                _scriptContext.Variables = newCommandForm.ScripContext.Variables;
-                _scriptContext.Arguments = newCommandForm.ScripContext.Arguments;
                 uiScriptTabControl.SelectedTab.Tag = _scriptContext;
             }
 
             if (newCommandForm.SelectedCommand.CommandName == "SeleniumElementActionCommand")
             {
                 CreateUndoSnapshot();
-                _scriptContext.Elements = newCommandForm.ScripContext.Elements;
                 HTMLElementRecorderURL = newCommandForm.HTMLElementRecorderURL;
             }
 

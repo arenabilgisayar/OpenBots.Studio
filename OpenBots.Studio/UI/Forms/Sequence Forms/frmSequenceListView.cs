@@ -265,10 +265,7 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                 //create clone of current command so databinding does not affect if changes are not saved
                 editCommand.OriginalCommand = CommonMethods.Clone(currentCommand);
 
-                editCommand.ScripContext.Variables = new List<ScriptVariable>(ScriptVariables);
-                editCommand.ScripContext.Arguments = new List<ScriptArgument>(ScriptArguments);
-                editCommand.ScripContext.Elements = new List<ScriptElement>(ScriptElements);
-                editCommand.ScripContext.ImportedNamespaces = ImportedNamespaces;
+                editCommand.ScriptContext = ScriptContext;
 
                 editCommand.ProjectPath = ScriptProjectPath;
 
@@ -281,16 +278,12 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                     CreateUndoSnapshot();
                     selectedCommandItem.Tag = editCommand.SelectedCommand;
                     selectedCommandItem.Text = editCommand.SelectedCommand.GetDisplayValue();
-                    selectedCommandItem.SubItems.Add(editCommand.SelectedCommand.GetDisplayValue());
-
-                    ScriptVariables = editCommand.ScripContext.Variables;
-                    ScriptArguments = editCommand.ScripContext.Arguments;                    
+                    selectedCommandItem.SubItems.Add(editCommand.SelectedCommand.GetDisplayValue());                   
                 }
 
                 if (editCommand.SelectedCommand.CommandName == "SeleniumElementActionCommand")
                 {
                     CreateUndoSnapshot();
-                    ScriptElements = editCommand.ScripContext.Elements;
                     HTMLElementRecorderURL = editCommand.HTMLElementRecorderURL;
                 }
 

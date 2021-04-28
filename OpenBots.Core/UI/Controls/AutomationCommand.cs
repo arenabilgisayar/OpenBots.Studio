@@ -107,10 +107,10 @@ namespace OpenBots.Core.UI.Controls
                     switch (control.HelperType)
                     {
                         case UIAdditionalHelperType.ShowVariableHelper:
-                            control.DataSource = editor.ScripContext.Variables;
+                            control.DataSource = editor.ScriptContext.Variables;
                             break;
                         case UIAdditionalHelperType.ShowElementHelper:
-                            control.DataSource = editor.ScripContext.Elements;
+                            control.DataSource = editor.ScriptContext.Elements;
                             break;
                         default:
                             break;

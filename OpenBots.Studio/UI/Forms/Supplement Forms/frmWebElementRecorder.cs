@@ -23,13 +23,14 @@ namespace OpenBots.UI.Forms.Supplement_Forms
 {
     public partial class frmWebElementRecorder : UIForm, IfrmWebElementRecorder
     {
-        public List<ScriptElement> ScriptElements { get; set; }
+        public ScriptContext ScriptContext { get; set; }
         public DataTable SearchParameters { get; set; }
         public string LastItemClicked { get; set; }
         public string StartURL { get; set; }
         public bool IsRecordingSequence { get; set; }
         public bool IsCommandItemSelected { get; set; }
         public frmScriptBuilder CallBackForm { get; set; }
+
         private List<ScriptCommand> _sequenceCommandList;
 
         private string _browserInstanceName;
@@ -56,7 +57,7 @@ namespace OpenBots.UI.Forms.Supplement_Forms
         private string _errorMessage = "Error cloning element. Please Try Again.";
 
         public frmWebElementRecorder(IContainer container, string startURL)
-        {
+        { 
             _container = container;
             _appSettings = new ApplicationSettings();
             _appSettings = _appSettings.GetOrCreateApplicationSettings();
@@ -396,8 +397,11 @@ namespace OpenBots.UI.Forms.Supplement_Forms
 
         private void pbSave_Click(object sender, EventArgs e)
         {
+            if (SearchParameters == null)
+                return;
+
             frmAddElement addElementForm = new frmAddElement("", SearchParameters);
-            addElementForm.ScriptElements = ScriptElements;
+            addElementForm.ScriptContext = ScriptContext;
             addElementForm.ShowDialog();
 
             if (addElementForm.DialogResult == DialogResult.OK)
@@ -408,7 +412,7 @@ namespace OpenBots.UI.Forms.Supplement_Forms
                     ElementValue = addElementForm.ElementValueDT
                 };
 
-                ScriptElements.Add(newElement);
+                ScriptContext.Elements.Add(newElement);
             }
 
             addElementForm.Dispose();
@@ -417,11 +421,8 @@ namespace OpenBots.UI.Forms.Supplement_Forms
         private void pbElements_Click(object sender, EventArgs e)
         {
             frmScriptElements scriptElementForm = new frmScriptElements();
-            scriptElementForm.ScriptElements = new List<ScriptElement>(ScriptElements);
+            scriptElementForm.ScriptContext = ScriptContext;
             scriptElementForm.ShowDialog();
-
-            if (scriptElementForm.DialogResult == DialogResult.OK)
-                ScriptElements = scriptElementForm.ScriptElements;
 
             scriptElementForm.Dispose();
         }

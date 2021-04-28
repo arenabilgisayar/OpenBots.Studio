@@ -217,7 +217,7 @@ namespace OpenBots.Commands.Database
 			
 			try
 			{
-				var oleDBConnection = await CreateConnection(editor.ScripContext);
+				var oleDBConnection = await CreateConnection(editor.ScriptContext);
 				oleDBConnection.Open();
 				oleDBConnection.Close();
 				MessageBox.Show("Connection Successful", "Test Connection", MessageBoxButtons.OK, MessageBoxIcon.Information);

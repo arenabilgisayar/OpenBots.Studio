@@ -11,13 +11,13 @@ namespace OpenBots.UI.Forms.Supplement_Forms
 {
     public partial class frmAddArgument : UIForm
     {
-        public List<ScriptVariable> ScriptVariables { get; set; }
-        public List<ScriptArgument> ScriptArguments { get; set; }
+        public ScriptContext ScriptContext { get; set; }
         private bool _isEditMode;
         private string _editingArgumentName;
         private TypeContext _typeContext;
         private Type _preEditType;
         private ToolTip _typeToolTip;
+        public List<ScriptArgument> ArgumentsCopy { get; set; }
 
         public frmAddArgument(TypeContext typeContext)
         {
@@ -74,8 +74,8 @@ namespace OpenBots.UI.Forms.Supplement_Forms
             }
 
             string newArgumentName = txtArgumentName.Text;
-            var existingVariable = ScriptVariables.Where(var => var.VariableName == newArgumentName).FirstOrDefault();
-            var existingArgument = ScriptArguments.Where(var => var.ArgumentName == newArgumentName).FirstOrDefault();
+            var existingVariable = ScriptContext.Variables.Where(var => var.VariableName == newArgumentName).FirstOrDefault();
+            var existingArgument = ArgumentsCopy.Where(var => var.ArgumentName == newArgumentName).FirstOrDefault();
             if (existingArgument != null || existingVariable != null)
             {
                 if (!_isEditMode || existingArgument.ArgumentName != _editingArgumentName)

@@ -25,10 +25,7 @@ namespace OpenBots.UI.Forms.Sequence_Forms
         #region Instance Variables
         //engine context variables
         private List<ListViewItem> _rowsSelectedForCopy;
-        public List<ScriptVariable> ScriptVariables { get; set; }
-        public List<ScriptArgument> ScriptArguments { get; set; }
-        public List<ScriptElement> ScriptElements { get; set; }
-        public Dictionary<string, AssemblyReference> ImportedNamespaces { get; set; }
+        public ScriptContext ScriptContext { get; set; }
         public Dictionary<string, AssemblyReference> AllNamespaces { get; set; }
         public Project ScriptProject { get; set; }
         public string ScriptProjectPath { get; set; }       
@@ -94,7 +91,7 @@ namespace OpenBots.UI.Forms.Sequence_Forms
             argumentType.DisplayMember = "Key";
             argumentType.ValueMember = "Value";
 
-            var importedNameSpacesBinding = new BindingSource(ImportedNamespaces, null);
+            var importedNameSpacesBinding = new BindingSource(ScriptContext.ImportedNamespaces, null);
             lbxImportedNamespaces.DataSource = importedNameSpacesBinding;
             lbxImportedNamespaces.DisplayMember = "Key";
             lbxImportedNamespaces.ValueMember = "Value";
@@ -321,11 +318,7 @@ namespace OpenBots.UI.Forms.Sequence_Forms
             if (specificCommand != "")
                 newCommandForm.DefaultStartupCommand = specificCommand;
 
-            newCommandForm.ScripContext.Variables = new List<ScriptVariable>(ScriptVariables);
-            newCommandForm.ScripContext.Arguments = new List<ScriptArgument>(ScriptArguments);
-            newCommandForm.ScripContext.Elements = new List<ScriptElement>(ScriptElements);
-            newCommandForm.ScripContext.ImportedNamespaces = ImportedNamespaces;
-
+            newCommandForm.ScriptContext = ScriptContext;
             newCommandForm.AContainer = AContainer;
             newCommandForm.ProjectPath = ScriptProjectPath;
             newCommandForm.HTMLElementRecorderURL = HTMLElementRecorderURL;
@@ -335,16 +328,12 @@ namespace OpenBots.UI.Forms.Sequence_Forms
             {
                 //add to listview
                 CreateUndoSnapshot();
-                AddCommandToListView(newCommandForm.SelectedCommand);
-
-                ScriptVariables = newCommandForm.ScripContext.Variables;
-                ScriptArguments = newCommandForm.ScripContext.Arguments;                
+                AddCommandToListView(newCommandForm.SelectedCommand);              
             }
 
             if (newCommandForm.SelectedCommand.CommandName == "SeleniumElementActionCommand")
             {
                 CreateUndoSnapshot();
-                ScriptElements = newCommandForm.ScripContext.Elements;
                 HTMLElementRecorderURL = newCommandForm.HTMLElementRecorderURL;
             }
 

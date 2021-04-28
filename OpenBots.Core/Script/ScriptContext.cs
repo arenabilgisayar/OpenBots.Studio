@@ -21,7 +21,8 @@ namespace OpenBots.Core.Script
         public ScriptState EngineScriptState { get; set; }
         public string GuidPlaceholder { get; set; }
 
-        public ScriptContext()
+
+        public ScriptContext(bool generateEngineScript = true)
         {
             Variables = new List<OBScriptVariable>();
             Arguments = new List<ScriptArgument>();
@@ -31,26 +32,12 @@ namespace OpenBots.Core.Script
             AssembliesList = NamespaceMethods.GetAssemblies(ImportedNamespaces);
             NamespacesList = NamespaceMethods.GetNamespacesList(ImportedNamespaces);
 
-            EngineScript = CSharpScript.Create("", ScriptOptions.Default.WithReferences(AssembliesList)
+            if (generateEngineScript)
+            {
+                EngineScript = CSharpScript.Create("", ScriptOptions.Default.WithReferences(AssembliesList)
                                                                         .WithImports(NamespacesList));
+            }       
 
-            EngineScriptState = null;
-            GuidPlaceholder = $"v{Guid.NewGuid()}".Replace("-", "");
-        }
-
-        public ScriptContext(List<OBScriptVariable> scriptVariables, List<ScriptArgument> scriptArguments, List<ScriptElement> scriptElements,
-            Dictionary<string, AssemblyReference> importedNamespaces, RSScript engineScript, ScriptState engineScriptState)
-        {
-            Variables = scriptVariables;
-            Arguments = scriptArguments;
-            Elements = scriptElements;
-            ImportedNamespaces = importedNamespaces;
-
-            AssembliesList = NamespaceMethods.GetAssemblies(ImportedNamespaces);
-            NamespacesList = NamespaceMethods.GetNamespacesList(ImportedNamespaces);
-
-            EngineScript = engineScript;
-            EngineScriptState = engineScriptState;
             GuidPlaceholder = $"v{Guid.NewGuid()}".Replace("-", "");
         }
 

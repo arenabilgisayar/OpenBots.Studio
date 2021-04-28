@@ -24,8 +24,8 @@ namespace OpenBots.UI.Forms
 {
     public partial class frmScriptVariables : UIForm
     {
-        public List<ScriptVariable> ScriptVariables { get; set; }
-        public List<ScriptArgument> ScriptArguments { get; set; }
+        public ScriptContext ScriptContext { get; set; }
+
         public string ScriptName { get; set; }
         public string LastModifiedVariableName { get; set; }
         private TreeNode _userVariableParentNode;
@@ -33,6 +33,7 @@ namespace OpenBots.UI.Forms
         private string _emptyValue = "(no default value)";
         private string _leadingType = "Type: ";
         private TypeContext _typeContext;
+        private List<ScriptVariable> _variablesCopy;
 
         #region Initialization and Form Load
         public frmScriptVariables(TypeContext typeContext)
@@ -41,10 +42,12 @@ namespace OpenBots.UI.Forms
             _typeContext = typeContext;
             LastModifiedVariableName = string.Empty;
         }
+
         private void frmScriptVariables_Load(object sender, EventArgs e)
         {
-           //initialize
-            _userVariableParentNode = InitializeNodes("My Task Variables", ScriptVariables);
+            //initialize
+            _variablesCopy = new List<ScriptVariable>(ScriptContext.Variables);
+            _userVariableParentNode = InitializeNodes("My Task Variables", _variablesCopy);
             lblMainLogo.Text = ScriptName + " variables";
         }
 
@@ -73,6 +76,7 @@ namespace OpenBots.UI.Forms
         {
             ResetVariables();
 
+            ScriptContext.Variables = _variablesCopy;
             //return success result
             DialogResult = DialogResult.OK;
         }
@@ -89,8 +93,8 @@ namespace OpenBots.UI.Forms
         {
             //create variable editing form
             frmAddVariable addVariableForm = new frmAddVariable(_typeContext);
-            addVariableForm.ScriptVariables = ScriptVariables;
-            addVariableForm.ScriptArguments = ScriptArguments;
+            addVariableForm.ScriptContext = ScriptContext;
+            addVariableForm.VariablesCopy = _variablesCopy;
 
             ExpandUserVariableNode();
 
@@ -152,10 +156,10 @@ namespace OpenBots.UI.Forms
             if (variableName == "ProjectPath")
                 return;
 
-            //create variable editing form
+            //create variable editing forms
             frmAddVariable addVariableForm = new frmAddVariable(variableName, variableValue, variableType, _typeContext);
-            addVariableForm.ScriptVariables = ScriptVariables;
-            addVariableForm.ScriptArguments = ScriptArguments;
+            addVariableForm.ScriptContext = ScriptContext;
+            addVariableForm.VariablesCopy = _variablesCopy;
 
             ExpandUserVariableNode();
 
@@ -269,7 +273,7 @@ namespace OpenBots.UI.Forms
         private void ResetVariables()
         {
             //remove all variables
-            ScriptVariables.Clear();
+            _variablesCopy.Clear();
 
             //loop each variable and add
             for (int i = 0; i < _userVariableParentNode.Nodes.Count; i++)
@@ -280,7 +284,7 @@ namespace OpenBots.UI.Forms
                 var variableType = (Type)_userVariableParentNode.Nodes[i].Nodes[1].Tag;
 
                 //add to list
-                ScriptVariables.Add(new ScriptVariable() 
+                _variablesCopy.Add(new ScriptVariable() 
                 { 
                     VariableName = variableName, 
                     VariableValue = variableValue,

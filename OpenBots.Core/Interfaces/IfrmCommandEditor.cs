@@ -11,7 +11,7 @@ namespace OpenBots.Core.Infrastructure
     public interface IfrmCommandEditor
     {
         List<AutomationCommand> CommandList { get; set; }
-        ScriptContext ScripContext { get; set; }
+        ScriptContext ScriptContext { get; set; }
         string ProjectPath { get; set; }
         IContainer AContainer { get; set; }
         ScriptCommand SelectedCommand { get; set; }

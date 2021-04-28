@@ -41,7 +41,7 @@ namespace OpenBots.UI.Forms
         //list of available commands
         public List<AutomationCommand> CommandList { get; set; } = new List<AutomationCommand>();
         //engine context assigned from frmScriptBuilder
-        public ScriptContext ScripContext { get; set; } = new ScriptContext();
+        public ScriptContext ScriptContext { get; set; }
         public string ProjectPath { get; set; }
         public IContainer AContainer { get; set; }
         //reference to currently selected command

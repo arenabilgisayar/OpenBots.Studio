@@ -264,7 +264,10 @@ namespace OpenBots.Commands.Task
 			//load arguments if selected and file exists
 			if (assignArgCheckBox.Checked)
 			{
-				var scriptContext = editor.ScripContext;
+				var scriptContext = new ScriptContext();
+
+				scriptContext.Variables = new List<ScriptVariable>(editor.ScriptContext.Variables);
+				scriptContext.Arguments = new List<ScriptArgument>(editor.ScriptContext.Arguments);
 
 				scriptContext.Variables.Where(x => x.VariableName == "ProjectPath").FirstOrDefault().VariableValue = "@\"" + editor.ProjectPath + '"';
 				foreach (var var in scriptContext.Variables)

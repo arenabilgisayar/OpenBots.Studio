@@ -315,10 +315,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                     //create clone of current command so databinding does not affect if changes are not saved
                     editCommand.OriginalCommand = CommonMethods.Clone(currentCommand);
 
-                    editCommand.ScripContext.Variables = new List<ScriptVariable>(_scriptContext.Variables);
-                    editCommand.ScripContext.Arguments = new List<ScriptArgument>(_scriptContext.Arguments);
-                    editCommand.ScripContext.Elements = new List<ScriptElement>(_scriptContext.Elements);
-                    editCommand.ScripContext.ImportedNamespaces = _scriptContext.ImportedNamespaces;
+                    editCommand.ScriptContext = _scriptContext;
 
                     editCommand.ProjectPath = ScriptProjectPath;
 
@@ -333,15 +330,12 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                         selectedCommandItem.Text = editCommand.SelectedCommand.GetDisplayValue();
                         selectedCommandItem.SubItems.Add(editCommand.SelectedCommand.GetDisplayValue());
 
-                        _scriptContext.Variables = editCommand.ScripContext.Variables;
-                        _scriptContext.Arguments = editCommand.ScripContext.Arguments;
                         uiScriptTabControl.SelectedTab.Tag = _scriptContext;
                     }
 
                     if (editCommand.SelectedCommand.CommandName == "SeleniumElementActionCommand")
                     {
                         CreateUndoSnapshot();
-                        _scriptContext.Elements = editCommand.ScripContext.Elements;
                         HTMLElementRecorderURL = editCommand.HTMLElementRecorderURL;
                     }
 
@@ -384,10 +378,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             newSequence.LoadCommands();
 
             //add variables/elements/arguments
-            newSequence.ScriptVariables = _scriptContext.Variables;
-            newSequence.ScriptElements = _scriptContext.Elements;
-            newSequence.ScriptArguments = _scriptContext.Arguments;
-            newSequence.ImportedNamespaces = _scriptContext.ImportedNamespaces;
+            newSequence.ScriptContext = _scriptContext;
             newSequence.AllNamespaces = _allNamespaces;
 
             newSequence.dgvVariables.DataSource = new BindingList<ScriptVariable>(_scriptContext.Variables);
@@ -445,10 +436,10 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                 selectedCommandItem.Text = sequence.GetDisplayValue();
 
                 //update variables/elements/arguments
-                _scriptContext.Variables = newSequence.ScriptVariables.Where(x => !string.IsNullOrEmpty(x.VariableName)).ToList();
-                _scriptContext.Elements = newSequence.ScriptElements.Where(x => !string.IsNullOrEmpty(x.ElementName)).ToList();
-                _scriptContext.Arguments = newSequence.ScriptArguments.Where(x => !string.IsNullOrEmpty(x.ArgumentName)).ToList();
-                _scriptContext.ImportedNamespaces = newSequence.ImportedNamespaces;
+                //_scriptContext.Variables = newSequence.ScriptVariables.Where(x => !string.IsNullOrEmpty(x.VariableName)).ToList();
+                //_scriptContext.Elements = newSequence.ScriptElements.Where(x => !string.IsNullOrEmpty(x.ElementName)).ToList();
+                //_scriptContext.Arguments = newSequence.ScriptArguments.Where(x => !string.IsNullOrEmpty(x.ArgumentName)).ToList();
+                //_scriptContext.ImportedNamespaces = newSequence.ImportedNamespaces;
             }
             else
             {

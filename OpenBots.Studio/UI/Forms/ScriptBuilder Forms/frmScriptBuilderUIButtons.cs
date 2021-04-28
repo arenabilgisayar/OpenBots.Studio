@@ -924,14 +924,12 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             frmScriptVariables scriptVariableEditor = new frmScriptVariables(_typeContext)
             {
                 ScriptName = uiScriptTabControl.SelectedTab.Name,
-                ScriptVariables = new List<ScriptVariable>(_scriptContext.Variables),
-                ScriptArguments = new List<ScriptArgument>(_scriptContext.Arguments)
+                ScriptContext = _scriptContext
             };
 
             if (scriptVariableEditor.ShowDialog() == DialogResult.OK)
             {
                 Invalidate();
-                _scriptContext.Variables = scriptVariableEditor.ScriptVariables;
                 uiScriptTabControl.SelectedTab.Tag = _scriptContext;
 
                 if (!uiScriptTabControl.SelectedTab.Text.Contains(" *"))
@@ -960,13 +958,11 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             frmScriptArguments scriptArgumentEditor = new frmScriptArguments(_typeContext)
             {
                 ScriptName = uiScriptTabControl.SelectedTab.Name,
-                ScriptVariables = new List<ScriptVariable>(_scriptContext.Variables),
-                ScriptArguments = new List<ScriptArgument>(_scriptContext.Arguments)
+                ScriptContext = _scriptContext
             };
 
             if (scriptArgumentEditor.ShowDialog() == DialogResult.OK)
             {
-                _scriptContext.Arguments = scriptArgumentEditor.ScriptArguments;
                 uiScriptTabControl.SelectedTab.Tag = _scriptContext;
 
                 if (!uiScriptTabControl.SelectedTab.Text.Contains(" *"))
@@ -995,13 +991,12 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             frmScriptElements scriptElementEditor = new frmScriptElements
             {
                 ScriptName = uiScriptTabControl.SelectedTab.Name,
-                ScriptElements = new List<ScriptElement>(_scriptContext.Elements)
+                ScriptContext = _scriptContext
             };
 
             if (scriptElementEditor.ShowDialog() == DialogResult.OK)
             {
                 CreateUndoSnapshot();
-                _scriptContext.Elements = scriptElementEditor.ScriptElements;
                 uiScriptTabControl.SelectedTab.Tag = _scriptContext;
             }
 
@@ -1363,7 +1358,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             {
                 CallBackForm = this,
                 IsRecordingSequence = true,
-                ScriptElements = _scriptContext.Elements
+                ScriptContext = _scriptContext
             };
             elementRecorder.chkStopOnClick.Visible = false;
             elementRecorder.IsCommandItemSelected = _selectedTabScriptActions.SelectedItems.Count > 0;
@@ -1373,7 +1368,6 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             elementRecorder.ShowDialog();
 
             HTMLElementRecorderURL = elementRecorder.StartURL;
-            _scriptContext.Elements = elementRecorder.ScriptElements;
 
             elementRecorder.Dispose();
         }

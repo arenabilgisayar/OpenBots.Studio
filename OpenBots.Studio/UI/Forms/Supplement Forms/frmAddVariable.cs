@@ -10,13 +10,13 @@ namespace OpenBots.UI.Forms.Supplement_Forms
 {
     public partial class frmAddVariable : UIForm
     {
-        public List<ScriptVariable> ScriptVariables { get; set; }
-        public List<ScriptArgument> ScriptArguments { get; set; }
+        public ScriptContext ScriptContext { get; set; }
         private bool _isEditMode;
         private string _editingVariableName;
         private TypeContext _typeContext;
         private Type _preEditType;
         private ToolTip _typeToolTip;
+        public List<ScriptVariable> VariablesCopy { get; set; }
 
         public frmAddVariable(TypeContext typeContext)
         {
@@ -70,8 +70,8 @@ namespace OpenBots.UI.Forms.Supplement_Forms
             }
 
             string newVariableName = txtVariableName.Text;
-            var existingVariable = ScriptVariables.Where(var => var.VariableName == newVariableName).FirstOrDefault();
-            var existingArgument = ScriptArguments.Where(arg => arg.ArgumentName == newVariableName).FirstOrDefault();
+            var existingVariable = VariablesCopy.Where(var => var.VariableName == newVariableName).FirstOrDefault();
+            var existingArgument = ScriptContext.Arguments.Where(arg => arg.ArgumentName == newVariableName).FirstOrDefault();
             if (existingVariable != null || existingArgument != null)
             {
                 if (!_isEditMode || existingVariable.VariableName != _editingVariableName)
