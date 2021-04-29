@@ -381,6 +381,8 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
 
             TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(_scriptContext.ImportedNamespaces), _typeContext.GroupedTypes);
 
+            TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(_importedNamespaces), _typeContext.GroupedTypes);
+
             var defaultTypesBinding = new BindingSource(_typeContext.DefaultTypes, null);
             variableType.DataSource = defaultTypesBinding;
             argumentType.DataSource = defaultTypesBinding;

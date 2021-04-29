@@ -364,6 +364,8 @@ namespace OpenBots.UI.Forms.Sequence_Forms
             dgvVariables.DataSource = new BindingList<ScriptVariable>(ScriptContext.Variables);
             dgvArguments.DataSource = new BindingList<ScriptArgument>(ScriptContext.Arguments);
 
+            TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(ImportedNamespaces), TypeContext.GroupedTypes);
+
             var defaultTypesBinding = new BindingSource(TypeContext.DefaultTypes, null);
             variableType.DataSource = defaultTypesBinding;
             argumentType.DataSource = defaultTypesBinding;
