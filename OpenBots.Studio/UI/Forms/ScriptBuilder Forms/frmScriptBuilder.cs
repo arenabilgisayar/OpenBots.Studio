@@ -37,12 +37,6 @@ using System.Windows.Forms;
 using AContainer = Autofac.IContainer;
 using CoreResources = OpenBots.Properties.Resources;
 using Point = System.Drawing.Point;
-using OBScriptVariable = OpenBots.Core.Script.ScriptVariable;
-using RSScript = Microsoft.CodeAnalysis.Scripting.Script;
-using Microsoft.CodeAnalysis.Scripting;
-using OpenBots.Core.Utilities.CommonUtilities;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using OpenBots.UI.Models;
 
 namespace OpenBots.UI.Forms.ScriptBuilder_Forms
 {

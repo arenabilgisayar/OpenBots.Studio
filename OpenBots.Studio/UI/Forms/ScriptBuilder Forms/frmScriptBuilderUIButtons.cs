@@ -50,6 +50,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             ScriptFilePath = null;
             _scriptFileExtension = null;
             _isMainScript = false;
+            _scriptContext = new ScriptContext();
 
             string title = $"New Tab {(uiScriptTabControl.TabCount + 1)} *";
             TabPage newTabPage = new TabPage(title)
@@ -62,7 +63,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             switch (ScriptProject.ProjectType)
             {
                 case ProjectType.OpenBots:
-                    newTabPage.Tag = new ScriptContext();                   
+                    newTabPage.Tag = _scriptContext;
                     newTabPage.Controls.Add(NewLstScriptActions(title));
                     newTabPage.Controls.Add(pnlCommandHelper);
 
@@ -71,8 +72,6 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                     _selectedTabScriptActions = (UIListView)uiScriptTabControl.SelectedTab.Controls[0];
                     _selectedTabScriptActions.Items.Clear();
                     HideSearchInfo();
-
-                    _scriptContext = new ScriptContext();
 
                     //assign ProjectPath variable
                     var projectPathVariable = new ScriptVariable
@@ -91,10 +90,8 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                     break;
                 case ProjectType.Python:
                     newTabPage.Controls.Add(NewTextEditorActions(ProjectType.Python, title));
-                    newTabPage.Tag = new ScriptContext();
+                    newTabPage.Tag = _scriptContext;
                     uiScriptTabControl.SelectedTab = newTabPage;
-
-                    _scriptContext = new ScriptContext();
 
                     //assign pythonVersion and mainFunction arguments
                     var mainFunctionArgument = new ScriptArgument
@@ -119,10 +116,8 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                     break;
                 case ProjectType.TagUI:
                     newTabPage.Controls.Add(NewTextEditorActions(ProjectType.TagUI, title));
-                    newTabPage.Tag = new ScriptContext();
+                    newTabPage.Tag = _scriptContext;
                     uiScriptTabControl.SelectedTab = newTabPage;
-
-                    _scriptContext = new ScriptContext();
 
                     var reportArgument = new ScriptArgument
                     {
@@ -137,10 +132,8 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                     break;
                 case ProjectType.CSScript:
                     newTabPage.Controls.Add(NewTextEditorActions(ProjectType.CSScript, title));
-                    newTabPage.Tag = new ScriptContext();
+                    newTabPage.Tag = _scriptContext;
                     uiScriptTabControl.SelectedTab = newTabPage;
-
-                    _scriptContext = new ScriptContext();
 
                     SetVarArgTabControlSettings(ScriptProject.ProjectType);
                     ResetVariableArgumentBindings();

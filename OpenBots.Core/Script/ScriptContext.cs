@@ -22,7 +22,7 @@ namespace OpenBots.Core.Script
         public string GuidPlaceholder { get; set; }
 
 
-        public ScriptContext(bool generateEngineScript = true)
+        public ScriptContext()
         {
             Variables = new List<OBScriptVariable>();
             Arguments = new List<ScriptArgument>();
@@ -32,19 +32,10 @@ namespace OpenBots.Core.Script
             AssembliesList = NamespaceMethods.GetAssemblies(ImportedNamespaces);
             NamespacesList = NamespaceMethods.GetNamespacesList(ImportedNamespaces);
 
-            if (generateEngineScript)
-            {
-                EngineScript = CSharpScript.Create("", ScriptOptions.Default.WithReferences(AssembliesList)
-                                                                        .WithImports(NamespacesList));
-            }       
-
-            GuidPlaceholder = $"v{Guid.NewGuid()}".Replace("-", "");
-        }
-
-        public void CreateEngineScript()
-        {
             EngineScript = CSharpScript.Create("", ScriptOptions.Default.WithReferences(AssembliesList)
-                                                                        .WithImports(NamespacesList));
+                                                                    .WithImports(NamespacesList));
+     
+            GuidPlaceholder = $"v{Guid.NewGuid()}".Replace("-", "");
         }
     }
 }
