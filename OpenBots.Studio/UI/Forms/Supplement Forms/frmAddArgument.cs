@@ -78,7 +78,7 @@ namespace OpenBots.UI.Forms.Supplement_Forms
 
             if (!_provider.IsValidIdentifier(txtArgumentName.Text))
             {
-                lblArgumentNameError.Text = "Variable Name is invalid";
+                lblArgumentNameError.Text = "Argument Name is invalid";
                 return;
             }
 
