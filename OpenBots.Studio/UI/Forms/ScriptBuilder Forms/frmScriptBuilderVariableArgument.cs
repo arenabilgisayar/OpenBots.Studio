@@ -1,4 +1,4 @@
-﻿using OpenBots.Core.Enums;
+﻿ using OpenBots.Core.Enums;
 using OpenBots.Core.Script;
 using OpenBots.Core.Utilities.CommonUtilities;
 using OpenBots.Studio.Utilities;
