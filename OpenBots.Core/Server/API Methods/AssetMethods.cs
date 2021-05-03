@@ -127,14 +127,13 @@ namespace OpenBots.Core.Server.API_Methods
             }
         }
 
-        public static void AddAsset(string token, Guid? assetId, string value)
+        public static void AddAsset(string token, Guid? assetId, int value)
         {
             apiInstance.Configuration.AccessToken = token;
 
             try
             {
-                int number = int.Parse(value);
-                apiInstance.ApiVapiVersionAssetsIdAddPutAsyncWithHttpInfo(assetId.ToString(), apiVersion, number).Wait();
+                apiInstance.ApiVapiVersionAssetsIdAddPutAsyncWithHttpInfo(assetId.ToString(), apiVersion, value).Wait();
             }
             catch (Exception ex)
             {
@@ -143,14 +142,13 @@ namespace OpenBots.Core.Server.API_Methods
             }
         }
 
-        public static void SubtractAsset(string token, Guid? assetId, string value)
+        public static void SubtractAsset(string token, Guid? assetId, int value)
         {
             apiInstance.Configuration.AccessToken = token;
 
             try
             {
-                int number = int.Parse(value);
-                apiInstance.ApiVapiVersionAssetsIdSubtractPutAsyncWithHttpInfo(assetId.ToString(), apiVersion, number).Wait();
+                apiInstance.ApiVapiVersionAssetsIdSubtractPutAsyncWithHttpInfo(assetId.ToString(), apiVersion, value).Wait();
             }
             catch (Exception ex)
             {

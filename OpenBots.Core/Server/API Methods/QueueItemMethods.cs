@@ -68,22 +68,19 @@ namespace OpenBots.Core.Server.API_Methods
             }
         }
 
-        public static void AttachFiles(string token, Guid? queueItemId, string attachments)
+        public static void AttachFiles(string token, Guid? queueItemId, List<string> attachments)
         {
             attachmentApiInstance.Configuration.AccessToken = token;
 
-            try
+            if (!string.IsNullOrEmpty(attachments))
             {
                 List<FileStream> attachmentsList = new List<FileStream>();
-                if (!string.IsNullOrEmpty(attachments))
+                foreach (var attachment in attachments)
                 {
-                    var splitAttachments = attachments.Split(';');
-                    foreach (var vAttachment in splitAttachments)
-                    {
-                        FileStream _file = new FileStream(vAttachment, FileMode.Open, FileAccess.Read);
-                        attachmentsList.Add(_file);
-                    }
+                    FileStream _file = new FileStream(attachment, FileMode.Open, FileAccess.Read);
+                    attachmentsList.Add(_file);
                 }
+            }
 
                 attachmentApiInstance.ApiVapiVersionQueueItemsQueueItemIdQueueItemAttachmentsPostAsyncWithHttpInfo(queueItemId.ToString(), apiVersion, attachmentsList).Wait();
 

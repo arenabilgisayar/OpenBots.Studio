@@ -13,6 +13,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Windows.Forms;
 using Application = Microsoft.Office.Interop.Word.Application;
 using DataTable = System.Data.DataTable;
+using Tasks = System.Threading.Tasks;
 
 namespace OpenBots.Commands.Word
 {
@@ -32,7 +33,7 @@ namespace OpenBots.Commands.Word
 		[Required]
 		[DisplayName("DataTable")]
 		[Description("Enter the DataTable to append to the Document.")]
-		[SampleUsage("{vDataTable}")]
+		[SampleUsage("vDataTable")]
 		[Remarks("")]
 		[Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
 		[CompatibleTypes(new Type[] { typeof(DataTable) })]
@@ -47,12 +48,12 @@ namespace OpenBots.Commands.Word
 
 			v_InstanceName = "DefaultWord";
 		}
-		public override void RunCommand(object sender)
+		public async override Tasks.Task RunCommand(object sender)
 		{
 			var engine = (IAutomationEngineInstance)sender;
 			var wordObject = v_InstanceName.GetAppInstance(engine);
 
-			DataTable dataTable = (DataTable)v_DataTable.ConvertUserVariableToObject(engine, nameof(v_DataTable), this);
+			DataTable dataTable = (DataTable)await v_DataTable.EvaluateCode(engine);
 
 			//selecting the word instance and open document
 			Application wordInstance = (Application)wordObject;
@@ -61,13 +62,12 @@ namespace OpenBots.Commands.Word
 			//converting System DataTable to Word DataTable
 			int RowCount = dataTable.Rows.Count; 
 			int ColumnCount = dataTable.Columns.Count;
-			object[,] DataArray = new object[RowCount + 1, ColumnCount + 1];
+			object[,] DataArray = new object[RowCount, ColumnCount];
 		   
 			int r = 0;
-			for (int c = 0; c <= ColumnCount - 1; c++)
+			for (int c = 0; c < ColumnCount; c++)
 			{
-				DataArray[r, c] = dataTable.Columns[c].ColumnName;
-				for (r = 0; r <= RowCount - 1; r++)
+				for (r = 0; r < RowCount; r++)
 				{
 					DataArray[r, c] = dataTable.Rows[r][c];
 				} //end row loop
@@ -114,6 +114,9 @@ namespace OpenBots.Commands.Word
 			wordDocument.Application.Selection.Tables[1].Rows[1].Select();
 			wordDocument.Application.Selection.Cells.VerticalAlignment = WdCellVerticalAlignment.wdCellAlignVerticalCenter;
 			wordDocument.Application.Selection.Font.Bold = 1;
+
+			int docRowCount = wordDocument.Application.Selection.Tables[1].Rows.Count;
+			wordDocument.Application.Selection.Tables[1].Rows[docRowCount].Delete();
 		}
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)

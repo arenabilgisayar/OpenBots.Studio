@@ -12,26 +12,24 @@ namespace OpenBots.Core.Server.API_Methods
     {
         public static EmailsApi apiInstance = new EmailsApi(serverURL);
 
-        public static void SendServerEmail(string token, EmailMessage emailMessage, string attachments, string accountName)
+        public static void SendServerEmail(string token, EmailMessage emailMessage, List<string> attachments, string accountName)
         {
             apiInstance.Configuration.AccessToken = token;
 
-            try
+            if (attachments != null)
             {
                 List<FileStream> attachmentsList = new List<FileStream>();
-                if (!string.IsNullOrEmpty(attachments))
+                foreach (var attachment in attachments)
                 {
-                    var splitAttachments = attachments.Split(';');
-                    foreach (var vAttachment in splitAttachments)
-                    {
-                        FileStream _file = new FileStream(vAttachment, FileMode.Open, FileAccess.Read);
-                        attachmentsList.Add(_file);
-                    }
+                    FileStream _file = new FileStream(attachment, FileMode.Open, FileAccess.Read);
+                    attaachmentsList.Add(_file);
                 }
-                var emailMessageJson = JsonConvert.SerializeObject(emailMessage);
-                apiInstance.ApiVapiVersionEmailsSendPostAsyncWithHttpInfo(apiVersion, emailMessageJson, attachmentsList, accountName).Wait();
+            }
 
-                foreach (var file in attachmentsList)
+            var emailMessageJson = JsonConvert.SerializeObject(emailMessage);
+            apiInstance.ApiVapiVersionEmailsSendPostAsyncWithHttpInfo(apiVersion, emailMessageJson, attachmentsList, accountName).Wait();
+
+            foreach (var file in attachmentsList)
                 {
                     file.Flush();
                     file.Dispose();
@@ -43,27 +41,6 @@ namespace OpenBots.Core.Server.API_Methods
                 throw new InvalidOperationException("Exception when calling EmailsApi.ApiVapiVersionEmailsSendPostAsyncWithHttpInfo: "
                     + ex.Message);
             }
-        }
-
-        public static List<EmailAddress> GetEmailList(string recipients)
-        {
-            var emailList = new List<EmailAddress>();
-
-            if (!string.IsNullOrEmpty(recipients))
-            {
-                var splitRecipients = recipients.Split(';');
-                foreach (var recipient in splitRecipients)
-                {
-                    var email = new EmailAddress()
-                    {
-                        Name = recipient,
-                        Address = recipient
-                    };
-                    emailList.Add(email);
-                }
-            }
-
-            return emailList;
         }
     }
 }

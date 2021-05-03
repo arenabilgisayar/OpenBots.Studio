@@ -13,7 +13,7 @@ namespace OpenBots.Commands.Asset.Test
         private UpdateAssetCommand _updateAsset;
 
         [Fact]
-        public void AppendsTextAsset()
+        public async void AppendsTextAsset()
         {
             _engine = new AutomationEngineInstance(null);
             _appendTextAsset = new AppendTextAssetCommand();
@@ -44,8 +44,8 @@ namespace OpenBots.Commands.Asset.Test
 
             _getAsset.RunCommand(_engine);
 
-            string initialText = "{initialText}".ConvertUserVariableToString(_engine);
-            string updatedAsset = "{updatedAsset}".ConvertUserVariableToString(_engine);
+            string initialText = (string)await "{initialText}".EvaluateCode(_engine);
+            string updatedAsset = (string)await "{updatedAsset}".EvaluateCode(_engine);
 
             resetAsset(assetName, initialText, "Text");
 
@@ -53,7 +53,7 @@ namespace OpenBots.Commands.Asset.Test
         }
 
         [Fact]
-        public void HandlesNonexistentAsset()
+        public async System.Threading.Tasks.Task HandlesNonexistentAsset()
         {
             _engine = new AutomationEngineInstance(null);
             _appendTextAsset = new AppendTextAssetCommand();

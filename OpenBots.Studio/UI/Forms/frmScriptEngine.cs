@@ -23,6 +23,7 @@ using OpenBots.Core.Settings;
 using OpenBots.Core.UI.DTOs;
 using OpenBots.Core.UI.Forms;
 using OpenBots.Core.Utilities.CommonUtilities;
+using OpenBots.Core.Utilities.FormsUtilities;
 using OpenBots.Engine;
 using OpenBots.Nuget;
 using OpenBots.Properties;
@@ -37,7 +38,6 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Windows.Forms;
 
 namespace OpenBots.UI.Forms
@@ -257,7 +257,8 @@ namespace OpenBots.UI.Forms
                 List<string> assemblyList = NugetPackageManager.LoadPackageAssemblies(_configPath, true);
                 Dictionary<string, List<Type>> groupedTypes = new Dictionary<string, List<Type>>();
                 Dictionary<string, AssemblyReference> allNamespaces = new Dictionary<string, AssemblyReference>();
-                var builder = AppDomainSetupManager.LoadBuilder(assemblyList, groupedTypes, allNamespaces);
+                Dictionary<string, AssemblyReference> importedNamespaces = new Dictionary<string, AssemblyReference>();
+                var builder = AppDomainSetupManager.LoadBuilder(assemblyList, groupedTypes, allNamespaces, importedNamespaces);
                 ScriptEngineContext.Container = builder.Build();
             }
 
@@ -267,6 +268,9 @@ namespace OpenBots.UI.Forms
                 BringToFront();
                 MoveFormToBottomRight(this);
             }
+
+            if (!ScriptEngineContext.IsDebugMode)
+                FormsHelper.HideForm(this);
 
             CommandControls = new CommandControls();
 
@@ -434,13 +438,16 @@ namespace OpenBots.UI.Forms
                 {
                     var assignedParentVariable = parentVariableList.Where(v => v.VariableName == argument.AssignedVariable).FirstOrDefault();
                     var assignedParentArgument = parentArgumentList.Where(a => a.ArgumentName == argument.AssignedVariable).FirstOrDefault();
+
                     if (assignedParentVariable != null)
                     {
-                        assignedParentVariable.VariableValue = childArgumentList.Where(a => a.ArgumentName == argument.ArgumentName).First().ArgumentValue;
+                        var newVarValue = childArgumentList.Where(a => a.ArgumentName == argument.ArgumentName).First().ArgumentValue;
+                        newVarValue.SetVariableValue(parentAutomationEngineIntance, assignedParentVariable.VariableName);
                     }
                     else if (assignedParentArgument != null)
                     {
-                        assignedParentArgument.ArgumentValue = childArgumentList.Where(a => a.ArgumentName == argument.ArgumentName).First().ArgumentValue;
+                        var newArgValue = childArgumentList.Where(a => a.ArgumentName == argument.ArgumentName).First().ArgumentValue;
+                        newArgValue.SetVariableValue(parentAutomationEngineIntance, assignedParentArgument.ArgumentName);
                     }
                     else
                     {

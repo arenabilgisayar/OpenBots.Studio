@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Windows.Forms;
 using OpenBots.Core.Properties;
+using System.Threading.Tasks;
 
 namespace OpenBots.Commands.Asset
 {
@@ -24,10 +25,10 @@ namespace OpenBots.Commands.Asset
 		[Required]
 		[DisplayName("Asset Name")]
 		[Description("Enter the name of the Asset.")]
-		[SampleUsage("Name || {vAssetName}")]
+		[SampleUsage("\"Name\" || vAssetName")]
 		[Remarks("")]
 		[Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
-		[CompatibleTypes(null, true)]
+		[CompatibleTypes(new Type[] { typeof(string) })]
 		public string v_AssetName { get; set; }
 
 		[Required]
@@ -44,18 +45,18 @@ namespace OpenBots.Commands.Asset
 		[Required]
 		[DisplayName("Output Directory Path")]
 		[Description("Enter or Select the directory path to store the file in.")]
-		[SampleUsage(@"C:\temp || {vDirectoryPath} || {ProjectPath}\temp")]
+		[SampleUsage("@\"C:\\temp\" || ProjectPath + @\"\\temp\" || vDirectoryPath")]
 		[Remarks("This input should only be used for File type Assets.")]
 		[Editor("ShowVariableHelper", typeof(UIAdditionalHelperType))]
 		[Editor("ShowFolderSelectionHelper", typeof(UIAdditionalHelperType))]
-		[CompatibleTypes(null, true)]
+		[CompatibleTypes(new Type[] { typeof(string) })]
 		public string v_OutputDirectoryPath { get; set; }
 
 		[Required]
 		[Editable(false)]
 		[DisplayName("Output Asset Value Variable")]
 		[Description("Create a new variable or select a variable from the list.")]
-		[SampleUsage("{vUserVariable}")]
+		[SampleUsage("vUserVariable")]
 		[Remarks("New variables/arguments may be instantiated by utilizing the Ctrl+K/Ctrl+J shortcuts.")]
 		[CompatibleTypes(new Type[] { typeof(string), typeof(double) })]
 		public string v_OutputUserVariableName { get; set; }
@@ -82,11 +83,11 @@ namespace OpenBots.Commands.Asset
 			CommonMethods.InitializeDefaultWebProtocol();
 		}
 
-		public override void RunCommand(object sender)
+		public async override Task RunCommand(object sender)
 		{
 			var engine = (IAutomationEngineInstance)sender;
-			var vAssetName = v_AssetName.ConvertUserVariableToString(engine);
-			var vOutputDirectoryPath = v_OutputDirectoryPath.ConvertUserVariableToString(engine);
+			var vAssetName = (string)await v_AssetName.EvaluateCode(engine);
+			var vOutputDirectoryPath = (string)await v_OutputDirectoryPath.EvaluateCode(engine);
 
 			var token = AuthMethods.GetAuthToken();
 			var asset = AssetMethods.GetAsset(token, vAssetName, v_AssetType);
@@ -94,32 +95,32 @@ namespace OpenBots.Commands.Asset
 			if (asset == null)
 				throw new DataException($"No Asset was found for '{vAssetName}' with type '{v_AssetType}'");
 
-            dynamic assetValue;
-            switch (v_AssetType)
-            {
-                case "Text":
-                    assetValue = asset.TextValue;
-                    break;
-                case "Number":
-                    assetValue = asset.NumberValue;
-                    break;
-                case "Json":
-                    assetValue = asset.JsonValue;
-                    break;
-                case "File":
-                    var fileId = asset.FileId;
-                    File file = FileMethods.GetFile(token, fileId);
-                    AssetMethods.DownloadFileAsset(token, asset.Id, vOutputDirectoryPath, file.Name);
-                    assetValue = string.Empty;
-                    break;
-                default:
-                    assetValue = string.Empty;
-                    break;
-            }
-
-            if (v_AssetType != "File")
-                ((object)assetValue).StoreInUserVariable(engine, v_OutputUserVariableName, nameof(v_OutputUserVariableName), this);
-        }
+			dynamic assetValue;
+			switch (v_AssetType)
+			{
+				case "Text":
+					assetValue = asset.TextValue;
+					break;
+				case "Number":
+					assetValue = asset.NumberValue;
+					break;
+				case "Json":
+					assetValue = asset.JsonValue;
+					break;
+				case "File":
+					var fileId = asset.FileId;
+					File file = FileMethods.GetFile(token, fileId);
+					AssetMethods.DownloadFileAsset(token, asset.Id, vOutputDirectoryPath, file.Name);
+					assetValue = string.Empty;
+					break;
+				default:
+					assetValue = string.Empty;
+					break;
+			}
+			
+			if (v_AssetType != "File")
+				((object)assetValue).SetVariableValue(engine, v_OutputUserVariableName);
+		}
 
 		public override List<Control> Render(IfrmCommandEditor editor, ICommandControls commandControls)
 		{

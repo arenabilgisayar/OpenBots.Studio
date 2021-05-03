@@ -20,7 +20,7 @@ namespace OpenBots.Commands.Asset.Test
         }
 
         [Fact]
-        public void GetsTextAsset()
+        public async void GetsTextAsset()
         {
             _engine = new AutomationEngineInstance(null);
             _getAsset = new GetAssetCommand();
@@ -34,11 +34,11 @@ namespace OpenBots.Commands.Asset.Test
 
             _getAsset.RunCommand(_engine);
 
-            Assert.Equal("testText", "{output}".ConvertUserVariableToString(_engine));
+            Assert.Equal("testText", (string)await "{output}".EvaluateCode(_engine));
         }
 
         [Fact]
-        public void GetsNumberAsset()
+        public async void GetsNumberAsset()
         {
             _engine = new AutomationEngineInstance(null);
             _getAsset = new GetAssetCommand();
@@ -52,13 +52,13 @@ namespace OpenBots.Commands.Asset.Test
 
             _getAsset.RunCommand(_engine);
 
-            var asset = "{output}".ConvertUserVariableToString(_engine);
+            var asset = (string)await "{output}".EvaluateCode(_engine);
 
             Assert.Equal("42", asset);
         }
 
         [Fact]
-        public void GetsJsonAsset()
+        public async void GetsJsonAsset()
         {
             _engine = new AutomationEngineInstance(null);
             _getAsset = new GetAssetCommand();
@@ -72,7 +72,7 @@ namespace OpenBots.Commands.Asset.Test
 
             _getAsset.RunCommand(_engine);
 
-            string jsonString = "{output}".ConvertUserVariableToString(_engine);
+            string jsonString = (string)await "{output}".EvaluateCode(_engine);
             JObject jsonObject = JObject.Parse(jsonString);
             Assert.Equal("testText", jsonObject["text"]);
         }
@@ -99,7 +99,7 @@ namespace OpenBots.Commands.Asset.Test
         }
 
         [Fact]
-        public void HandlesNonexistentAsset()
+        public async System.Threading.Tasks.Task HandlesNonexistentAsset()
         {
             _engine = new AutomationEngineInstance(null);
             _getAsset = new GetAssetCommand();
@@ -111,7 +111,7 @@ namespace OpenBots.Commands.Asset.Test
             _getAsset.v_OutputDirectoryPath = "";
             _getAsset.v_OutputUserVariableName = "{output}";
 
-            Assert.Throws<InvalidOperationException>(() => _getAsset.RunCommand(_engine));
+            Assert.ThrowsAsync<InvalidOperationException>(() => _getAsset.RunCommand(_engine));
         }
     }
 }

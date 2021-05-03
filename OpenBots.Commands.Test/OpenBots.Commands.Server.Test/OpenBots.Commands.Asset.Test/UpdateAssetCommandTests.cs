@@ -14,7 +14,7 @@ namespace OpenBots.Commands.Asset.Test
         private GetAssetCommand _getAsset;
 
         [Fact]
-        public void UpdatesTextAsset()
+        public async void UpdatesTextAsset()
         {
             _engine = new AutomationEngineInstance(null);
             _updateAsset = new UpdateAssetCommand();
@@ -39,14 +39,14 @@ namespace OpenBots.Commands.Asset.Test
 
             _getAsset.RunCommand(_engine);
 
-            string outputAsset = "{output}".ConvertUserVariableToString(_engine);
+            string outputAsset = (string)await "{output}".EvaluateCode(_engine);
             Assert.Equal("newText", outputAsset);
 
             resetAsset(assetName, "testText", "Text");
         }
 
         [Fact]
-        public void UpdatesNumberAsset()
+        public async void UpdatesNumberAsset()
         {
             _engine = new AutomationEngineInstance(null);
             _updateAsset = new UpdateAssetCommand();
@@ -71,14 +71,14 @@ namespace OpenBots.Commands.Asset.Test
 
             _getAsset.RunCommand(_engine);
 
-            string outputAsset = "{output}".ConvertUserVariableToString(_engine);
+            string outputAsset = (string)await "{output}".EvaluateCode(_engine);
             Assert.Equal("70", outputAsset);
 
             resetAsset(assetName, "42", "Number");
         }
 
         [Fact]
-        public void UpdatesJsonAsset()
+        public async void UpdatesJsonAsset()
         {
             _engine = new AutomationEngineInstance(null);
             _updateAsset = new UpdateAssetCommand();
@@ -103,7 +103,7 @@ namespace OpenBots.Commands.Asset.Test
 
             _getAsset.RunCommand(_engine);
 
-            JObject outputAsset = JObject.Parse("{output}".ConvertUserVariableToString(_engine));
+            JObject outputAsset = (JObject)await "{output}".EvaluateCode(_engine);
             Assert.Equal("newText", outputAsset["text"]);
 
             resetAsset(assetName, "{ \"text\": \"testText\" }", "Json");
@@ -145,7 +145,7 @@ namespace OpenBots.Commands.Asset.Test
         }
 
         [Fact]
-        public void HandlesNonexistentAsset()
+        public async System.Threading.Tasks.Task HandlesNonexistentAsset()
         {
             _engine = new AutomationEngineInstance(null);
             _updateAsset = new UpdateAssetCommand();
@@ -161,7 +161,7 @@ namespace OpenBots.Commands.Asset.Test
             _updateAsset.v_AssetFilePath = "";
             _updateAsset.v_AssetValue = "{newAsset}";
 
-            Assert.Throws<ArgumentNullException>(() => _updateAsset.RunCommand(_engine));
+            Assert.ThrowsAsync<ArgumentNullException>(() => _updateAsset.RunCommand(_engine));
         }
 
         private void resetAsset(string assetName, string assetVal, string type)

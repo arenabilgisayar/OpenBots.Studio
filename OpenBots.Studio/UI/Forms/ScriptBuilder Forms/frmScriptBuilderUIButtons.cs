@@ -84,7 +84,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
 
                     _scriptArguments = new List<ScriptArgument>();
                     _scriptElements = new List<ScriptElement>();
-                    _importedNamespaces = ScriptDefaultNamespaces.DefaultNamespaces;
+                    _importedNamespaces = new Dictionary<string, AssemblyReference>(ScriptDefaultNamespaces.DefaultNamespaces);
 
                     ResetVariableArgumentBindings();
 
@@ -1108,7 +1108,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                 NotifySync("Loading package assemblies...", Color.White);
 
                 var assemblyList = NugetPackageManager.LoadPackageAssemblies(configPath);
-                _builder = AppDomainSetupManager.LoadBuilder(assemblyList, _typeContext.GroupedTypes, _allNamespaces);
+                _builder = AppDomainSetupManager.LoadBuilder(assemblyList, _typeContext.GroupedTypes, _allNamespaces, _importedNamespaces);
                 AContainer = _builder.Build();
 
                 LoadCommands(this);
@@ -1158,7 +1158,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                 //load existing command assemblies
                 string configPath = Path.Combine(ScriptProjectPath, "project.obconfig");
                 var assemblyList = NugetPackageManager.LoadPackageAssemblies(configPath);
-                _builder = AppDomainSetupManager.LoadBuilder(assemblyList, _typeContext.GroupedTypes, _allNamespaces);
+                _builder = AppDomainSetupManager.LoadBuilder(assemblyList, _typeContext.GroupedTypes, _allNamespaces, _importedNamespaces);
                 AContainer = _builder.Build();
 
                 LoadCommands(this);
@@ -1258,7 +1258,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                     break;
             }
 
-            EngineContext engineContext = new EngineContext(ScriptFilePath, ScriptProjectPath, AContainer, this, EngineLogger, null, null, null, null, null, null, startLineNumber, _isDebugMode);
+            EngineContext engineContext = new EngineContext(ScriptFilePath, ScriptProjectPath, AContainer, this, EngineLogger, null, null, null, null, null, null, startLineNumber, _isDebugMode, false);
 
             //initialize Engine
             CurrentEngine = new frmScriptEngine(engineContext, false, _isDebugMode);

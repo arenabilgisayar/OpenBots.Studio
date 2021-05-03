@@ -1,6 +1,7 @@
 ﻿using OpenBots.Core.Enums;
 using OpenBots.Core.Script;
 using OpenBots.Core.Utilities.CommonUtilities;
+using OpenBots.Studio.Utilities;
 using OpenBots.UI.Forms.Supplement_Forms;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,6 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                 _existingVarArgSearchList = new List<string>();
                 _existingVarArgSearchList.AddRange(ScriptArguments.Select(arg => arg.ArgumentName).ToList());
                 _existingVarArgSearchList.AddRange(ScriptVariables.Select(var => var.VariableName).ToList());
-                _existingVarArgSearchList.AddRange(CommonMethods.GenerateSystemVariables().Select(var => var.VariableName).ToList());
             }
             catch (Exception ex)
             {
@@ -75,18 +75,6 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                             cell.ReadOnly = false;
 
                         dgv.Rows[e.RowIndex].Cells[0].Value = variableName.Trim();
-                    }
-                }
-                //variable/argument type column
-                else if (e.ColumnIndex == 1)
-                {
-                    Type selectedType = (Type)dgv.Rows[e.RowIndex].Cells[1].Value;
-                    if (selectedType.IsPrimitive || selectedType == typeof(string))
-                        dgv.Rows[e.RowIndex].Cells[2].ReadOnly = false;
-                    else
-                    {
-                        dgv.Rows[e.RowIndex].Cells[2].Value = null;
-                        dgv.Rows[e.RowIndex].Cells[2].ReadOnly = true;
                     }
                 }
 
@@ -158,8 +146,8 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                         row.ReadOnly = true;
 
                     //adds new type to default list when a script containing non-defaults is loaded
-                    if (!TypeContext.DefaultTypes.ContainsKey(((Type)row.Cells[1].Value)?.ToString()))
-                        TypeContext.DefaultTypes.Add(((Type)row.Cells[1].Value).ToString(), (Type)row.Cells[1].Value);
+                    if (!TypeContext.DefaultTypes.ContainsKey(((Type)row.Cells[1].Value)?.GetRealTypeName()))
+                        TypeContext.DefaultTypes.Add(((Type)row.Cells[1].Value).GetRealTypeName(), (Type)row.Cells[1].Value);
 
                     //sets Value cell to readonly if the Direction is Out
                     if (row.Cells.Count == 4 && row.Cells["Direction"].Value != null &&
@@ -228,17 +216,17 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                     else if (selectedCell.Value is Type && ((Type)selectedCell.Value).Name == "MoreOptions")
                     {
                         //triggers the type form to open if 'More Options...' is selected
-                        frmTypes typeForm = new frmTypes(TypeContext.GroupedTypes);
+                        frmTypes typeForm = new frmTypes(TypeContext);
                         typeForm.ShowDialog();
 
                         //adds type to defaults if new, then commits selection to the cell
                         if (typeForm.DialogResult == DialogResult.OK)
                         {
-                            if (!TypeContext.DefaultTypes.ContainsKey(typeForm.SelectedType.FullName))
+                            if (!TypeContext.DefaultTypes.ContainsKey(typeForm.SelectedType.GetRealTypeName()))
                             {
-                                TypeContext.DefaultTypes.Add(typeForm.SelectedType.FullName, typeForm.SelectedType);
-                                VariableType.DataSource = new BindingSource(TypeContext.DefaultTypes, null);
-                                ArgumentType.DataSource = new BindingSource(TypeContext.DefaultTypes, null);
+                                TypeContext.DefaultTypes.Add(typeForm.SelectedType.GetRealTypeName(), typeForm.SelectedType);
+                                variableType.DataSource = new BindingSource(TypeContext.DefaultTypes, null);
+                                argumentType.DataSource = new BindingSource(TypeContext.DefaultTypes, null);
                             }
 
                             dgv.Rows[e.RowIndex].Cells[e.ColumnIndex].Tag = typeForm.SelectedType;
@@ -250,6 +238,8 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                             dgv.Rows[e.RowIndex].Cells[e.ColumnIndex].Tag = _preEditVarArgType;
                             ((DataGridViewComboBoxCell)dgv.Rows[e.RowIndex].Cells[1]).Value = _preEditVarArgType;
                         }
+
+                        typeForm.Dispose();
 
                         //necessary hack to force the set value to update
                         SendKeys.Send("{TAB}");
@@ -332,9 +322,11 @@ namespace OpenBots.UI.Forms.Sequence_Forms
             dgvVariables.DataSource = new BindingList<ScriptVariable>(ScriptVariables);
             dgvArguments.DataSource = new BindingList<ScriptArgument>(ScriptArguments);
 
+            TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(ImportedNamespaces), TypeContext.GroupedTypes);
+
             var defaultTypesBinding = new BindingSource(TypeContext.DefaultTypes, null);
-            VariableType.DataSource = defaultTypesBinding;
-            ArgumentType.DataSource = defaultTypesBinding;
+            variableType.DataSource = defaultTypesBinding;
+            argumentType.DataSource = defaultTypesBinding;
 
             var importedNameSpacesBinding = new BindingSource(ImportedNamespaces, null);
             lbxImportedNamespaces.DataSource = importedNameSpacesBinding;
@@ -383,6 +375,8 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                 var importedNameSpacesBinding = new BindingSource(ImportedNamespaces, null);
                 lbxImportedNamespaces.DataSource = importedNameSpacesBinding;
 
+                TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(ImportedNamespaces), TypeContext.GroupedTypes);
+
                 //marks the script as unsaved with changes
                 if (uiScriptTabControl.SelectedTab != null && !uiScriptTabControl.SelectedTab.Text.Contains(" *"))
                     uiScriptTabControl.SelectedTab.Text += " *";
@@ -404,6 +398,8 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                 removaList.ForEach(x => ImportedNamespaces.Remove(x));
                 var importedNameSpacesBinding = new BindingSource(ImportedNamespaces, null);
                 lbxImportedNamespaces.DataSource = importedNameSpacesBinding;
+
+                TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(ImportedNamespaces), TypeContext.GroupedTypes);
 
                 //marks the script as unsaved with changes
                 if (uiScriptTabControl.SelectedTab != null && !uiScriptTabControl.SelectedTab.Text.Contains(" *"))
