@@ -64,7 +64,7 @@ namespace OpenBots.Commands.Asset.Test
             VariableMethods.CreateTestVariable(assetName, _engine, "{assetName}", typeof(string));
             VariableMethods.CreateTestVariable(toAppend, _engine, "{toAppend}", typeof(string));
 
-            Assert.Throws<InvalidOperationException>(() => _appendTextAsset.RunCommand(_engine));
+            Assert.ThrowsAsync<InvalidOperationException>(() => _appendTextAsset.RunCommand(_engine));
         }
 
         private void resetAsset(string assetName, string assetVal, string type)
