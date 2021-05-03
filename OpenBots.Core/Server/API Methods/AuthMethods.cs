@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using IdentityModel.Client;
+using Newtonsoft.Json.Linq;
 using OpenBots.Core.Server.User;
 using OpenBots.Server.SDK.Api;
 using OpenBots.Server.SDK.Model;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using static OpenBots.Core.Server.User.EnvironmentSettings;
 
 namespace OpenBots.Core.Server.API_Methods
@@ -14,6 +16,9 @@ namespace OpenBots.Core.Server.API_Methods
         {
             string agentId = settings["AgentId"];
             string serverURL = settings["OpenBotsServerUrl"];
+            //TODO: server type will be stored in settings??
+            //string serverType = "Open Source";
+            string serverType = "Cloud";
 
             if (string.IsNullOrEmpty(agentId))
                 throw new Exception("Agent is not connected");
@@ -27,22 +32,43 @@ namespace OpenBots.Core.Server.API_Methods
             if (string.IsNullOrEmpty(serverURL))
                 throw new Exception("Server URL not found");
 
-            var apiInstance = new AuthApi(serverURL);
-            var login = new Login(username, password);
             string token;
 
-            try
+            if (serverType == "Open Source")
             {
-                var result = apiInstance.ApiVapiVersionAuthTokenPostWithHttpInfo(apiVersion, login).Data.ToString();
-                JObject jsonObj = JObject.Parse(result.Replace("[]", "null"));
-                Dictionary<string, string> resultDict = jsonObj.ToObject<Dictionary<string, string>>();
-                token = resultDict["token"].ToString();
-                return token;
+                var apiInstance = new AuthApi(serverURL);
+                var login = new Login(username, password);
+
+                try
+                {
+                    var result = apiInstance.ApiVapiVersionAuthTokenPostWithHttpInfo(apiVersion, login).Data.ToString();
+                    JObject jsonObj = JObject.Parse(result.Replace("[]", "null"));
+                    Dictionary<string, string> resultDict = jsonObj.ToObject<Dictionary<string, string>>();
+                    token = resultDict["token"].ToString();
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException("Exception when calling AuthApi.ApiVapiVersionAuthTokenPostAsync: " + ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                throw new InvalidOperationException("Exception when calling AuthApi.ApiVapiVersionAuthTokenPostAsync: " + ex.Message);
+                var httpClient = new HttpClient();
+
+                var identityServerResponse = httpClient.RequestPasswordTokenAsync(new PasswordTokenRequest
+
+                {
+                    Address = "https://dev.login.openbots.io/connect/token", //TODO: use server url??
+                    ClientId = "client",
+                    UserName = "nicole.carrero@openbots.ai", //username,
+                    Password = "PASSWORDGOESHERE" //password
+                }).Result;
+
+                if (identityServerResponse.IsError) throw new Exception(identityServerResponse.Error);
+
+                token = identityServerResponse.AccessToken;
             }
+            return token;
         }
     }
 }
