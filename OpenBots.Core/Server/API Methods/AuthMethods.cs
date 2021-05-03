@@ -17,8 +17,8 @@ namespace OpenBots.Core.Server.API_Methods
             string agentId = settings["AgentId"];
             string serverURL = settings["OpenBotsServerUrl"];
             //TODO: server type will be stored in settings??
-            //string serverType = "Open Source";
-            string serverType = "Cloud";
+            string serverType = "Open Source";
+            //string serverType = "Cloud";
 
             if (string.IsNullOrEmpty(agentId))
                 throw new Exception("Agent is not connected");

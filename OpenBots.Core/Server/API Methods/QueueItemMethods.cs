@@ -189,10 +189,16 @@ namespace OpenBots.Core.Server.API_Methods
 
             try
             {
-                var file = FileMethods.GetFile(token, attachment.FileId);
-                MemoryStream response = attachmentApiInstance.ExportQueueItemAttachmentAsyncWithHttpInfo(attachment.Id.ToString(), apiVersion, attachment.QueueItemId.ToString()).Result.Data;
-                byte[] fileArray = response.ToArray();
-                System.IO.File.WriteAllBytes(Path.Combine(directoryPath, file.Name), fileArray);
+                var response = attachmentApiInstance.ExportQueueItemAttachmentAsyncWithHttpInfo(attachment.Id.ToString(), apiVersion, attachment.QueueItemId.ToString()).Result;
+                string value;
+                var headers = response.Headers.TryGetValue("Content-Disposition", out value);
+                string[] valueArray = value.Split('=');
+                string[] fileNameArray = valueArray[1].Split(';');
+                string[] fileNameArray2 = fileNameArray[0].Split('"');
+                string fileName = fileNameArray2[1];
+                var data = response.Data;
+                byte[] fileArray = data.ToArray();
+                System.IO.File.WriteAllBytes(Path.Combine(directoryPath, fileName), fileArray);
             }
             catch (Exception ex)
             {

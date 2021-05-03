@@ -109,8 +109,7 @@ namespace OpenBots.Commands.Asset
 					break;
 				case "File":
 					var fileId = asset.FileId;
-					File file = FileMethods.GetFile(token, fileId);
-					AssetMethods.DownloadFileAsset(token, asset.Id, vOutputDirectoryPath, file.Name);
+					AssetMethods.DownloadFileAsset(token, asset.Id, vOutputDirectoryPath);
 					assetValue = string.Empty;
 					break;
 				default:

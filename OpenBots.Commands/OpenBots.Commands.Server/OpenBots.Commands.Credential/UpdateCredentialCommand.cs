@@ -67,7 +67,7 @@ namespace OpenBots.Commands.Credential
 			var vCredentialPassword = ((SecureString)await v_CredentialPassword.EvaluateCode(engine)).ConvertSecureStringToString();
 
 			var token = AuthMethods.GetAuthToken();
-			var credential = CredentialMethods.GetCredential(token, $"name eq '{vCredentialName}'");
+			var credential = CredentialMethods.GetCredential(token, vCredentialName);
 
 			if (credential == null)
 				throw new Exception($"No Credential was found for '{vCredentialName}'");

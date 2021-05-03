@@ -47,14 +47,21 @@ namespace OpenBots.Core.Server.API_Methods
             }
         }
 
-        public static void DownloadFileAsset(string token, Guid? assetId, string directoryPath, string fileName)
+        public static void DownloadFileAsset(string token, Guid? assetId, string directoryPath) //, string fileName)
         {
             apiInstance.Configuration.AccessToken = token;
 
             try
             {
-                MemoryStream response = apiInstance.ExportAssetAsyncWithHttpInfo(assetId.ToString(), apiVersion).Result.Data;
-                byte[] file = response.ToArray();
+                var response = apiInstance.ExportAssetAsyncWithHttpInfo(assetId.ToString(), apiVersion).Result;
+                string value;
+                var headers = response.Headers.TryGetValue("Content-Disposition", out value);
+                string[] valueArray = value.Split('=');
+                string[] fileNameArray = valueArray[1].Split(';');
+                string[] fileNameArray2 = fileNameArray[0].Split('"');
+                string fileName = fileNameArray2[1];
+                var data = response.Data;
+                byte[] file = data.ToArray();
                 IOFile.WriteAllBytes(Path.Combine(directoryPath, fileName), file);
             }
             catch (Exception ex)

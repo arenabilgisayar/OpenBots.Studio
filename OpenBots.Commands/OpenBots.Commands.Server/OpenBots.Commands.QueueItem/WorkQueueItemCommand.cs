@@ -131,7 +131,6 @@ namespace OpenBots.Commands.QueueItem
 
             if (v_SaveAttachments == "Yes")
             {
-
                 if (Directory.Exists(vAttachmentDirectory))
                 {
                     //get all queue item attachments

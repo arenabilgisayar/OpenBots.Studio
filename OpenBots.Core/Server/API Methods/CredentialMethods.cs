@@ -16,13 +16,15 @@ namespace OpenBots.Core.Server.API_Methods
     {
         public static CredentialsApi apiInstance = new CredentialsApi(serverURL);
 
-        public static Credential GetCredential(string token, string filter)
+        public static Credential GetCredential(string token, string name)
         {
             apiInstance.Configuration.AccessToken = token;
 
             try
             {
-                var result = apiInstance.ApiVapiVersionCredentialsGetAsyncWithHttpInfo(apiVersion, filter).Result.Data.Items.FirstOrDefault();
+                var result = apiInstance.ApiVapiVersionCredentialsGetCredentialByNameCredentialNameGetAsyncWithHttpInfo(name, apiVersion).Result.Data;
+                //string filter = $"name eq '{name}'";
+                //var result = apiInstance.ApiVapiVersionCredentialsGetAsyncWithHttpInfo(apiVersion, filter).Result.Data.Items.FirstOrDefault();
                 var resultJson = JsonConvert.SerializeObject(result);
                 var credential = JsonConvert.DeserializeObject<Credential>(resultJson);
 
