@@ -2,8 +2,11 @@
 using OpenBots.Core.Script;
 using OpenBots.Core.UI.Forms;
 using OpenBots.Core.Utilities.CommonUtilities;
+using OpenBots.UI.Models;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -18,6 +21,7 @@ namespace OpenBots.UI.Forms.Supplement_Forms
         private Type _preEditType;
         private ToolTip _typeToolTip;
         public List<ScriptArgument> ArgumentsCopy { get; set; }
+        private CodeDomProvider _provider;
 
         public frmAddArgument(TypeContext typeContext)
         {
@@ -62,14 +66,28 @@ namespace OpenBots.UI.Forms.Supplement_Forms
         {
             _typeToolTip = AddTypeToolTip();
             _typeToolTip.SetToolTip(cbxDefaultType, _preEditType.GetRealTypeName());
+            _provider = CodeDomProvider.CreateProvider("C#");
         }
 
-        private void uiBtnOk_Click(object sender, EventArgs e)
+        private async void uiBtnOk_Click(object sender, EventArgs e)
         {
+            txtArgumentName.ForeColor = Color.SteelBlue;
+            txtDefaultValue.ForeColor = Color.SteelBlue;
+            lblArgumentNameError.Text = "";
+            lblArgumentValueError.Text = "";
+
             txtArgumentName.Text = txtArgumentName.Text.Trim();
             if (txtArgumentName.Text == string.Empty)
             {
                 lblArgumentNameError.Text = "Argument Name not provided";
+                txtArgumentName.ForeColor = Color.Red;
+                return;
+            }
+
+            if (!_provider.IsValidIdentifier(txtArgumentName.Text))
+            {
+                lblArgumentNameError.Text = "Argument Name is invalid";
+                txtArgumentName.ForeColor = Color.Red;
                 return;
             }
 
@@ -81,6 +99,7 @@ namespace OpenBots.UI.Forms.Supplement_Forms
                 if (!_isEditMode || existingArgument.ArgumentName != _editingArgumentName)
                 {
                     lblArgumentNameError.Text = "An Argument or Variable with this name already exists";
+                    txtArgumentName.ForeColor = Color.Red;
                     return;
                 }
             }
@@ -88,6 +107,22 @@ namespace OpenBots.UI.Forms.Supplement_Forms
             if (txtArgumentName.Text.StartsWith("{") || txtArgumentName.Text.EndsWith("}"))
             {
                 lblArgumentNameError.Text = "Argument markers '{' and '}' should not be included";
+                txtArgumentName.ForeColor = Color.Red;
+                return;
+            }
+
+            try
+            {
+                if (!_isEditMode)
+                    await StudioVariableMethods.AddVariable(newArgumentName, (Type)cbxDefaultType.Tag, txtDefaultValue.Text, ScriptContext);
+                else
+                    await StudioVariableMethods.UpdateVariable(newArgumentName, (Type)cbxDefaultType.Tag, txtDefaultValue.Text, ScriptContext);
+
+            }
+            catch (Exception ex)
+            {
+                lblArgumentValueError.Text = ex.Message;
+                txtDefaultValue.ForeColor = Color.Red;
                 return;
             }
 

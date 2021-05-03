@@ -59,7 +59,7 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                         (cellValue != null && !provider.IsValidIdentifier(cellValue.ToString())))
                     {
                         dgv.Rows.RemoveAt(e.RowIndex);
-                        await StudioVariableMethods.RemoveVariable(_preEditVarArgName, ScriptContext);
+                        await StudioVariableMethods.ResetEngineVariables(ScriptContext);
                         return;
                     }
                     //removes an empty uncommitted row
@@ -75,6 +75,7 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                     {
                         Notify($"An Error Occurred: A variable or argument with the name '{variableName}' already exists", Color.Red);
                         dgv.Rows.RemoveAt(e.RowIndex);
+                        await StudioVariableMethods.ResetEngineVariables(ScriptContext);
                         return;
                     }
                     //if the variable/argument name is valid, set value cell's readonly as false
@@ -136,7 +137,7 @@ namespace OpenBots.UI.Forms.Sequence_Forms
             }
         }
 
-        private async void dgvVariablesArguments_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        private void dgvVariablesArguments_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
         {
             try
             {
@@ -148,8 +149,6 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                     //marks the script as unsaved with changes
                     if (!uiScriptTabControl.SelectedTab.Text.Contains(" *"))
                         uiScriptTabControl.SelectedTab.Text += " *";
-
-                    await StudioVariableMethods.RemoveVariable(e.Row.Cells[0].Value.ToString(), ScriptContext);
                 }
             }
             catch (Exception ex)
@@ -159,27 +158,54 @@ namespace OpenBots.UI.Forms.Sequence_Forms
             }
         }
 
-        private void dgvVariablesArguments_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        private async void dgvVariablesArguments_UserDeletedRow(object sender, DataGridViewRowEventArgs e)
+        {
+            await StudioVariableMethods.ResetEngineVariables(ScriptContext);
+        }
+
+        private async void dgvVariablesArguments_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
             try
             {
                 DataGridView dgv = (DataGridView)sender;
 
+                if (dgv.Name == "dgvVariables")
+                    await ScriptContext.ReinitializeEngineScript();
+
                 foreach (DataGridViewRow row in dgv.Rows)
                 {
+                    var nameCell = row.Cells[0];
+                    var typeCell = row.Cells[1];
+                    var valueCell = row.Cells[2];
+
+                    if (nameCell.Value == null)
+                        continue;
+
+                    string varArgName = nameCell.Value?.ToString();
+
                     //sets the entire ProjectPath row as readonly
                     if (row.Cells[0].Value?.ToString() == "ProjectPath")
                         row.ReadOnly = true;
 
                     //adds new type to default list when a script containing non-defaults is loaded
-                    if (!TypeContext.DefaultTypes.ContainsKey(((Type)row.Cells[1].Value)?.GetRealTypeName()))
-                        TypeContext.DefaultTypes.Add(((Type)row.Cells[1].Value).GetRealTypeName(), (Type)row.Cells[1].Value);
+                    if (!TypeContext.DefaultTypes.ContainsKey(((Type)typeCell.Value)?.GetRealTypeName()))
+                        TypeContext.DefaultTypes.Add(((Type)typeCell.Value).GetRealTypeName(), (Type)row.Cells[1].Value);
 
                     //sets Value cell to readonly if the Direction is Out
                     if (row.Cells.Count == 4 && row.Cells["Direction"].Value != null &&
                        ((ScriptArgumentDirection)row.Cells["Direction"].Value == ScriptArgumentDirection.Out ||
                         (ScriptArgumentDirection)row.Cells["Direction"].Value == ScriptArgumentDirection.InOut))
                         row.Cells["ArgumentValue"].ReadOnly = true;
+
+                    try
+                    {
+                        await StudioVariableMethods.AddVariable(nameCell.Value.ToString(), (Type)typeCell.Value, valueCell.Value?.ToString(), ScriptContext);
+                        valueCell.Style = new DataGridViewCellStyle { ForeColor = Color.Black };
+                    }
+                    catch (Exception)
+                    {
+                        valueCell.Style = new DataGridViewCellStyle { ForeColor = Color.Red };
+                    }
                 }
             }
             catch (Exception ex)
@@ -276,11 +302,9 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                         SendKeys.Send("+{TAB}");
                     }
 
-                    await StudioVariableMethods.RemoveVariable(nameCell.Value.ToString(), ScriptContext);
-
                     try
                     {
-                        await StudioVariableMethods.AddVariable(nameCell.Value.ToString(), (Type)typeCell.Value, valueCell.Value?.ToString(), ScriptContext);
+                        await StudioVariableMethods.UpdateVariable(nameCell.Value.ToString(), (Type)typeCell.Value, valueCell.Value?.ToString(), ScriptContext);
                         valueCell.Style = new DataGridViewCellStyle { ForeColor = Color.Black };
                     }
                     catch (Exception)
@@ -364,7 +388,7 @@ namespace OpenBots.UI.Forms.Sequence_Forms
             dgvVariables.DataSource = new BindingList<ScriptVariable>(ScriptContext.Variables);
             dgvArguments.DataSource = new BindingList<ScriptArgument>(ScriptContext.Arguments);
 
-            TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(ImportedNamespaces), TypeContext.GroupedTypes);
+            TypeMethods.GenerateAllVariableTypes(NamespaceMethods.GetAssemblies(ScriptContext.ImportedNamespaces), TypeContext.GroupedTypes);
 
             var defaultTypesBinding = new BindingSource(TypeContext.DefaultTypes, null);
             variableType.DataSource = defaultTypesBinding;

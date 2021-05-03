@@ -4,6 +4,7 @@ using OpenBots.Core.Utilities.CommonUtilities;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using OBScriptVariable = OpenBots.Core.Script.ScriptVariable;
 using RSScript = Microsoft.CodeAnalysis.Scripting.Script;
 
@@ -36,6 +37,15 @@ namespace OpenBots.Core.Script
                                                                     .WithImports(NamespacesList));
      
             GuidPlaceholder = $"v{Guid.NewGuid()}".Replace("-", "");
+        }
+
+        public async Task ReinitializeEngineScript()
+        {
+
+            EngineScript = CSharpScript.Create("", ScriptOptions.Default.WithReferences(AssembliesList)
+                                                                    .WithImports(NamespacesList));
+
+            EngineScriptState = await EngineScript.RunAsync();
         }
     }
 }

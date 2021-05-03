@@ -212,6 +212,9 @@ namespace OpenBots.UI.Forms.Sequence_Forms
                 int displayTime;
                 switch (itemToDisplay.Item2.Name)
                 {
+                    case "Transparent":
+                        displayTime = 0;
+                        break;
                     case "White":
                         displayTime = 1;
                         break;

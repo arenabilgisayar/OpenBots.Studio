@@ -17,6 +17,7 @@ using OpenBots.Core.Script;
 using OpenBots.Core.UI.Forms;
 using OpenBots.Core.Utilities.CommonUtilities;
 using OpenBots.UI.Forms.Supplement_Forms;
+using OpenBots.UI.Models;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -221,7 +222,7 @@ namespace OpenBots.UI.Forms
             }
         }
 
-        private void tvScriptArguments_KeyDown(object sender, KeyEventArgs e)
+        private async void tvScriptArguments_KeyDown(object sender, KeyEventArgs e)
         {
             //handling outside
             if (tvScriptArguments.SelectedNode == null)
@@ -264,6 +265,7 @@ namespace OpenBots.UI.Forms
                 //remove parent node
                 parentNode.Remove();
                 ResetArguments();
+                await StudioVariableMethods.ResetEngineVariables(ScriptContext);
             }
         }
 

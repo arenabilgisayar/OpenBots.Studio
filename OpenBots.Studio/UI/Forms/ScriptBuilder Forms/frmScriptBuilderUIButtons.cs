@@ -258,11 +258,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
 
                     uiScriptTabControl.SelectedTab.Tag = _scriptContext;
 
-                    foreach (var variable in _scriptContext.Variables)
-                        await StudioVariableMethods.AddVariable(variable.VariableName, variable.VariableType, variable.VariableValue.ToString(), _scriptContext);
-
-                    foreach (var argument in _scriptContext.Arguments)
-                        await StudioVariableMethods.AddVariable(argument.ArgumentName, argument.ArgumentType, argument.ArgumentValue.ToString(), _scriptContext);
+                    await StudioVariableMethods.ResetEngineVariables(_scriptContext);
 
                     //populate commands
                     PopulateExecutionCommands(deserializedScript.Commands);
@@ -923,7 +919,6 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             if (scriptVariableEditor.ShowDialog() == DialogResult.OK)
             {
                 Invalidate();
-                uiScriptTabControl.SelectedTab.Tag = _scriptContext;
 
                 if (!uiScriptTabControl.SelectedTab.Text.Contains(" *"))
                     uiScriptTabControl.SelectedTab.Text += " *"; 
@@ -956,8 +951,6 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
 
             if (scriptArgumentEditor.ShowDialog() == DialogResult.OK)
             {
-                uiScriptTabControl.SelectedTab.Tag = _scriptContext;
-
                 if (!uiScriptTabControl.SelectedTab.Text.Contains(" *"))
                     uiScriptTabControl.SelectedTab.Text += " *";
             }
@@ -990,7 +983,6 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             if (scriptElementEditor.ShowDialog() == DialogResult.OK)
             {
                 CreateUndoSnapshot();
-                uiScriptTabControl.SelectedTab.Tag = _scriptContext;
             }
 
             scriptElementEditor.Dispose();
@@ -1257,7 +1249,7 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
             IsScriptRunning = true;
             ((frmScriptEngine)CurrentEngine).Show();
 
-            Notify("", Color.White);
+            Notify("", Color.Transparent);
 
             if (!_isDebugMode)
                 FormsHelper.HideAllForms();

@@ -1,8 +1,11 @@
 ﻿using OpenBots.Core.Script;
 using OpenBots.Core.UI.Forms;
 using OpenBots.Core.Utilities.CommonUtilities;
+using OpenBots.UI.Models;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -17,6 +20,7 @@ namespace OpenBots.UI.Forms.Supplement_Forms
         private Type _preEditType;
         private ToolTip _typeToolTip;
         public List<ScriptVariable> VariablesCopy { get; set; }
+        private CodeDomProvider _provider;
 
         public frmAddVariable(TypeContext typeContext)
         {
@@ -58,14 +62,28 @@ namespace OpenBots.UI.Forms.Supplement_Forms
         {
             _typeToolTip = AddTypeToolTip();
             _typeToolTip.SetToolTip(cbxDefaultType, _preEditType.GetRealTypeName());
+            _provider = CodeDomProvider.CreateProvider("C#");
         }
 
-        private void uiBtnOk_Click(object sender, EventArgs e)
+        private async void uiBtnOk_Click(object sender, EventArgs e)
         {
+            txtVariableName.ForeColor = Color.SteelBlue;
+            txtDefaultValue.ForeColor = Color.SteelBlue;
+            lblVariableNameError.Text = "";
+            lblVariableValueError.Text = "";
+
             txtVariableName.Text = txtVariableName.Text.Trim();
             if (txtVariableName.Text == string.Empty)
             {
                 lblVariableNameError.Text = "Variable Name not provided";
+                txtVariableName.ForeColor = Color.Red;
+                return;
+            }
+
+            if (!_provider.IsValidIdentifier(txtVariableName.Text))
+            {
+                lblVariableNameError.Text = "Variable Name is invalid";
+                txtVariableName.ForeColor = Color.Red;
                 return;
             }
 
@@ -77,6 +95,7 @@ namespace OpenBots.UI.Forms.Supplement_Forms
                 if (!_isEditMode || existingVariable.VariableName != _editingVariableName)
                 {
                     lblVariableNameError.Text = "A Variable or Argument with this name already exists";
+                    txtVariableName.ForeColor = Color.Red;
                     return;
                 }
             }
@@ -84,6 +103,22 @@ namespace OpenBots.UI.Forms.Supplement_Forms
             if (txtVariableName.Text.StartsWith("{") || txtVariableName.Text.EndsWith("}"))
             {
                 lblVariableNameError.Text = "Variable markers '{' and '}' should not be included";
+                txtVariableName.ForeColor = Color.Red;
+                return;
+            }
+            
+            try
+            {
+                if (!_isEditMode)
+                    await StudioVariableMethods.AddVariable(newVariableName, (Type)cbxDefaultType.Tag, txtDefaultValue.Text, ScriptContext);
+                else
+                    await StudioVariableMethods.UpdateVariable(newVariableName, (Type)cbxDefaultType.Tag, txtDefaultValue.Text, ScriptContext);
+
+            }
+            catch (Exception ex)
+            {
+                lblVariableValueError.Text = ex.Message;
+                txtDefaultValue.ForeColor = Color.Red;
                 return;
             }
 

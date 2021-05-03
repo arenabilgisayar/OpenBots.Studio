@@ -329,8 +329,6 @@ namespace OpenBots.UI.Forms.ScriptBuilder_Forms
                         selectedCommandItem.Tag = editCommand.SelectedCommand;
                         selectedCommandItem.Text = editCommand.SelectedCommand.GetDisplayValue();
                         selectedCommandItem.SubItems.Add(editCommand.SelectedCommand.GetDisplayValue());
-
-                        uiScriptTabControl.SelectedTab.Tag = _scriptContext;
                     }
 
                     if (editCommand.SelectedCommand.CommandName == "SeleniumElementActionCommand")

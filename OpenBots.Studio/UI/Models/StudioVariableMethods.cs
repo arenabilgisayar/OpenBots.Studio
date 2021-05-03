@@ -2,6 +2,7 @@
 using OpenBots.Core.Script;
 using OpenBots.Core.Utilities.CommonUtilities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -33,7 +34,8 @@ namespace OpenBots.UI.Models
 
             var existingVariable = scriptContext.EngineScriptState.Variables.Where(x => x.Name == varName).LastOrDefault();
 
-            if (existingVariable != null && (existingVariable.Type.GetRealTypeName() == varType.GetRealTypeName() || existingVariable.Type.GetRealTypeName() == $"Nullable<{varType.GetRealTypeName()}>"))
+            if (existingVariable != null && (existingVariable.Type.GetRealTypeName() == varType.GetRealTypeName() || 
+                                             existingVariable.Type.GetRealTypeName() == $"Nullable<{varType.GetRealTypeName()}>"))
             {
                 if (scriptContext.EngineScriptState == null)
                     scriptContext.EngineScriptState = await scriptContext.EngineScript.RunAsync();
@@ -45,36 +47,47 @@ namespace OpenBots.UI.Models
                    .WithReferences(scriptContext.AssembliesList)
                    .WithImports(scriptContext.NamespacesList));
             }
-            else if(existingVariable != null)
+            else if (existingVariable != null)
             {
-                var existingtype = existingVariable.Type.GetRealTypeName();
-                var newType = varType.GetRealTypeName();
-
-                await RemoveVariable(varName, scriptContext);
-                await AddVariable(varName, varType, code, scriptContext);
+                var errors = await ResetEngineVariables(scriptContext);
+                if (errors.Count > 0)
+                    throw errors.Last();
             }
             else
                 await AddVariable(varName, varType, code, scriptContext);
         }
 
-        public async static Task RemoveVariable(string varName, ScriptContext scriptContext)
+        public async static Task<List<Exception>> ResetEngineVariables(ScriptContext scriptContext)
         {
-            var existingVariable = scriptContext.EngineScriptState.Variables.Where(x => x.Name == varName).LastOrDefault();
+            List<Exception> errors = new List<Exception>();
+                
+            await scriptContext.ReinitializeEngineScript();
 
-            if (existingVariable != null)
+            foreach (var variable in scriptContext.Variables)
             {
-                scriptContext.EngineScriptState.Variables.Remove(existingVariable);
-
-                if (scriptContext.EngineScriptState == null)
-                    scriptContext.EngineScriptState = await scriptContext.EngineScript.RunAsync();
-
-                string script = $"GC.Collect();";
-
-                scriptContext.EngineScriptState = await scriptContext.EngineScriptState
-                   .ContinueWithAsync(script, ScriptOptions.Default
-                   .WithReferences(scriptContext.AssembliesList)
-                   .WithImports(scriptContext.NamespacesList));
+                try
+                {
+                    await AddVariable(variable.VariableName, variable.VariableType, variable.VariableValue?.ToString(), scriptContext);
+                }
+                catch (Exception ex)
+                {
+                    errors.Add(ex);
+                }
             }
+
+            foreach (var argument in scriptContext.Arguments)
+            {
+                try
+                {
+                    await AddVariable(argument.ArgumentName, argument.ArgumentType, argument.ArgumentValue.ToString(), scriptContext);
+                }
+                catch (Exception ex)
+                {
+                    errors.Add(ex);
+                }
+            }
+
+            return errors;
         }
     }
 }

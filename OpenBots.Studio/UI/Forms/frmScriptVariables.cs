@@ -16,6 +16,7 @@ using OpenBots.Core.Script;
 using OpenBots.Core.UI.Forms;
 using OpenBots.Core.Utilities.CommonUtilities;
 using OpenBots.UI.Forms.Supplement_Forms;
+using OpenBots.UI.Models;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -49,6 +50,7 @@ namespace OpenBots.UI.Forms
             _variablesCopy = new List<ScriptVariable>(ScriptContext.Variables);
             _userVariableParentNode = InitializeNodes("My Task Variables", _variablesCopy);
             lblMainLogo.Text = ScriptName + " variables";
+            ExpandUserVariableNode();
         }
 
         private TreeNode InitializeNodes(string parentName, List<ScriptVariable> variables)
@@ -213,7 +215,7 @@ namespace OpenBots.UI.Forms
             }
         }
 
-        private void tvScriptVariables_KeyDown(object sender, KeyEventArgs e)
+        private async void tvScriptVariables_KeyDown(object sender, KeyEventArgs e)
         {
             //handling outside
             if (tvScriptVariables.SelectedNode == null)
@@ -256,6 +258,7 @@ namespace OpenBots.UI.Forms
                 //remove parent node
                 parentNode.Remove();
                 ResetVariables();
+                await StudioVariableMethods.ResetEngineVariables(ScriptContext);
             }
         }
 
