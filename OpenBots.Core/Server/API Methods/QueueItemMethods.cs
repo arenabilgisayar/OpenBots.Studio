@@ -72,19 +72,21 @@ namespace OpenBots.Core.Server.API_Methods
         {
             attachmentApiInstance.Configuration.AccessToken = token;
 
-            if (!string.IsNullOrEmpty(attachments))
+            try
             {
                 List<FileStream> attachmentsList = new List<FileStream>();
-                foreach (var attachment in attachments)
+                if (attachments != null && attachments.Count > 0)
                 {
-                    FileStream _file = new FileStream(attachment, FileMode.Open, FileAccess.Read);
-                    attachmentsList.Add(_file);
+                    foreach (var attachment in attachments)
+                    {
+                        FileStream _file = new FileStream(attachment, FileMode.Open, FileAccess.Read);
+                        attachmentsList.Add(_file);
+                    }
                 }
-            }
 
                 attachmentApiInstance.ApiVapiVersionQueueItemsQueueItemIdQueueItemAttachmentsPostAsyncWithHttpInfo(queueItemId.ToString(), apiVersion, attachmentsList).Wait();
 
-                foreach(var file in attachmentsList)
+                foreach (var file in attachmentsList)
                 {
                     file.Flush();
                     file.Dispose();

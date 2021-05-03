@@ -16,20 +16,23 @@ namespace OpenBots.Core.Server.API_Methods
         {
             apiInstance.Configuration.AccessToken = token;
 
-            if (attachments != null)
+            try
             {
                 List<FileStream> attachmentsList = new List<FileStream>();
-                foreach (var attachment in attachments)
+                if (attachments != null)
                 {
-                    FileStream _file = new FileStream(attachment, FileMode.Open, FileAccess.Read);
-                    attaachmentsList.Add(_file);
+                    
+                    foreach (var attachment in attachments)
+                    {
+                        FileStream _file = new FileStream(attachment, FileMode.Open, FileAccess.Read);
+                        attachmentsList.Add(_file);
+                    }
                 }
-            }
 
-            var emailMessageJson = JsonConvert.SerializeObject(emailMessage);
-            apiInstance.ApiVapiVersionEmailsSendPostAsyncWithHttpInfo(apiVersion, emailMessageJson, attachmentsList, accountName).Wait();
+                var emailMessageJson = JsonConvert.SerializeObject(emailMessage);
+                apiInstance.ApiVapiVersionEmailsSendPostAsyncWithHttpInfo(apiVersion, emailMessageJson, attachmentsList, accountName).Wait();
 
-            foreach (var file in attachmentsList)
+                foreach (var file in attachmentsList)
                 {
                     file.Flush();
                     file.Dispose();
